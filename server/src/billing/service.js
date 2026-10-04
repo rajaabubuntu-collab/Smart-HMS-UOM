@@ -1,3 +1,4 @@
+import { billingNotice } from '../notifications/service.js';
 import { randomBytes } from 'node:crypto';
 import { Bill, Patient, audit } from '../models.js';
 import { hospitalDate } from '../scheduling/time.js';
@@ -54,6 +55,13 @@ export async function generateBill(appointment, actor, session, options = {}) {
       },
     ],
     { session },
+  );
+  await billingNotice(
+    bill,
+    `bill:${bill._id}:created`,
+    'New bill available',
+    'A bill is ready for your completed appointment.',
+    session,
   );
   await audit(actor, 'bill_generated', 'billing', bill._id, session);
   return bill;

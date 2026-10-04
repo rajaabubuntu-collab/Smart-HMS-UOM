@@ -31,7 +31,7 @@ The appointment-to-consultation workflow now continues into itemised billing. No
 - Payment submissions carry a UUID request key. A retry with the same actor and details returns the original receipt, even if the original HTTP response was lost. Reusing that key with different details is rejected. Bill revisions plus transaction write conflicts prevent overpayment from simultaneous distinct submissions.
 - Admin reversals are transactional, once-only corrections; they preserve the original entry and add reversal time, actor and reason. They do not issue a financial refund.
 - Doctors cannot use the billing API. Completing their consultation creates the fee bill internally without granting them billing access. Reception/admin cannot retrieve consultation notes through billing endpoints.
-- Bill changes and payment events are audited. Notification delivery belongs to week 6; the new bill is immediately available in the patient portal.
+- Bill changes and payment events are audited. The week-five baseline exposed new bills in the portal; [week 6](week-6.md) now adds in-app billing notifications.
 
 ## Verification
 
@@ -41,4 +41,4 @@ Browser coverage includes manual generation, service charges, overdue status, pa
 
 Run `npm test`, `npm run test:e2e`, `npm run lint`, `npm run build` and `npm run format:check`. All integration/browser test databases are disposable and separate from development data.
 
-Next milestone: notifications and reminders, followed by the remaining planned modules.
+Next milestone at this baseline was notifications and reminders, now implemented in [week 6](week-6.md).

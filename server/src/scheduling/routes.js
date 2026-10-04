@@ -132,6 +132,21 @@ export function schedulingRouter() {
     ]);
     res.json({ items, total, page, limit });
   });
+  router.get('/directory/doctors/:id', async (req, res) => {
+    const doctor = await Doctor.findOne({
+      _id: parse(objectId, req.params.id),
+      ...(await activeDoctors()),
+    })
+      .populate('user', 'name')
+      .populate('department', 'name')
+      .lean();
+    if (!doctor)
+      throw httpError(
+        404,
+        'This doctor is not currently available in the directory. Please choose another doctor or contact reception.',
+      );
+    res.json({ doctor: doctorResponse(doctor) });
+  });
   router.get('/directory/doctors', async (req, res) => {
     const { page, limit, department, search } = parse(directoryQuery, req.query);
     const filter = await activeDoctors();

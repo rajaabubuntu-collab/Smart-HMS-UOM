@@ -155,6 +155,8 @@ const appointmentSchema = new Schema(
     reason: { type: String, default: '', maxlength: 500 },
     status: { type: String, enum: appointmentStatuses, default: 'Scheduled' },
     holdsSlot: { type: Boolean, default: true },
+    scheduleRevision: { type: Number, default: 0 },
+    remindedRevision: { type: Number, default: -1 },
     checkedInAt: Date,
     cancelledAt: Date,
     cancellationReason: { type: String, default: '' },
@@ -182,6 +184,7 @@ appointmentSchema.index(
 appointmentSchema.index({ patient: 1, startsAt: 1 });
 appointmentSchema.index({ doctor: 1, startsAt: 1, status: 1 });
 appointmentSchema.index({ schedule: 1, status: 1 });
+appointmentSchema.index({ status: 1, startsAt: 1 });
 export const DoctorSchedule = model('DoctorSchedule', scheduleSchema);
 export const AppointmentSlot = model('AppointmentSlot', slotSchema);
 export const Appointment = model('Appointment', appointmentSchema);
@@ -296,6 +299,27 @@ paymentSchema.index({ bill: 1, createdAt: -1 });
 export const Bill = model('Bill', billSchema);
 export const Payment = model('Payment', paymentSchema);
 
+const notificationSchema = new Schema(
+  {
+    recipient: reference('User'),
+    eventKey: { type: String, required: true, maxlength: 200 },
+    type: {
+      type: String,
+      enum: ['appointment', 'reminder', 'clinical', 'billing'],
+      required: true,
+    },
+    title: { type: String, required: true, maxlength: 120 },
+    message: { type: String, required: true, maxlength: 600 },
+    path: { type: String, required: true, maxlength: 300 },
+    readAt: { type: Date, default: null },
+  },
+  { timestamps: { createdAt: true, updatedAt: false } },
+);
+notificationSchema.index({ recipient: 1, eventKey: 1 }, { unique: true });
+notificationSchema.index({ recipient: 1, createdAt: -1, _id: -1 });
+notificationSchema.index({ recipient: 1, readAt: 1 });
+export const Notification = model('Notification', notificationSchema);
+
 export async function connectDatabase(uri) {
   await mongoose.connect(uri, { serverSelectionTimeoutMS: 10000 });
   await Promise.all(
@@ -312,6 +336,7 @@ export async function connectDatabase(uri) {
       Consultation,
       Bill,
       Payment,
+      Notification,
     ].map((m) => m.init()),
   );
 }

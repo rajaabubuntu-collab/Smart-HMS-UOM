@@ -1,3 +1,4 @@
+import { appointmentNotice } from '../notifications/service.js';
 import mongoose from 'mongoose';
 import { randomBytes } from 'node:crypto';
 import {
@@ -184,6 +185,7 @@ export async function bookAppointment(data, actor) {
       ],
       { session },
     );
+    await appointmentNotice(appointment, 'booked', session);
     await audit(actor._id, 'appointment_booked', 'appointments', appointment._id, session);
   });
   return appointment;
@@ -230,6 +232,7 @@ export async function cancelAppointment(id, reason, actor) {
     appointment.cancellationReason = reason;
     appointment.history.push({ action: 'Cancelled', actor: actor._id, reason });
     await appointment.save({ session });
+    await appointmentNotice(appointment, 'cancelled', session);
     await audit(actor._id, 'appointment_cancelled', 'appointments', id, session);
   });
   return appointment;
@@ -258,7 +261,9 @@ export async function rescheduleAppointment(id, data, actor) {
       reason: data.reason,
     });
     Object.assign(appointment, appointmentSnapshot(slot, details));
+    appointment.scheduleRevision = (appointment.scheduleRevision || 0) + 1;
     await appointment.save({ session });
+    await appointmentNotice(appointment, 'rescheduled', session);
     await audit(actor._id, 'appointment_rescheduled', 'appointments', id, session);
   });
   return appointment;
@@ -277,6 +282,7 @@ export async function checkInAppointment(id, actor) {
     appointment.checkedInAt = new Date();
     appointment.history.push({ action: 'Checked in', actor: actor._id });
     await appointment.save({ session });
+    await appointmentNotice(appointment, 'checked_in', session);
     await audit(actor._id, 'appointment_checked_in', 'appointments', id, session);
   });
   return appointment;

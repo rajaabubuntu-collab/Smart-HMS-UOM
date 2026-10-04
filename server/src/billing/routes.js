@@ -1,3 +1,4 @@
+import { billingNotice } from '../notifications/service.js';
 import { Router } from 'express';
 import mongoose from 'mongoose';
 import { z } from 'zod';
@@ -145,6 +146,13 @@ export function billingRouter() {
         dueDate: bill.dueDate,
       });
       await bill.save({ session });
+      await billingNotice(
+        bill,
+        `bill:${id}:revision:${bill.revision}`,
+        'Bill updated',
+        'Your itemised bill has changed.',
+        session,
+      );
       await audit(req.user._id, 'bill_revised', 'billing', id, session);
     });
     res.json({ bill: billResponse(bill) });
@@ -192,6 +200,13 @@ export function billingRouter() {
         ],
         { session },
       );
+      await billingNotice(
+        bill,
+        `payment:${payment._id}:recorded`,
+        'Payment recorded',
+        'A received payment has been recorded on your bill.',
+        session,
+      );
       await audit(req.user._id, 'payment_recorded', 'billing', payment._id, session);
     });
     res
@@ -218,6 +233,13 @@ export function billingRouter() {
         payment.reversalReason = data.reason;
         await bill.save({ session });
         await payment.save({ session });
+        await billingNotice(
+          bill,
+          `payment:${payment._id}:reversed`,
+          'Payment record corrected',
+          'A payment record was reversed and your balance updated. This was a record correction, not an online refund.',
+          session,
+        );
         await audit(req.user._id, 'payment_reversed', 'billing', payment._id, session);
       });
       res.json({

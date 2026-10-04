@@ -2567,3 +2567,116 @@ label {
     margin: 8px 0;
   }
 }
+
+.notification-bell {
+  position: relative;
+  flex-shrink: 0;
+  text-decoration: none;
+}
+.notification-count {
+  position: absolute;
+  top: -4px;
+  right: -7px;
+  border-radius: 20px;
+  min-width: 18px;
+  padding: 2px 4px;
+  font-size: 10px;
+  font-weight: 700;
+  text-align: center;
+  color: white;
+  background: var(--green);
+}
+.notification-toolbar {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 24px;
+}
+.notification-row {
+  margin-bottom: 16px;
+  display: flex;
+  justify-content: space-between;
+  gap: 24px;
+  align-items: center;
+  overflow-wrap: anywhere;
+}
+.notification-row > div:first-child {
+  flex: 1;
+  min-width: 0;
+}
+.notification-row h2 {
+  font-size: 1.1rem;
+  margin: 10px 0;
+}
+.notification-row p {
+  line-height: 1.6;
+}
+.notification-unread {
+  border-left: 4px solid var(--green);
+}
+.notification-footnote {
+  margin-top: 28px;
+  font-size: 13px;
+  line-height: 1.7;
+}
+@media (max-width: 650px) {
+  .notification-row {
+    align-items: stretch;
+    flex-direction: column;
+  }
+  .notification-toolbar {
+    flex-direction: column;
+  }
+  .topbar-user {
+    gap: 10px;
+  }
+}
+
+.guide-intro,
+.guide-shortcut {
+  margin-bottom: 24px;
+}
+.guide-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 24px;
+  align-items: start;
+}
+.guide-grid .field {
+  margin-bottom: 18px;
+}
+.guide-grid p,
+.guide-intro p {
+  line-height: 1.65;
+}
+.guide-results > .card,
+.guide-suggestion {
+  margin-bottom: 20px;
+  overflow-wrap: anywhere;
+}
+.guide-doctor {
+  border-top: 1px solid var(--border);
+  padding: 16px 0;
+}
+.guide-emergency {
+  border: 1px solid #d78b76;
+  border-left: 4px solid #a33724;
+  background: #fff1eb;
+  border-radius: 12px;
+  color: #642416;
+  padding: 20px;
+  margin: 18px 0;
+}
+.guide-emergency h2 {
+  font-size: 1.1rem;
+}
+.guide-emergency a {
+  color: inherit;
+  font-weight: 700;
+}
+@media (max-width: 950px) {
+  .guide-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

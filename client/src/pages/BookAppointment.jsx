@@ -12,11 +12,29 @@ export default function BookAppointment() {
   const [params] = useSearchParams();
   const preset = user.role !== 'patient' ? params.get('patient') : null;
   const loaded = useResource(preset ? `/reception/patients/${preset}` : null);
+  const doctorId = params.get('doctor');
+  const selectedDoctor = useResource(
+    doctorId ? `/directory/doctors/${encodeURIComponent(doctorId)}` : null,
+  );
+  if (selectedDoctor.pending) return <Loading />;
+  if (selectedDoctor.error)
+    return (
+      <>
+        <Notice>{selectedDoctor.error}</Notice>
+        <Link className="button primary" to="/book">
+          Browse doctors
+        </Link>
+      </>
+    );
   if (loaded.pending) return <Loading />;
   if (loaded.error) return <Notice>{loaded.error}</Notice>;
   return (
     <BookingForm
-      key={preset || 'self'}
+      key={`${preset || 'self'}:${doctorId || ''}:${params.get('department') || ''}`}
+      presetDoctor={selectedDoctor.data?.doctor || null}
+      presetDepartment={
+        params.get('department') || selectedDoctor.data?.doctor.department._id || ''
+      }
       preset={
         loaded.data
           ? {
@@ -29,10 +47,10 @@ export default function BookAppointment() {
     />
   );
 }
-function BookingForm({ preset }) {
+function BookingForm({ preset, presetDoctor, presetDepartment }) {
   const { user } = useAuth();
   const [patient, setPatient] = useState(preset),
-    [doctor, setDoctor] = useState(null),
+    [doctor, setDoctor] = useState(presetDoctor),
     [slot, setSlot] = useState(null),
     [date, setDate] = useState(today());
   const [busy, setBusy] = useState(false),
@@ -130,6 +148,7 @@ function BookingForm({ preset }) {
             )}
             <h2>{user.role === 'patient' ? '1' : '2'}. Choose your doctor</h2>
             <DoctorPicker
+              initialDepartment={presetDepartment}
               selected={doctor}
               onSelect={(value) => {
                 setDoctor(value);

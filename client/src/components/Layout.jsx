@@ -1,3 +1,4 @@
+import { NotificationBell } from '../pages/Notifications';
 import { useState } from 'react';
 import { Link, NavLink, Outlet } from 'react-router-dom';
 import {
@@ -13,6 +14,7 @@ import {
   CalendarDays,
   CalendarPlus,
   CalendarClock,
+  Bell,
 } from 'lucide-react';
 import { useAuth } from '../auth';
 import { Brand, Notice } from './ui';
@@ -23,9 +25,12 @@ export default function Layout() {
   const [error, setError] = useState('');
   const [busy, setBusy] = useState(false);
   const links = [{ to: '/dashboard', label: 'Overview', icon: LayoutDashboard }];
+  links.push({ to: '/notifications', label: 'Notifications', icon: Bell });
   links.push({ to: '/appointments', label: 'Appointments', icon: CalendarDays });
   if (user.role === 'doctor')
     links.push({ to: '/queue', label: 'Consultation queue', icon: HeartPulse });
+  if (user.role === 'patient')
+    links.push({ to: '/recommendations', label: 'Department guide', icon: HeartPulse });
   if (user.role === 'patient')
     links.push({ to: '/records', label: 'Medical records', icon: HeartPulse });
   if (user.role !== 'doctor')
@@ -109,7 +114,7 @@ export default function Layout() {
           <span>
             <ShieldCheck size={16} /> Protected workspace
           </span>
-          <small>Final-year project · v0.5</small>
+          <small>Final-year project · v0.7</small>
         </div>
       </aside>
       <div className="main-shell">
@@ -125,6 +130,7 @@ export default function Layout() {
             <span className="topbar-title">Your hospital, connected.</span>
           </div>
           <div className="topbar-user">
+            <NotificationBell />
             <div className="avatar">
               {user.name
                 .split(' ')

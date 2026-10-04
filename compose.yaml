@@ -2,6 +2,10 @@ name: smart-hms-week1
 services:
   mongo:
     image: mongo:7
+    ulimits:
+      nofile:
+        soft: 64000
+        hard: 64000
     command: ['mongod', '--replSet', 'rs0', '--bind_ip_all']
     ports:
       - '127.0.0.1:27018:27017'

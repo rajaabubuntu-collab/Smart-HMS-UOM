@@ -1,3 +1,4 @@
+import { appointmentNotice, notifyPatient } from '../notifications/service.js';
 import { Router } from 'express';
 import { generateBill } from '../billing/service.js';
 import mongoose from 'mongoose';
@@ -154,6 +155,7 @@ export function clinicalRouter() {
       appointment.status = 'In Consultation';
       appointment.history.push({ action: 'Consultation started', actor: req.user._id });
       await appointment.save({ session });
+      await appointmentNotice(appointment, 'started', session);
       await audit(req.user._id, 'consultation_started', 'clinical', id, session);
     });
     res.status(201).json({ message: 'Consultation started.' });
@@ -206,10 +208,23 @@ export function clinicalRouter() {
           appointment.history.push({ action: 'Consultation completed', actor: req.user._id });
           await appointment.save({ session });
           await generateBill(appointment, req.user._id, session);
+          await appointmentNotice(appointment, 'completed', session);
         }
         record.revision += 1;
         revision = record.revision;
         await record.save({ session });
+        if (action === 'prescription')
+          await notifyPatient(
+            appointment.patient,
+            {
+              eventKey: `prescription:${record._id}:${record.revision}`,
+              type: 'clinical',
+              title: 'Prescription updated',
+              message: `Your prescription record for ${appointment.reference} has been updated. Review the latest version in Medical records.`,
+              path: '/records',
+            },
+            session,
+          );
         await audit(req.user._id, `consultation_${action}`, 'clinical', id, session);
       });
       res.json({

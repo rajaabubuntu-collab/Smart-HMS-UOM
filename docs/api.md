@@ -1,4 +1,4 @@
-# Smart HMS API (weeks 1–5)
+# Smart HMS API (weeks 1–7)
 
 Base path: `/api`. JSON request/response bodies. Authenticated requests use the HTTP-only `hms_session` cookie. No bearer tokens are exposed to frontend JavaScript.
 
@@ -187,3 +187,51 @@ Reversal: `{revision, reason}`. Reversed entries remain in payment history with 
 Bill responses include `items`, `totalMinor`, `paidMinor`, `balanceMinor`, `currency: "LKR"`, `dueDate`, `revision`, and derived `status`. Lists omit charge version history; detail includes it. Payment details omit internal request keys. `Paid` means balance zero; otherwise due date before today's Asia/Colombo date means `Overdue`, else `Pending`. Partial bills remain Pending/Overdue with a positive paid amount. No status write endpoint exists.
 
 Completion automatically creates a unique bill in the existing consultation transaction. Automatic due date is the completion date. Payment/bill edits use expected revisions and transactions. Stale revisions, duplicate invoices, already-reversed payments, forbidden state changes and overpayments return 409; validation returns 400; wrong role 403; absent/unowned record 404.
+
+## Week 6: notifications
+
+All authenticated roles can access their own inbox. There is no administrator bypass or client notification-creation endpoint. Workflow events currently target the affected patient; staff inboxes can be empty.
+
+| Method | Endpoint                                    | Behavior                                                                                                                |
+| ------ | ------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------- |
+| GET    | `/notifications?page=1&limit=10&filter=all` | Own newest-first notifications; filter `all` or `unread`; limit max 50                                                  |
+| GET    | `/notifications/unread-count`               | `{unreadCount}` for the authenticated user                                                                              |
+| PATCH  | `/notifications/:id`                        | Body `{read: true}` or `{read: false}`; persists read/unread state; unowned or absent ID returns 404                    |
+| POST   | `/notifications/read-all`                   | Body `{through: "ISO UTC timestamp"}` from the list's `asOf`; marks own unread entries created at/before that timestamp |
+
+List response: `{records, total, page, limit, asOf, unreadCount}`. Each record exposes `_id`, `type` (appointment/reminder/clinical/billing), `title`, `message`, `path`, `readAt` (null when unread) and `createdAt`. Internal recipient/event-key fields are omitted. Unknown query/body fields and invalid IDs return 400; missing authentication returns 401. Mutating requests retain the app's trusted-Origin requirement.
+
+Notifications are generated transactionally for booking, cancellation, rescheduling, check-in, consultation start/completion, prescription revision, bill generation/revision, received payment and payment reversal. There is no notification for a clinical draft save. Link destinations are server-generated relative routes, with destination authorization enforced separately.
+
+Appointment reminders have no HTTP trigger. The API process runs a bounded check on startup and every 60 seconds. Scheduled appointments with `now < startsAt <= now + 24h` and an undelivered `scheduleRevision` receive one in-app reminder. The notification and `remindedRevision` marker commit together under the existing doctor lock. Rescheduling increments `scheduleRevision`; old reminders remain historical. See [delivery decisions](week-6.md) for restart, batching and downtime semantics.
+
+## Week 7: department guide
+
+`POST /api/recommendations` is patient-only (401 without authentication, 403 for other roles or an untrusted Origin). Body:
+
+```json
+{
+  "symptoms": "cough",
+  "duration": { "value": 2, "unit": "days" },
+  "painLevel": 3,
+  "comments": "",
+  "emergencySigns": "no",
+  "acknowledged": true
+}
+```
+
+Symptoms: trimmed 3–1000 characters. Duration value: integer 1–3650; unit: hours/days/weeks/months. Pain is optional, integer 1–10. Comments default to empty, max 1000. Warning-sign answer is required: yes/no/unsure. Acknowledgement must be true. All schemas are strict; forged patient/age fields and invalid values return 400. Age is resolved from the authenticated patient's stored profile.
+
+Response is `{ruleVersion, disclaimer, emergencyMessage, outcome, explanation, suggestions}`. Outcomes:
+
+- `urgent`: selected or recognised possible warning sign; no routine suggestions.
+- `review`: unsure, high reported pain or severe/sudden/worsening wording; speak to a qualified professional, no routine suggestions.
+- `staff`: unsupported context/language/age, negation, uncertain/mixed descriptions or no match; contact reception.
+- `unavailable`: a rule matched but no corresponding active department exists.
+- `matched`: one rule group matched; suggestions contain active matching departments and associated active doctors.
+
+Each suggestion contains `{department: {id, name}, explanation, matchedTerms, doctors, doctorCount}`. Up to six doctors per service are returned in stable ID order. Doctor fields: id, name, specialization, qualification, consultationFeeMinor. They are directory matches, not a quality ranking; no appointment slot is claimed. No diagnosis or numerical medical confidence score is returned. Raw submitted values are not stored; the audit target is the rule version and action records the outcome.
+
+`GET /api/directory/doctors/:id` returns `{doctor}` for an active doctor with an active department, using the same safe fields as doctor search. Invalid IDs return 400; unavailable/missing doctors 404. This supports `/book?doctor=:id`; `/book?department=:id` presets department browsing. The booking workflow validates availability again and requires explicit confirmation. Symptom text never travels in these URLs or into the appointment reason automatically.
+
+See [week 7 decisions and limitations](week-7.md) for the rule catalogue, safety boundaries and source rationale.

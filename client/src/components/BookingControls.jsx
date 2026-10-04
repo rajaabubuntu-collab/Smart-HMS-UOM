@@ -5,8 +5,8 @@ import { Field, Loading, Notice, Pager, useResource } from './ui';
 import { today, dateAfter, timeLabel, money } from '../scheduling';
 
 // Shared selectors keep patient booking and receptionist rescheduling consistent.
-export function DoctorPicker({ onSelect, selected }) {
-  const [department, setDepartment] = useState(''),
+export function DoctorPicker({ onSelect, selected, initialDepartment = '' }) {
+  const [department, setDepartment] = useState(initialDepartment),
     [search, setSearch] = useState(''),
     [query, setQuery] = useState(''),
     [page, setPage] = useState(1);

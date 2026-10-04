@@ -1,4 +1,4 @@
-# Security decisions (weeks 1–5)
+# Security decisions (weeks 1–7)
 
 This is a local academic prototype, not a production clinical deployment. Use synthetic data.
 
@@ -55,3 +55,19 @@ No claims of legal compliance, clinical safety certification or production readi
 - Bill edits/payment writes/reversals increment the bill revision and use transactions. Concurrent updates conflict and retry against the latest revision, preventing overpayment and lost edits. Once a payment exists, charge changes are blocked even after reversal.
 - Payment retries use unique per-bill UUID keys plus exact actor/payload matching. Original receipts and reversed entries remain in history; only admins can reverse with a mandatory reason. This records an external payment correction and never sends money.
 - Audit entries record invoice creation/revision, payment recording and reversal. Online gateway integration, credit notes, refunds and financial-system reconciliation remain outside scope.
+
+## Notifications (week 6)
+
+- Inbox list/count/read operations always include the authenticated recipient ID. Staff/admin have no cross-user inbox access. Strict schemas reject attempts to provide another recipient or edit message/path content.
+- Notification paths and messages are generated server-side. Notices avoid clinical note, diagnosis, medication and allergy content. Target pages still enforce their own record permissions.
+- Workflow notices share source transactions. Unique recipient/event keys deduplicate delivery; payment retries return the existing receipt before notification generation.
+- Reminder delivery rechecks appointment status/time under the scheduling doctor lock and commits its deduplication marker with the notice. Reschedule revision keys make repeated workers/restarts safe. No unauthenticated scheduling trigger or external email/SMS service is introduced.
+- Mark-all is scoped to the caller and a timestamp cutoff. Read flags represent in-app acknowledgement only. Historical messages remain even if an appointment subsequently changes; users follow the link for current state.
+
+## Department guide (week 7)
+
+- Only authenticated patients submit requests. Strict bounded schemas reject forged patient/age fields; age comes from the caller's profile. Symptoms are treated as plain data, never as executable rules or prompts to an external model.
+- Fixed rule matching is local. Raw symptom text, comments, duration and pain scores are not persisted or sent to external AI services. Audit entries store actor, outcome and rule version only; booking links contain doctor/department IDs, not medical text.
+- Warning-sign responses, high reported pain and uncertainty suppress routine booking suggestions. This does not establish the absence of danger and is not clinically validated triage. No diagnosis/treatment output or fabricated medical probabilities are provided.
+- Doctor suggestions and booking deep links exclude inactive accounts/departments. Final booking still applies existing transactional scheduling and ownership checks. Previously generated suggestions cannot bypass deactivation or reserve a slot.
+- The MongoDB container's file descriptor limit is explicitly 64,000 to prevent the observed development file-exhaustion crash. This changes only the container limit and preserves its named data volume.

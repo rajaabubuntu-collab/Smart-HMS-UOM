@@ -1,6 +1,6 @@
 # Smart HMS — Care, connected.
 
-University of Moratuwa BIT final-year project. Weeks 1–5 implementation: a MERN application with patient/staff management, doctor schedules, appointment booking, rescheduling, cancellation, receptionist check-in, consultations, prescriptions, medical history and billing.
+University of Moratuwa BIT final-year project. Weeks 1–7 implementation: a MERN application with patient/staff management, doctor schedules, appointment booking, rescheduling, cancellation, receptionist check-in, consultations, prescriptions, medical history, billing, in-app notifications and a rule-based department guide.
 
 ## Start locally
 
@@ -18,7 +18,7 @@ Open **http://localhost:5173** (use `localhost`, matching `APP_ORIGIN`). The API
 
 `npm run setup` creates a gitignored `.env` with a random JWT signing secret; it never replaces an existing environment file. `npm run seed` creates four **synthetic** development accounts, one per role, plus General Medicine. Their randomly generated passwords are saved to **`.local/dev-credentials.txt`**, excluded from Git. Open that file locally to sign in. Re-running the seed preserves existing accounts and passwords.
 
-The database runs in an isolated Compose project on **127.0.0.1:27018**, separate from any existing MongoDB on port 27017. Its volume persists across restarts. A single-node replica set enables atomic multi-document operations. `directConnection=true` supports the local port mapping.
+The database runs in an isolated Compose project on **127.0.0.1:27018**, separate from any existing MongoDB on port 27017. Its volume persists across restarts. The container has a 64,000-file descriptor limit to avoid MongoDB file exhaustion during repeated development/test runs. A single-node replica set enables atomic multi-document operations. `directConnection=true` supports the local port mapping.
 
 To stop: press Ctrl+C in the development terminal and run `npm run db:stop`. Do not remove the database volume if you want to keep your data.
 
@@ -39,15 +39,23 @@ To stop: press Ctrl+C in the development terminal and run `npm run db:stop`. Do 
 - Patient access to completed records and prescription version history; assigned doctors can revise prescriptions with a reason.
 - Automatic consultation bills, itemised service charges, partial cash/bank-transfer payment recording, payment history and printable statements.
 - Patient-owned billing access, pending/paid/overdue filters, immutable payment history and administrator correction reversals.
+- In-app notification centre with unread counts, read/unread controls and appointment/clinical/billing updates.
+- Durable 24-hour appointment reminders checked at startup and every minute while the API runs.
+- Patient department guide with keyword explanations, active doctor suggestions, receptionist fallback and booking hand-off.
+- Warning-sign and uncertainty responses suppress routine booking suggestions; no diagnosis, treatment or medical confidence score is generated.
 - Responsive layouts, form feedback, loading/error states and mobile navigation.
 
-Password recovery, patient account activation/deactivation, notifications, recommendations, reports and the audit viewer are **not implemented yet**. See [week 5 walkthrough](docs/week-5.md).
+Password recovery, patient account activation/deactivation, email/SMS delivery, feedback, reports and the audit viewer are **not implemented yet**. See [week 7 walkthrough](docs/week-7.md).
 
 To try booking: sign in as admin, publish a future session in **Doctor schedules**, then sign in as a patient and use **Book appointment**. Reception can use **Patients & walk-ins** and **Appointments** for registration, proxy booking and check-in. All appointment dates/times use Sri Lanka time.
 
 To try consultations: reception checks in today’s appointment, then the assigned doctor opens **Consultation queue**, starts the visit, reviews allergies and saves a draft or completes it. The patient then sees it in **Medical records**. Completed visits remain accessible to the doctor through **Appointments → Open clinical record**.
 
 To try billing: complete a consultation, then sign in as reception/admin and open **Billing**. Review charges before recording received payments. Patients see their own invoices in **Bills & payments**. Online payment processing is outside this milestone. Older completed visits can be billed manually through **Appointments → Billing → Generate missing bill**.
+
+To try notifications: book or change an appointment, then sign in as its patient and open the **bell** or **Notifications**. Appointments within the next 24 hours receive one reminder per schedule revision. The server checks up to 100 eligible appointments per minute. No email/SMS credentials are needed; those channels are not enabled.
+
+To try the guide: sign in as a patient and open **Department guide**. Use synthetic adult/non-emergency examples such as `cough` to match the seeded General Medicine service. Specialist suggestions require an active matching department and doctor; otherwise the guide directs patients to reception. This is a limited academic prototype, not clinically validated triage.
 
 ## Verification
 

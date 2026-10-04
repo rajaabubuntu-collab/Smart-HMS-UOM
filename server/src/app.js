@@ -1,3 +1,5 @@
+import { recommendationRouter } from './recommendations/routes.js';
+import { notificationRouter } from './notifications/routes.js';
 import express from 'express';
 import { billingRouter } from './billing/routes.js';
 import { clinicalRouter } from './clinical/routes.js';
@@ -258,6 +260,8 @@ export function createApp(config, { rateLimitEnabled = true } = {}) {
   app.use('/api', schedulingRouter());
   app.use('/api', clinicalRouter());
   app.use('/api', billingRouter());
+  app.use('/api', notificationRouter());
+  app.use('/api', recommendationRouter());
   app.use('/api', (req, res, next) => next(httpError(404, 'API endpoint not found.')));
   const clientDist = fileURLToPath(new URL('../../client/dist', import.meta.url));
   if (config.env === 'production' && existsSync(clientDist)) {

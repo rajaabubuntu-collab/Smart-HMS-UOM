@@ -104,6 +104,18 @@ export default function Dashboard() {
         </div>
       </section>
       <AppointmentOverview />
+      {user.role === 'patient' && (
+        <section className="card padded guide-shortcut">
+          <h2>Need help choosing a department?</h2>
+          <p>
+            The department guide can suggest a service for non-emergency concerns. It is not a
+            diagnosis.
+          </p>
+          <Link className="button primary" to="/recommendations">
+            Open department guide
+          </Link>
+        </section>
+      )}
       {user.role === 'admin' && (
         <>
           <div className="section-heading">
@@ -269,9 +281,7 @@ export default function Dashboard() {
         </span>
         <div>
           <strong>Next in your care journey</strong>
-          <p>
-            Notifications and operational reports are planned for upcoming development milestones.
-          </p>
+          <p>Feedback and operational reports are planned for upcoming development milestones.</p>
         </div>
         <span className="tag">COMING NEXT</span>
       </section>

@@ -1,3 +1,4 @@
+import { runReminderBatch } from '../src/notifications/reminders.js';
 import mongoose from 'mongoose';
 import {
   connectDatabase,
@@ -95,6 +96,30 @@ await Appointment.create({
   bookedBy: fixtures.users.patient._id,
   status: 'Completed',
 });
+// A future appointment proves reminder delivery through the real worker function.
+const reminderStart = new Date(Date.now() + 3600000);
+const reminderEnd = new Date(reminderStart.getTime() + 900000);
+const reminderSlot = await AppointmentSlot.create({
+  schedule: schedule._id,
+  doctor: doctor._id,
+  startsAt: reminderStart,
+  endsAt: reminderEnd,
+});
+await Appointment.create({
+  reference: 'HMS-REMINDERTEST',
+  patient: patient._id,
+  doctor: doctor._id,
+  slot: reminderSlot._id,
+  schedule: schedule._id,
+  startsAt: reminderStart,
+  endsAt: reminderEnd,
+  doctorName: 'Test doctor',
+  departmentName: 'General Medicine',
+  consultationFeeMinor: 250000,
+  bookedBy: fixtures.users.patient._id,
+  status: 'Scheduled',
+});
+await runReminderBatch();
 // Browser tests intentionally run many distinct users behind one loopback IP.
 // Rate limiting is exercised separately in api.test.js with the real limiter.
 const server = createApp(testConfig, { rateLimitEnabled: false }).listen(4100, '127.0.0.1', () =>

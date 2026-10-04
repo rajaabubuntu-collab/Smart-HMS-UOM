@@ -1,3 +1,5 @@
+import Recommendations from './pages/Recommendations';
+import Notifications from './pages/Notifications';
 /* eslint-disable react-refresh/only-export-components -- Application entry point is not imported by other modules. */
 import React from 'react';
 import ReactDOM from 'react-dom/client';
@@ -60,6 +62,7 @@ function App() {
       <Route element={<Protected />}>
         <Route element={<Layout />}>
           <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/notifications" element={<Notifications />} />
           <Route path="/appointments" element={<Appointments />} />
           <Route element={<Protected roles={['doctor']} />}>
             <Route path="/queue" element={<DoctorQueue />} />
@@ -78,6 +81,7 @@ function App() {
           </Route>
           <Route element={<Protected roles={['patient']} />}>
             <Route path="/profile" element={<Profile />} />
+            <Route path="/recommendations" element={<Recommendations />} />
             <Route path="/records" element={<MedicalHistory />} />
           </Route>
           <Route element={<Protected roles={['admin']} />}>
