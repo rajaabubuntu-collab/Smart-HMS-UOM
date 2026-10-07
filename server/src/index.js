@@ -7,7 +7,7 @@ import { createApp } from './app.js';
 try {
   const config = loadConfig();
   await connectDatabase(config.mongoUri);
-  const server = createApp(config).listen(config.port, '127.0.0.1', () =>
+  const server = createApp(config).listen(config.port, config.host, () =>
     console.log(`Smart HMS API: http://localhost:${config.port}`),
   );
   server.on('error', (err) => {

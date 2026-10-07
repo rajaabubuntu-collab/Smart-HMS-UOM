@@ -1,6 +1,6 @@
 {
   "name": "smart-hms-uom",
-  "version": "0.7.0",
+  "version": "0.10.0",
   "private": true,
   "type": "module",
   "workspaces": [
@@ -22,7 +22,12 @@
     "test:e2e": "playwright test",
     "lint": "eslint .",
     "format": "prettier --write .",
-    "format:check": "prettier --check ."
+    "format:check": "prettier --check .",
+    "db:backup": "node scripts/ops/backup.mjs create",
+    "db:restore": "node scripts/ops/backup.mjs restore",
+    "test:recovery": "node scripts/ops/rehearsal.mjs",
+    "test:production": "node scripts/ops/production-smoke.mjs",
+    "image:build": "docker build -t smart-hms:0.10.0 ."
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
@@ -33,5 +38,10 @@
     "eslint-plugin-react-refresh": "^0.5.7",
     "globals": "^17.13.0",
     "prettier": "^3.9.9"
+  },
+  "overrides": {
+    "concurrently": {
+      "shell-quote": "1.11.0"
+    }
   }
 }

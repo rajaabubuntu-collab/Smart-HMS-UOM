@@ -1,0 +1,15 @@
+# Copy without .example to ~/.config/systemd/user/ after replacing paths.
+[Unit]
+Description=Smart HMS local development server
+
+[Service]
+Type=simple
+WorkingDirectory=/ABSOLUTE/PROJECT/PATH
+ExecStart=/usr/bin/npm run dev
+KillMode=control-group
+TimeoutStopSec=20
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=default.target

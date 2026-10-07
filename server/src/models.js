@@ -49,6 +49,8 @@ const patientSchema = new Schema(
   { timestamps: true },
 );
 
+patientSchema.index({ createdAt: 1 });
+
 const departmentSchema = new Schema(
   {
     name: { type: String, required: true, trim: true, maxlength: 80 },
@@ -94,6 +96,8 @@ const auditSchema = new Schema(
 );
 auditSchema.index({ createdAt: -1 });
 auditSchema.index({ actor: 1, createdAt: -1 });
+auditSchema.index({ module: 1, createdAt: -1 });
+auditSchema.index({ action: 1, createdAt: -1 });
 
 export const User = model('User', userSchema);
 export const Patient = model('Patient', patientSchema);
@@ -116,6 +120,7 @@ const scheduleSchema = new Schema(
   { timestamps: true },
 );
 scheduleSchema.index({ doctor: 1, date: 1, isActive: 1 });
+scheduleSchema.index({ startsAt: 1 });
 const slotSchema = new Schema(
   {
     schedule: reference('DoctorSchedule'),
@@ -185,6 +190,7 @@ appointmentSchema.index({ patient: 1, startsAt: 1 });
 appointmentSchema.index({ doctor: 1, startsAt: 1, status: 1 });
 appointmentSchema.index({ schedule: 1, status: 1 });
 appointmentSchema.index({ status: 1, startsAt: 1 });
+appointmentSchema.index({ startsAt: 1 });
 export const DoctorSchedule = model('DoctorSchedule', scheduleSchema);
 export const AppointmentSlot = model('AppointmentSlot', slotSchema);
 export const Appointment = model('Appointment', appointmentSchema);
@@ -223,6 +229,7 @@ const consultationSchema = new Schema(
   { timestamps: true },
 );
 consultationSchema.index({ patient: 1, completedAt: -1 });
+consultationSchema.index({ status: 1, completedAt: 1 });
 consultationSchema.index(
   { doctor: 1 },
   {
@@ -279,6 +286,7 @@ const billSchema = new Schema(
   { timestamps: true },
 );
 billSchema.index({ patient: 1, createdAt: -1 });
+billSchema.index({ createdAt: 1 });
 const paymentSchema = new Schema(
   {
     bill: reference('Bill'),
@@ -296,6 +304,8 @@ const paymentSchema = new Schema(
 );
 paymentSchema.index({ bill: 1, requestKey: 1 }, { unique: true });
 paymentSchema.index({ bill: 1, createdAt: -1 });
+paymentSchema.index({ createdAt: 1 });
+paymentSchema.index({ reversedAt: 1 });
 export const Bill = model('Bill', billSchema);
 export const Payment = model('Payment', paymentSchema);
 
@@ -320,6 +330,26 @@ notificationSchema.index({ recipient: 1, createdAt: -1, _id: -1 });
 notificationSchema.index({ recipient: 1, readAt: 1 });
 export const Notification = model('Notification', notificationSchema);
 
+const feedbackSchema = new Schema(
+  {
+    appointment: { ...reference('Appointment'), unique: true },
+    patient: reference('Patient'),
+    doctor: reference('Doctor'),
+    appointmentReference: { type: String, required: true },
+    patientName: { type: String, required: true },
+    doctorName: { type: String, required: true },
+    departmentName: { type: String, required: true },
+    visitAt: { type: Date, required: true },
+    rating: { type: Number, required: true, min: 1, max: 5, validate: Number.isInteger },
+    comment: { type: String, default: '', maxlength: 2000 },
+  },
+  { timestamps: { createdAt: true, updatedAt: false } },
+);
+feedbackSchema.index({ patient: 1, createdAt: -1 });
+feedbackSchema.index({ createdAt: -1, _id: -1 });
+feedbackSchema.index({ rating: 1, createdAt: -1, _id: -1 });
+export const Feedback = model('Feedback', feedbackSchema);
+
 export async function connectDatabase(uri) {
   await mongoose.connect(uri, { serverSelectionTimeoutMS: 10000 });
   await Promise.all(
@@ -337,6 +367,7 @@ export async function connectDatabase(uri) {
       Bill,
       Payment,
       Notification,
+      Feedback,
     ].map((m) => m.init()),
   );
 }

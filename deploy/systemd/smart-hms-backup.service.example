@@ -1,0 +1,10 @@
+[Unit]
+Description=Smart HMS encrypted local backup during a short maintenance window
+
+[Service]
+Type=oneshot
+WorkingDirectory=/ABSOLUTE/PROJECT/PATH
+ExecStart=/usr/bin/node "/ABSOLUTE/PROJECT/PATH/scripts/ops/scheduled-backup.mjs"
+# Use a quoted ExecStart path if the checkout path contains spaces.
+UMask=0077
+TimeoutStartSec=1h

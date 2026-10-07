@@ -183,9 +183,17 @@ export default function Appointments() {
                       </Link>
                     )}
                     {user.role === 'patient' && item.status === 'Completed' && (
-                      <Link className="button subtle small" to="/records">
-                        Medical record
-                      </Link>
+                      <>
+                        <Link className="button subtle small" to="/records">
+                          Medical record
+                        </Link>
+                        <Link
+                          className="button subtle small"
+                          to={`/feedback?appointment=${item.id}`}
+                        >
+                          Feedback
+                        </Link>
+                      </>
                     )}
                     <span className={`status-pill ${statusClass(item.status)}`}>{item.status}</span>
                     <div>

@@ -4,6 +4,7 @@ import { ArrowUpRight, Check, ShieldCheck, HeartPulse, Eye, EyeOff } from 'lucid
 import { useAuth } from '../auth';
 import { Brand, Field, Notice, Submit } from '../components/ui';
 import { today } from '../scheduling';
+import { DisplayPreference } from '../components/DisplayPreference';
 
 export default function AuthPage({ register = false }) {
   const auth = useAuth();
@@ -36,7 +37,9 @@ export default function AuthPage({ register = false }) {
   return (
     <main className="auth-shell">
       <section className="auth-story">
-        <Brand light />
+        <Link to="/" aria-label="Smart HMS home">
+          <Brand light />
+        </Link>
         <div className="story-copy">
           <div className="story-kicker">
             <span /> A little more connected. A lot more care.
@@ -77,6 +80,12 @@ export default function AuthPage({ register = false }) {
         </footer>
       </section>
       <section className="auth-panel">
+        <div className="auth-home-row">
+          <Link className="text-link" to="/">
+            ← Hospital website
+          </Link>
+          <DisplayPreference />
+        </div>
         <div className="auth-top">
           <span>
             New here? {register ? 'Already have an account?' : 'Join your care community.'}

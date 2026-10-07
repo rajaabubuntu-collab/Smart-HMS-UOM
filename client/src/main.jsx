@@ -1,9 +1,22 @@
+import Reports from './pages/Reports';
+import AuditLog from './pages/AuditLog';
+import { PatientFeedback, AdminFeedback } from './pages/Feedback';
 import Recommendations from './pages/Recommendations';
 import Notifications from './pages/Notifications';
 /* eslint-disable react-refresh/only-export-components -- Application entry point is not imported by other modules. */
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import { BrowserRouter, Navigate, Outlet, Route, Routes, Link } from 'react-router-dom';
+import {
+  BrowserRouter,
+  Navigate,
+  Outlet,
+  Route,
+  Routes,
+  Link,
+  useLocation,
+} from 'react-router-dom';
+import PublicHome from './pages/PublicHome';
+import { DisplayProvider } from './components/DisplayPreference';
 import { AuthProvider, useAuth } from './auth';
 import { Loading, Notice } from './components/ui';
 import Layout from './components/Layout';
@@ -19,6 +32,7 @@ import ReceptionPatients from './pages/ReceptionPatients';
 import { DoctorQueue, ConsultationPage, MedicalHistory } from './pages/Clinical';
 import { Billing, BillDetail } from './pages/Billing';
 import './styles.css';
+import './glass.css';
 
 function Protected({ roles }) {
   const { user } = useAuth();
@@ -37,13 +51,16 @@ function Protected({ roles }) {
 }
 function App() {
   const { loading, error, refresh } = useAuth();
+  const { pathname } = useLocation();
+  // Public information remains usable while session lookup is loading or unavailable.
+  if (pathname === '/') return <PublicHome />;
   if (loading)
     return (
       <div className="full-state">
         <Loading />
       </div>
     );
-  if (error)
+  if (error && !['/login', '/register'].includes(pathname))
     return (
       <div className="full-state">
         <div className="card padded">
@@ -80,17 +97,20 @@ function App() {
             <Route path="/schedules" element={<Schedules />} />
           </Route>
           <Route element={<Protected roles={['patient']} />}>
+            <Route path="/feedback" element={<PatientFeedback />} />
             <Route path="/profile" element={<Profile />} />
             <Route path="/recommendations" element={<Recommendations />} />
             <Route path="/records" element={<MedicalHistory />} />
           </Route>
           <Route element={<Protected roles={['admin']} />}>
+            <Route path="/admin/reports" element={<Reports />} />
+            <Route path="/admin/audit" element={<AuditLog />} />
+            <Route path="/admin/feedback" element={<AdminFeedback />} />
             <Route path="/admin/departments" element={<Departments />} />
             <Route path="/admin/staff" element={<Staff />} />
           </Route>
         </Route>
       </Route>
-      <Route path="/" element={<Navigate to="/dashboard" replace />} />
       <Route
         path="*"
         element={
@@ -111,9 +131,11 @@ function App() {
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
     <BrowserRouter>
-      <AuthProvider>
-        <App />
-      </AuthProvider>
+      <DisplayProvider>
+        <AuthProvider>
+          <App />
+        </AuthProvider>
+      </DisplayProvider>
     </BrowserRouter>
   </React.StrictMode>,
 );

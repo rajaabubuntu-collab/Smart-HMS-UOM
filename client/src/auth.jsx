@@ -39,10 +39,12 @@ export function AuthProvider({ children }) {
   }, []);
   async function login(values) {
     const data = await api('/auth/login', { method: 'POST', body: values, ignoreAuth: true });
+    setError('');
     setUser(data.user);
   }
   async function register(values) {
     const data = await api('/auth/register', { method: 'POST', body: values, ignoreAuth: true });
+    setError('');
     setUser(data.user);
   }
   async function logout() {

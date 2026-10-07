@@ -68,4 +68,4 @@ During testing, MongoDB exited with `Too many open files` at the container's inh
 
 Run `npm test`, `npm run test:e2e`, `npm run lint`, `npm run build` and `npm run format:check`. Screenshots are stored under `.local/screenshots/department-guide-desktop.png` and `department-guide-mobile.png`.
 
-Next planned work: patient feedback, followed by reports and audit viewing.
+Patient feedback is now implemented in [week 8](week-8.md). Reports and audit viewing remain next.

@@ -15,9 +15,13 @@ import {
   CalendarPlus,
   CalendarClock,
   Bell,
+  MessageSquare,
+  ChartNoAxesCombined,
+  ScrollText,
 } from 'lucide-react';
 import { useAuth } from '../auth';
 import { Brand, Notice } from './ui';
+import { DisplayPreference } from './DisplayPreference';
 
 export default function Layout() {
   const { user, logout } = useAuth();
@@ -27,6 +31,12 @@ export default function Layout() {
   const links = [{ to: '/dashboard', label: 'Overview', icon: LayoutDashboard }];
   links.push({ to: '/notifications', label: 'Notifications', icon: Bell });
   links.push({ to: '/appointments', label: 'Appointments', icon: CalendarDays });
+  if (['patient', 'admin'].includes(user.role))
+    links.push({
+      to: user.role === 'patient' ? '/feedback' : '/admin/feedback',
+      label: user.role === 'patient' ? 'My feedback' : 'Patient feedback',
+      icon: MessageSquare,
+    });
   if (user.role === 'doctor')
     links.push({ to: '/queue', label: 'Consultation queue', icon: HeartPulse });
   if (user.role === 'patient')
@@ -50,6 +60,8 @@ export default function Layout() {
     links.push(
       { to: '/admin/departments', label: 'Departments', icon: Building2 },
       { to: '/admin/staff', label: 'Care team', icon: UsersRound },
+      { to: '/admin/reports', label: 'Reports & analytics', icon: ChartNoAxesCombined },
+      { to: '/admin/audit', label: 'Audit log', icon: ScrollText },
     );
   async function signOut() {
     setBusy(true);
@@ -111,10 +123,13 @@ export default function Layout() {
           <span className="tiny-label">SMART HMS</span>
         </div>
         <div className="sidebar-bottom">
+          <Link className="text-link hospital-home-link" to="/">
+            Hospital website
+          </Link>
           <span>
             <ShieldCheck size={16} /> Protected workspace
           </span>
-          <small>Final-year project · v0.7</small>
+          <small>Final-year project · v0.10</small>
         </div>
       </aside>
       <div className="main-shell">
@@ -130,6 +145,7 @@ export default function Layout() {
             <span className="topbar-title">Your hospital, connected.</span>
           </div>
           <div className="topbar-user">
+            <DisplayPreference />
             <NotificationBell />
             <div className="avatar">
               {user.name

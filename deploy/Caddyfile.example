@@ -1,0 +1,4 @@
+# Run Caddy on the host; replace with the same real domain as APP_ORIGIN.
+hms.example.com {
+	reverse_proxy 127.0.0.1:4000
+}

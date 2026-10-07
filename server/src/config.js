@@ -6,6 +6,7 @@ dotenv.config({ path: fileURLToPath(new URL('../../.env', import.meta.url)), qui
 
 const schema = z.object({
   NODE_ENV: z.enum(['development', 'test', 'production']).default('development'),
+  BIND_HOST: z.enum(['127.0.0.1', '0.0.0.0']).default('127.0.0.1'),
   PORT: z.coerce.number().int().min(1).max(65535).default(4000),
   APP_ORIGIN: z.url().default('http://localhost:5173'),
   MONGODB_URI: z.string().min(1),
@@ -20,8 +21,8 @@ const schema = z.object({
   TRUST_PROXY: z.enum(['true', 'false']).default('false'),
 });
 
-export function loadConfig() {
-  const parsed = schema.safeParse(process.env);
+export function loadConfig(environment = process.env) {
+  const parsed = schema.safeParse(environment);
   if (!parsed.success) {
     // Do not print environment values (which may contain secrets).
     throw new Error(
@@ -37,6 +38,7 @@ export function loadConfig() {
   return {
     env: env.NODE_ENV,
     port: env.PORT,
+    host: env.BIND_HOST,
     origin: env.APP_ORIGIN,
     mongoUri: env.MONGODB_URI,
     jwtSecret: env.JWT_SECRET,

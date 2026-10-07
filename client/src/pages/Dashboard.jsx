@@ -281,7 +281,10 @@ export default function Dashboard() {
         </span>
         <div>
           <strong>Next in your care journey</strong>
-          <p>Feedback and operational reports are planned for upcoming development milestones.</p>
+          <p>
+            Deployment preparation, backup recovery and final evaluation are planned for upcoming
+            milestones.
+          </p>
         </div>
         <span className="tag">COMING NEXT</span>
       </section>

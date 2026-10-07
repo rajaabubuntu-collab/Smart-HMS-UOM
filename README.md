@@ -1,6 +1,12 @@
 # Smart HMS — Care, connected.
 
-University of Moratuwa BIT final-year project. Weeks 1–7 implementation: a MERN application with patient/staff management, doctor schedules, appointment booking, rescheduling, cancellation, receptionist check-in, consultations, prescriptions, medical history, billing, in-app notifications and a rule-based department guide.
+University of Moratuwa BIT final-year project. Weeks 1–10 implementation: a MERN application with patient/staff management, doctor schedules, appointment booking, rescheduling, cancellation, receptionist check-in, consultations, prescriptions, medical history, billing, in-app notifications, a rule-based department guide, patient feedback, ten operational reports and an audit viewer.
+
+## Interim review and interface revision — 7 October 2026
+
+The public entrance at **http://localhost:5173/** now presents patient services, visit guidance and demo hospital information. The homepage, login/register and shared workspace use a new Apple-inspired glass design, with a persistent **Solid surfaces** option and system accessibility fallbacks. The portal remains at `/dashboard`; account access is still required for personal records and bookings. Real hospital identity/contact details have not been supplied, so the homepage clearly labels its demonstration content.
+
+See the [report gap review and revised delivery plan](docs/interim-review.md) and [revised use-case specification](docs/use-cases.md). Socket.IO, charts, email/SMS, password recovery, patient deactivation and administrative hospital settings remain subsequent work. Current Colombo time and LKR support does not imply a fully localised or multilingual settings module.
 
 ## Start locally
 
@@ -43,9 +49,14 @@ To stop: press Ctrl+C in the development terminal and run `npm run db:stop`. Do 
 - Durable 24-hour appointment reminders checked at startup and every minute while the API runs.
 - Patient department guide with keyword explanations, active doctor suggestions, receptionist fallback and booking hand-off.
 - Warning-sign and uncertainty responses suppress routine booking suggestions; no diagnosis, treatment or medical confidence score is generated.
+- Patient star ratings and optional comments after completed visits, duplicate prevention and an admin feedback inbox with search/rating filters.
+- Administrator reports covering appointments, schedules, consultations, registrations, demographics, revenue, billing, doctor workload, department activity and feedback.
+- Read-only audit viewer with user/action/module/date filters, literal search, UTC timestamps and pagination.
+- Encrypted local backups, isolated verified restoration, recovery rehearsal and optional daily backup timer templates.
+- Non-root production container, HTTPS proxy template and one-time initial administrator provisioning.
 - Responsive layouts, form feedback, loading/error states and mobile navigation.
 
-Password recovery, patient account activation/deactivation, email/SMS delivery, feedback, reports and the audit viewer are **not implemented yet**. See [week 7 walkthrough](docs/week-7.md).
+Password recovery, patient account activation/deactivation, email/SMS delivery, report file exports and production deployment are **not implemented yet**. See [week 10 walkthrough](docs/week-10.md).
 
 To try booking: sign in as admin, publish a future session in **Doctor schedules**, then sign in as a patient and use **Book appointment**. Reception can use **Patients & walk-ins** and **Appointments** for registration, proxy booking and check-in. All appointment dates/times use Sri Lanka time.
 
@@ -56,6 +67,10 @@ To try billing: complete a consultation, then sign in as reception/admin and ope
 To try notifications: book or change an appointment, then sign in as its patient and open the **bell** or **Notifications**. Appointments within the next 24 hours receive one reminder per schedule revision. The server checks up to 100 eligible appointments per minute. No email/SMS credentials are needed; those channels are not enabled.
 
 To try the guide: sign in as a patient and open **Department guide**. Use synthetic adult/non-emergency examples such as `cough` to match the seeded General Medicine service. Specialist suggestions require an active matching department and doctor; otherwise the guide directs patients to reception. This is a limited academic prototype, not clinically validated triage.
+
+To try feedback: sign in as a patient and open **My feedback**, or choose **Feedback** on a completed appointment in **History**. Submit a 1–5 star rating and optional comment once per visit. Administrators can open **Patient feedback** to search submissions and filter by rating. Feedback is private to its patient and hospital administrators; it cannot be edited or deleted through the app.
+
+To try reports: sign in as admin and choose **Reports & analytics**. Select a report and date range, then **Generate report**. Each report explains its date basis; totals cover all matching rows, not just the displayed page. **Audit log** searches recorded actions by user, action, module and date. Date filters use Sri Lanka time; audit event timestamps are shown in UTC.
 
 ## Verification
 
@@ -84,11 +99,15 @@ docs/                 API reference, security decisions and requirement traceabi
 scripts/              Local environment setup
 ```
 
+## Backup and recovery
+
+Stop the dev server and all other database writers, keep MongoDB running, then use `npm run db:backup -- --writes-stopped`. Restore into a new database with `npm run db:restore -- .local/backups/backup-DIRECTORY`. Sessions are excluded. Encryption keys are stored separately under `~/.local/share/smart-hms/backup.key`; protect and back up the key. Run `npm run test:recovery` for a disposable end-to-end rehearsal. See [week 10](docs/week-10.md) for daily timer templates, key handling and recovery limits.
+
 ## Build and hosting preparation
 
 `npm run build` creates `client/dist`. In production mode, `npm start` serves both the API and this build from one origin. Set `NODE_ENV=production`, an HTTPS `APP_ORIGIN`, a new JWT secret and a protected replica-set `MONGODB_URI`. Place a trusted HTTPS reverse proxy in front of the loopback API; enable `TRUST_PROXY=true` only if there is exactly one trusted proxy. Production cookies are Secure and SameSite=Strict.
 
-The Compose file is **local development configuration**: no database authentication, loopback-only published port, and a single replica member. Production infrastructure, database users/backups and operational validation remain a later milestone. Use synthetic data during development.
+The Compose file is **local development configuration**: no database authentication, loopback-only published port, and a single replica member. A separate production container and configuration templates are now available. See [deployment runbook](docs/deployment.md) for the actual host/database setup, administrator bootstrap, HTTPS and acceptance procedure. Nothing has been publicly deployed. Use synthetic data during development.
 
 ## Implementation decisions
 

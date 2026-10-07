@@ -1,0 +1,10 @@
+[Unit]
+Description=Daily Smart HMS local backup
+
+[Timer]
+OnCalendar=*-*-* 03:00:00 Asia/Colombo
+Persistent=true
+Unit=smart-hms-backup.service
+
+[Install]
+WantedBy=timers.target

@@ -235,3 +235,38 @@ Each suggestion contains `{department: {id, name}, explanation, matchedTerms, do
 `GET /api/directory/doctors/:id` returns `{doctor}` for an active doctor with an active department, using the same safe fields as doctor search. Invalid IDs return 400; unavailable/missing doctors 404. This supports `/book?doctor=:id`; `/book?department=:id` presets department browsing. The booking workflow validates availability again and requires explicit confirmation. Symptom text never travels in these URLs or into the appointment reason automatically.
 
 See [week 7 decisions and limitations](week-7.md) for the rule catalogue, safety boundaries and source rationale.
+
+## Patient feedback (week 8)
+
+All routes require a current authenticated session. Writes require the configured Origin. Patients cannot supply a patient/doctor identity or server-generated metadata.
+
+| Method | Endpoint                                                         | Access / behavior                                                         |
+| ------ | ---------------------------------------------------------------- | ------------------------------------------------------------------------- |
+| GET    | `/api/feedback/visits?page=1&limit=10&appointment=<optional-id>` | Patient; own completed visits, each with saved feedback or null           |
+| POST   | `/api/feedback`                                                  | Patient; submit once for an owned completed visit                         |
+| GET    | `/api/admin/feedback?page=1&limit=10&q=<text>&rating=<1-5>`      | Administrator; all submissions, literal search and optional rating filter |
+
+Submission body: `{appointment: "<id>", rating: 1..5, comment?: "up to 2000 characters"}`. Strict schema; rating must be an integer number. Returns 201 `{feedback: {id, rating, comment, createdAt}}`. Unknown/foreign visit returns 404; incomplete visit or duplicate submission returns 409; invalid data returns 400. Duplicate concurrent requests cannot create a second record or audit entry.
+
+Patient list: `{records: [{id, reference, doctorName, departmentName, startsAt, feedback}], total, page, limit}`; feedback uses the safe submission shape. An optional appointment filter still enforces ownership and completion; no match returns an empty list.
+
+Admin list: `{records, total, page, limit}`. Each record includes `_id`, appointment/patient/doctor IDs, snapshot patient/doctor/department names, appointment reference, visitAt, rating, comment and createdAt. `q` is at most 100 characters and searches those names, reference and comment as literal text. Rating is optional 1–5; pagination is bounded to page 1–10,000 and limit 1–50. Neither route includes clinical notes or contact information. There are no feedback update/delete routes.
+
+## Operational reports and audit viewing (week 9)
+
+All endpoints below are administrator-only. They inherit session authentication, no-store headers and rate limits. No source records are changed by a report or audit query.
+
+| Method | Endpoint                                                                                  | Result                                                                    |
+| ------ | ----------------------------------------------------------------------------------------- | ------------------------------------------------------------------------- |
+| GET    | `/api/admin/reports`                                                                      | Catalogue of ten report types, explanatory basis, columns and metrics     |
+| GET    | `/api/admin/reports/:type?from=YYYY-MM-DD&to=YYYY-MM-DD&page=1&limit=10`                  | Generated report with period, summary metrics, columns and paginated rows |
+| GET    | `/api/admin/audit/options`                                                                | Distinct recorded actions and modules for filter dropdowns                |
+| GET    | `/api/admin/audit?from=YYYY-MM-DD&to=YYYY-MM-DD&user=&action=&module=&q=&page=1&limit=10` | Read-only audit events with safe actor identity and UTC timestamps        |
+
+Report types: `appointments`, `schedules`, `consultations`, `registrations`, `demographics`, `revenue`, `billing`, `workload`, `departments`, `feedback`. `appointments` requires from=to. See [week 9 definitions](week-9.md) for exact date bases and calculations; invoice balances are current while revenue uses receipt/reversal event dates.
+
+Report response: `{report:{id,title,basis}, period:{from,to,timezone,generatedAt}, columns:[{key,label,format}], summary:[{key,label,format,value}], records, total, page, limit}`. Formats are text, number, datetime, decimal or money. Money values are integer LKR minor units; dates are ISO timestamps where applicable. `total` counts table rows/groups, not necessarily source documents; summary counts cover all matching source activity. Empty feedback average is null. Summary and table data share one snapshot per request; paging/regeneration reads a new snapshot.
+
+Both date filters default to today and include the full calendar dates in Asia/Colombo. Valid range: 1900–2199, from<=to, at most 366 inclusive days. Page 1–10,000, limit 1–50. Unknown fields, invalid dates and unknown report types return 400. Unauthorized roles return 403; unauthenticated requests return 401.
+
+Audit `user` is a case-insensitive literal current-name search, or an exact actor ID when it is a 24-character hex ID. Action/module are exact strings; `q` searches action/module/target as literal substrings. Each filter is limited to 100 characters. Events return `{id,actorId,actorName,actorRole,action,module,target,createdAt}` in descending timestamp/ID order. Missing actors are retained with null or original ID. No audit update/delete routes are available.
