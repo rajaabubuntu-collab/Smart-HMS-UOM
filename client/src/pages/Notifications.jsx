@@ -1,3 +1,4 @@
+import { t } from '../i18n/locale';
 import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Bell } from 'lucide-react';
@@ -26,7 +27,7 @@ function useNotificationRefresh() {
 }
 export function NotificationBell() {
   const [revision] = useNotificationRefresh();
-  const { data, error } = useResource('/notifications/unread-count', revision);
+  const { data, error } = useResource('/notifications/unread-count', revision, true);
   const count = data?.unreadCount || 0;
   return (
     <Link
@@ -34,11 +35,13 @@ export function NotificationBell() {
       to="/notifications"
       aria-label={
         error
-          ? 'Notifications (count unavailable)'
+          ? t('Notifications (count unavailable)')
           : `Notifications${count ? ` (${count} unread)` : ''}`
       }
       title={
-        error ? 'Notification count unavailable. Open notifications to retry.' : 'Notifications'
+        error
+          ? t('Notification count unavailable. Open notifications to retry.')
+          : t('Notifications')
       }
     >
       <Bell size={20} />
@@ -61,7 +64,7 @@ export default function Notifications() {
     data,
     error: loadError,
     pending,
-  } = useResource(`/notifications?page=${page}&filter=${filter}`, revision);
+  } = useResource(`/notifications?page=${page}&filter=${filter}`, revision, true);
   async function change(notification, read, open = false) {
     setBusy(true);
     setError('');
@@ -92,12 +95,14 @@ export default function Notifications() {
   return (
     <>
       <PageHeading
-        eyebrow="YOUR UPDATES"
-        title="Notifications"
-        description="Appointment reminders, care updates and billing activity. In-app updates refresh every 30 seconds while this page is visible."
+        eyebrow={t('YOUR UPDATES')}
+        title={t('Notifications')}
+        description={t(
+          'Appointment reminders, care updates and billing activity. In-app updates refresh every 30 seconds while this page is visible.',
+        )}
       >
         <button className="button subtle" disabled={busy} onClick={refresh}>
-          Refresh notifications
+          {t('Refresh notifications')}{' '}
         </button>
       </PageHeading>
       <Notice>{error || loadError}</Notice>
@@ -114,24 +119,25 @@ export default function Notifications() {
                 setPage(1);
               }}
             >
-              {value === 'all' ? 'All notifications' : 'Unread only'}
+              {value === 'all' ? t('All notifications') : t('Unread only')}
             </button>
           ))}
         </div>
         <button className="button subtle" disabled={busy || !data?.unreadCount} onClick={readAll}>
-          Mark all as read
+          {t('Mark all as read')}{' '}
         </button>
       </div>
       {pending && <Loading />}
       {data && (
         <>
           <p className="muted">
-            {data.unreadCount} unread {data.unreadCount === 1 ? 'notification' : 'notifications'}
+            {data.unreadCount} {t('unread')}{' '}
+            {data.unreadCount === 1 ? t('notification') : t('notifications')}
           </p>
           {!data.records.length && (
             <section className="card padded">
-              <h2>{filter === 'unread' ? 'You’re all caught up' : 'No notifications yet'}</h2>
-              <p>Updates will appear here as your appointments and bills change.</p>
+              <h2>{filter === 'unread' ? t('You’re all caught up') : t('No notifications yet')}</h2>
+              <p>{t('Updates will appear here as your appointments and bills change.')}</p>
             </section>
           )}
           {data.records.map((n) => (
@@ -141,7 +147,7 @@ export default function Notifications() {
             >
               <div>
                 <span className="eyebrow">
-                  {n.type} · {n.readAt ? 'Read' : 'Unread'}
+                  {n.type} · {n.readAt ? t('Read') : t('Unread')}
                 </span>
                 <h2>{n.title}</h2>
                 <p>{n.message}</p>
@@ -155,14 +161,14 @@ export default function Notifications() {
                   disabled={busy}
                   onClick={() => change(n, true, true)}
                 >
-                  View details
+                  {t('View details')}{' '}
                 </button>
                 <button
                   className="button subtle small"
                   disabled={busy}
                   onClick={() => change(n, !n.readAt)}
                 >
-                  {n.readAt ? 'Mark unread' : 'Mark read'}
+                  {n.readAt ? t('Mark unread') : t('Mark read')}
                 </button>
               </div>
             </article>
@@ -171,9 +177,9 @@ export default function Notifications() {
         </>
       )}
       <p className="muted notification-footnote">
-        Notifications are a history of updates. Open the linked record for its current status.
-        Reminders are delivered here while the server is running; email and SMS delivery are not
-        enabled.
+        {t(
+          'Notifications are a history of updates. Open the linked record for its current status. Reminders appear here while the server is running. Patients can manage external message preferences and check delivery status in Email & SMS.',
+        )}{' '}
       </p>
     </>
   );

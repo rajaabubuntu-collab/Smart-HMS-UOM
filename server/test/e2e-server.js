@@ -1,3 +1,5 @@
+import { rm } from 'node:fs/promises';
+import { startRecoveryWorker } from '../src/security/recovery.js';
 import { runReminderBatch } from '../src/notifications/reminders.js';
 import mongoose from 'mongoose';
 import {
@@ -11,6 +13,10 @@ import {
 import { hospitalDate, localInstant } from '../src/scheduling/time.js';
 import { createApp } from '../src/app.js';
 import { testConfig, isolatedUri, seedTestAccounts } from './helpers.js';
+import { createServer } from 'node:http';
+import { startRealtime } from '../src/realtime.js';
+import { startDeliveryWorker } from '../src/notifications/delivery-worker.js';
+import { deliveryConfig } from '../src/notifications/delivery-config.js';
 
 await connectDatabase(isolatedUri('browser'));
 const fixtures = await seedTestAccounts();
@@ -122,15 +128,21 @@ await Appointment.create({
 await runReminderBatch();
 // Browser tests intentionally run many distinct users behind one loopback IP.
 // Rate limiting is exercised separately in api.test.js with the real limiter.
-const server = createApp(testConfig, { rateLimitEnabled: false }).listen(4100, '127.0.0.1', () =>
-  console.log('Isolated browser-test API ready on 4100.'),
-);
+testConfig.delivery = deliveryConfig({});
+const server = createServer(createApp(testConfig, { rateLimitEnabled: false }));
+const realtime = await startRealtime(server, testConfig);
+const stopDelivery = startDeliveryWorker(testConfig);
+await rm('.local/e2e-reset-mail', { recursive: true, force: true });
+const stopRecovery = startRecoveryWorker(testConfig, { previewDirectory: '.local/e2e-reset-mail' });
+server.listen(4100, '127.0.0.1', () => console.log('Isolated browser-test API ready on 4100.'));
 async function cleanup() {
-  server.close(async () => {
-    await mongoose.connection.dropDatabase();
-    await mongoose.disconnect();
-    process.exit(0);
-  });
+  await stopDelivery();
+  await stopRecovery();
+  await rm('.local/e2e-reset-mail', { recursive: true, force: true });
+  await realtime.stop();
+  await mongoose.connection.dropDatabase();
+  await mongoose.disconnect();
+  process.exit(0);
 }
 process.on('SIGTERM', cleanup);
 process.on('SIGINT', cleanup);

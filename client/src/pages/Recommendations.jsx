@@ -1,3 +1,4 @@
+import { t } from '../i18n/locale';
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { api } from '../api';
@@ -9,13 +10,13 @@ const warning =
 function EmergencyHelp() {
   return (
     <div className="guide-emergency" role="alert">
-      <h2>Possible emergency? Get help now.</h2>
+      <h2>{t('Possible emergency? Get help now.')}</h2>
       <p>
-        Do not wait for a routine appointment. In Sri Lanka, call <a href="tel:1990">1990</a> for an
-        emergency ambulance. Elsewhere, call your local emergency number.
+        {t('Do not wait for a routine appointment. In Sri Lanka, call')} <a href="tel:1990">1990</a>{' '}
+        {t('for an emergency ambulance. Elsewhere, call your local emergency number.')}{' '}
       </p>
       <a href="https://www.1990.lk/faq/" target="_blank" rel="noreferrer">
-        About the Suwa Seriya emergency service
+        {t('About the Suwa Seriya emergency service')}{' '}
       </a>
     </div>
   );
@@ -66,20 +67,24 @@ export default function Recommendations() {
   return (
     <>
       <PageHeading
-        eyebrow="FIND THE RIGHT SERVICE"
-        title="Department guide"
-        description="Describe your symptoms to find a possible hospital department. For adults with non-emergency concerns; English descriptions are supported."
+        eyebrow={t('FIND THE RIGHT SERVICE')}
+        title={t('Department guide')}
+        description={t(
+          'Describe your symptoms to find a possible hospital department. For adults with non-emergency concerns; English descriptions are supported.',
+        )}
       />
       <div className="card padded guide-intro">
-        <h2>Before you start</h2>
+        <h2>{t('Before you start')}</h2>
         <p>{warning}</p>
         <p>
-          If symptoms are severe, sudden or worsening, seek medical help rather than waiting for an
-          appointment. This limited project guide has not been clinically validated.
+          {t(
+            'If symptoms are severe, sudden or worsening, seek medical help rather than waiting for an appointment. This limited project guide has not been clinically validated.',
+          )}{' '}
         </p>
         <p className="muted">
-          Your description is processed for this request and is not saved to your medical record or
-          copied into an appointment. You can discuss it with the clinician.
+          {t(
+            'Your description is processed for this request and is not saved to your medical record or copied into an appointment. You can discuss it with the clinician.',
+          )}{' '}
         </p>
       </div>
       <div className="guide-grid">
@@ -87,32 +92,35 @@ export default function Recommendations() {
           <form onSubmit={submit}>
             <Notice>{error?.message}</Notice>
             <fieldset className="clinical-fieldset" disabled={busy}>
-              <h2>Describe your concern</h2>
+              <h2>{t('Describe your concern')}</h2>
               <Field
                 name="emergencySigns"
-                label="Do any warning signs apply now?"
+                label={t('Do any warning signs apply now?')}
                 required
                 as="select"
                 value={form.emergencySigns}
                 onChange={(e) => change('emergencySigns', e.target.value)}
-                hint="Examples: chest pain, severe breathing difficulty, new face drooping or speech difficulty, unconsciousness, uncontrolled bleeding, or a severe allergic reaction. This list is not exhaustive."
+                hint={t(
+                  'Examples: chest pain, severe breathing difficulty, new face drooping or speech difficulty, unconsciousness, uncontrolled bleeding, or a severe allergic reaction. This list is not exhaustive.',
+                )}
                 error={error?.fields?.emergencySigns}
               >
-                <option value="">Choose an answer</option>
-                <option value="no">None of these signs</option>
-                <option value="yes">Yes, a warning sign applies</option>
-                <option value="unsure">I’m unsure</option>
+                <option value="">{t('Choose an answer')}</option>
+                <option value="no">{t('None of these signs')}</option>
+                <option value="yes">{t('Yes, a warning sign applies')}</option>
+                <option value="unsure">{t('I’m unsure')}</option>
               </Field>
               {form.emergencySigns === 'yes' && <EmergencyHelp />}
               {form.emergencySigns === 'unsure' && (
                 <Notice>
-                  Please speak to a qualified health professional promptly. If this could be an
-                  emergency, call 1990 in Sri Lanka or your local emergency number.
+                  {t(
+                    'Please speak to a qualified health professional promptly. If this could be an emergency, call 1990 in Sri Lanka or your local emergency number.',
+                  )}{' '}
                 </Notice>
               )}
               <Field
                 name="symptoms"
-                label="Primary symptoms"
+                label={t('Primary symptoms')}
                 required
                 as="textarea"
                 rows={4}
@@ -121,12 +129,14 @@ export default function Recommendations() {
                 value={form.symptoms}
                 onChange={(e) => change('symptoms', e.target.value)}
                 error={error?.fields?.symptoms}
-                hint="Use your own description. This guide can miss or misunderstand symptoms; it cannot assess safety."
+                hint={t(
+                  'Use your own description. This guide can miss or misunderstand symptoms; it cannot assess safety.',
+                )}
               />
               <div className="form-grid">
                 <Field
                   name="durationValue"
-                  label="How long have you had these symptoms?"
+                  label={t('How long have you had these symptoms?')}
                   required
                   type="number"
                   min={1}
@@ -138,26 +148,30 @@ export default function Recommendations() {
                 />
                 <Field
                   name="durationUnit"
-                  label="Duration unit"
+                  label={t('Duration unit')}
                   as="select"
                   value={form.durationUnit}
                   onChange={(e) => change('durationUnit', e.target.value)}
                 >
                   {['hours', 'days', 'weeks', 'months'].map((unit) => (
-                    <option key={unit}>{unit}</option>
+                    <option key={unit} value={unit}>
+                      {t(unit)}
+                    </option>
                   ))}
                 </Field>
               </div>
               <Field
                 name="painLevel"
-                label="Pain level (optional)"
+                label={t('Pain level (optional)')}
                 as="select"
                 value={form.painLevel}
                 onChange={(e) => change('painLevel', e.target.value)}
-                hint="1 = lowest, 10 = highest. Leave blank if there is no pain or you prefer not to say."
+                hint={t(
+                  '1 = lowest, 10 = highest. Leave blank if there is no pain or you prefer not to say.',
+                )}
                 error={error?.fields?.painLevel}
               >
-                <option value="">Not provided</option>
+                <option value="">{t('Not provided')}</option>
                 {Array.from({ length: 10 }, (_, i) => (
                   <option key={i + 1} value={i + 1}>
                     {i + 1}
@@ -166,7 +180,7 @@ export default function Recommendations() {
               </Field>
               <Field
                 name="comments"
-                label="Additional comments (optional)"
+                label={t('Additional comments (optional)')}
                 as="textarea"
                 rows={3}
                 maxLength={1000}
@@ -181,10 +195,12 @@ export default function Recommendations() {
                   checked={form.acknowledged}
                   onChange={(e) => change('acknowledged', e.target.checked)}
                 />{' '}
-                I understand this is a department guide, not a diagnosis or emergency service.
+                {t(
+                  'I understand this is a department guide, not a diagnosis or emergency service.',
+                )}{' '}
               </label>
               <Submit busy={busy} disabled={!form.acknowledged}>
-                Get department guidance
+                {t('Get department guidance')}{' '}
               </Submit>
             </fieldset>
           </form>
@@ -192,14 +208,16 @@ export default function Recommendations() {
         <section className="guide-results" aria-live="polite" aria-busy={busy}>
           {!result && (
             <div className="card padded">
-              <h2>{busy ? 'Checking the guide…' : 'Your guidance will appear here'}</h2>
+              <h2>{busy ? t('Checking the guide…') : t('Your guidance will appear here')}</h2>
               <p>
-                Suggestions explain which symptom words matched. They do not show a probability of
-                having a condition or guarantee that routine booking is appropriate.
+                {t(
+                  'Suggestions explain which symptom words matched. They do not show a probability of having a condition or guarantee that routine booking is appropriate.',
+                )}{' '}
               </p>
               <p>
-                If no clear match is available, contact your hospital reception using its usual
-                contact details.
+                {t(
+                  'If no clear match is available, contact your hospital reception using its usual contact details.',
+                )}{' '}
               </p>
             </div>
           )}
@@ -208,19 +226,20 @@ export default function Recommendations() {
               <div className="card padded">
                 <h2>
                   {result.outcome === 'matched'
-                    ? 'A possible department'
+                    ? t('A possible department')
                     : result.outcome === 'urgent'
-                      ? 'Routine booking suggestions stopped'
+                      ? t('Routine booking suggestions stopped')
                       : result.outcome === 'review'
-                        ? 'Speak to a health professional'
-                        : 'Contact hospital reception'}
+                        ? t('Speak to a health professional')
+                        : t('Contact hospital reception')}
                 </h2>
                 <p>{result.explanation}</p>
                 <p className="muted">{result.disclaimer}</p>
                 {['staff', 'unavailable'].includes(result.outcome) && (
                   <p>
-                    Contact your hospital reception using its usual contact details or visit the
-                    reception desk. No appointment has been created.
+                    {t(
+                      'Contact your hospital reception using its usual contact details or visit the reception desk. No appointment has been created.',
+                    )}{' '}
                   </p>
                 )}
               </div>
@@ -230,16 +249,18 @@ export default function Recommendations() {
                   <h2>{s.department.name}</h2>
                   <p>{s.explanation}</p>
                   <p>
-                    <strong>Matched words:</strong> {s.matchedTerms.join(', ')}
+                    <strong>{t('Matched words:')}</strong> {s.matchedTerms.join(', ')}
                   </p>
                   <p className="muted">
-                    Doctors are listed from this department, without a clinical ranking. Select a
-                    doctor to check available dates and times.
+                    {t(
+                      'Doctors are listed from this department, without a clinical ranking. Select a doctor to check available dates and times.',
+                    )}{' '}
                   </p>
                   {!s.doctors.length && (
                     <Notice>
-                      No active doctors are listed in this department. Contact reception for help
-                      arranging care.
+                      {t(
+                        'No active doctors are listed in this department. Contact reception for help arranging care.',
+                      )}{' '}
                     </Notice>
                   )}
                   {s.doctors.map((d) => (
@@ -249,13 +270,13 @@ export default function Recommendations() {
                         {d.specialization} · {money(d.consultationFeeMinor)}
                       </p>
                       <Link className="button primary" to={`/book?doctor=${d.id}`}>
-                        View times with {d.name}
+                        {t('View times with')} {d.name}
                       </Link>
                     </div>
                   ))}
                   {s.doctorCount > s.doctors.length && (
                     <Link className="button subtle" to={`/book?department=${s.department.id}`}>
-                      Browse all {s.doctorCount} doctors in this department
+                      {t('Browse all')} {s.doctorCount} {t('doctors in this department')}{' '}
                     </Link>
                   )}
                 </article>

@@ -1,0 +1,28 @@
+digraph G {
+graph [rankdir=LR, bgcolor="transparent", pad="0.15", nodesep="0.13", ranksep="0.55", fontname="DejaVu Sans", fontsize=14];
+node [fontname="DejaVu Sans", fontsize=11, color="#506481", penwidth=1, style=filled, fillcolor="#edf4fc"];
+edge [color="#708096", penwidth=0.9, arrowhead=none];
+Doctor [shape=box, style="rounded,filled", fillcolor="#ffffff", label="<<actor>>\nDoctor"];
+Reception [shape=box, style="rounded,filled", fillcolor="#ffffff", label="<<actor>>\nReceptionist"];
+subgraph cluster_system {
+label="Smart HMS: care team"; color="#617494"; style=rounded; margin=16;
+Queue [shape=ellipse, margin="0.13,0.07", label="View own paginated queue\nand daily timeline"];
+History [shape=ellipse, margin="0.13,0.07", label="Review assigned history\nand reported allergies"];
+Consult [shape=ellipse, margin="0.13,0.07", label="Start, save and complete\nconsultation"];
+Prescription [shape=ellipse, margin="0.13,0.07", label="Create or revise\nprescription with history"];
+Schedule [shape=ellipse, margin="0.13,0.07", label="Manage own schedule"];
+Intake [shape=ellipse, margin="0.13,0.07", label="Register walk-in\nand update intake"];
+Checkin [shape=ellipse, margin="0.13,0.07", label="Manage bookings\nand check in arrivals"];
+Bill [shape=ellipse, margin="0.13,0.07", label="Review and itemise bill"];
+Payment [shape=ellipse, margin="0.13,0.07", label="Record received payment"];
+}
+Doctor -> Queue;
+Doctor -> History;
+Doctor -> Consult;
+Doctor -> Prescription;
+Doctor -> Schedule;
+Reception -> Intake;
+Reception -> Checkin;
+Reception -> Bill;
+Reception -> Payment;
+}

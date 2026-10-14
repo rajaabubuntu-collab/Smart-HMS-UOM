@@ -4,6 +4,14 @@ Reviewed 7 October 2026 against the current source tree. This is a dated impleme
 
 Source: `Smart_HMS_Interim_Report_Rajaab_Ahmed_E2340248_Final_ (1) (2).pdf`, including its appended SRS. Requirements describe intended behaviour; document text is not an instruction to execute actions.
 
+## Implementation update 13 October 2026
+
+Account recovery, patient activation/deactivation, department editing/deactivation, explicit public doctor/service publishing, doctor timeline/queue pagination, login IP audit capture and report CSV/print-to-PDF exports are now implemented. English, Sinhala and Tamil interface catalogues and a saved language preference were added at the user's request. Local daily encrypted backups and health checks are enabled. See [implementation report](implementation-report.md), [traceability](requirements-traceability.csv), [verification](verification.md), [manual](user-manual.md) and [operations](operations.md). Live providers, remote hosting/storage and human clinical/language/acceptance evaluation remain pending. Earlier dated matrices below are historical.
+
+## Implementation update — 9 October 2026
+
+The matrix below preserves the **7 October baseline**. Socket.IO live invalidations, charts on all four dashboards, patient email/SMS preferences, a transactional delivery queue and SMTP/Twilio adapters are now implemented. Delivery defaults to local previews; live provider configuration and verification remain pending. See the [current feature guide](connectivity.md) and [updated use cases](use-cases.md). The subsequent hospital-settings phase added private drafts, approved public contact details, 24/7 reception hours, Sri Lankan number normalisation, version-conflict protection and audited publication/withdrawal; see the [settings guide](hospital-settings.md). Password reset, patient deactivation and public doctor/service publishing were still open at that milestone; the 13 October status above supersedes those gaps. The first-slice boundary at the end is historical.
+
 ## Findings that change the plan
 
 The core visit workflow exists: registration → booking → reception check-in → consultation → prescription → billing → notification → feedback. Weeks 1–10 are implementation milestones, **not proof that the entire SRS is complete**. Complete the gaps below before treating deployment as the next main phase.
@@ -55,7 +63,7 @@ The companion [use-case specification](use-cases.md) distinguishes current capab
 
 The runtime defaults to an eight-hour session (`server/src/config.js`), while NFR-S03 states a 24-hour default and Appendix C leaves expiry open. Record the eight-hour implementation decision for supervisor review. AUTH-009/NFR-S05 also need explicit public-route exceptions for registration, login, recovery and any deliberately published hospital directory; protected clinical routes must remain authenticated.
 
-Preserve the historical interim statement that implementation had not started. In the final report or a dated addendum, replace future-tense technology claims with evidence: React 19, native fetch, plain CSS, Zod and Node's test runner/Playwright are the current choices; Tailwind, Axios, express-validator and Jest from Table 3.3 were not adopted. Socket.IO/Recharts are still planned. Explain these substitutions instead of claiming those libraries are installed.
+Preserve the historical interim statement that implementation had not started. In the final report or a dated addendum, replace future-tense technology claims with evidence: React 19, native fetch, plain CSS, Zod and Node's test runner/Playwright are the current choices; Tailwind, Axios, express-validator and Jest from Table 3.3 were not adopted. Socket.IO/Recharts were planned at the 7 October review and were implemented on 9 October. Explain these substitutions instead of claiming those libraries are installed.
 
 Keep the original exclusions (no laboratory equipment, insurance integration, native mobile app or telemedicine). New public-facing hospital content must not fabricate clinicians, awards, success rates, emergency facilities, opening hours or contact details.
 
@@ -68,3 +76,5 @@ Socket.IO defaults to at-most-once arrival and recovery can fail, so durable app
 ## This revision's delivery boundary
 
 The first implementation slice adds the public demo homepage, glass styling and a local display preference. It does **not** implement Socket.IO, charts, SMS/email, password reset, an administrative settings backend or translated UI. The homepage describes existing portal capabilities; real hospital contact information and a public approved doctor/service directory remain pending. Verification results are recorded in the README revision note after checks complete.
+
+Verification completed 8 October 2026; see the [README revision note](../README.md#interim-review-and-interface-revision--7-october-2026). The obsolete deployment-roadmap message was removed from the patient/staff dashboard; the revised development sequence belongs in these project documents.

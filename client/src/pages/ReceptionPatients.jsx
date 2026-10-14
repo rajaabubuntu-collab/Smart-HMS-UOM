@@ -1,3 +1,4 @@
+import { t } from '../i18n/locale';
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { UserPlus, CalendarPlus, FilePenLine } from 'lucide-react';
@@ -19,28 +20,30 @@ export default function ReceptionPatients() {
   return (
     <>
       <PageHeading
-        eyebrow="FRONT DESK"
-        title="Patients & walk-ins"
-        description="Find an existing patient or create an account for a new arrival."
+        eyebrow={t('FRONT DESK')}
+        title={t('Patients & walk-ins')}
+        description={t('Find an existing patient or create an account for a new arrival.')}
       >
         <button className="button primary" onClick={() => setModal({})}>
-          <UserPlus size={17} /> Register walk-in
+          <UserPlus size={17} /> {t('Register walk-in')}{' '}
         </button>
       </PageHeading>
       <Notice success>{success}</Notice>
       <section className="card padded">
-        <h2>Find the right patient</h2>
+        <h2>{t('Find the right patient')}</h2>
         <p className="muted">
-          Check their date of birth and contact details before booking to avoid duplicate records.
+          {t(
+            'Check their date of birth and contact details before booking to avoid duplicate records.',
+          )}{' '}
         </p>
         <PatientPicker selected={patient} onSelect={setPatient} />
         {patient && (
           <div className="form-actions">
             <Link className="button primary" to={`/book?patient=${patient.id}`}>
-              <CalendarPlus size={17} /> Book for {patient.user.name}
+              <CalendarPlus size={17} /> {t('Book for')} {patient.user.name}
             </Link>
             <button className="button subtle" onClick={() => setModal({ id: patient.id })}>
-              <FilePenLine size={17} /> Review patient record
+              <FilePenLine size={17} /> {t('Review patient record')}{' '}
             </button>
           </div>
         )}
@@ -54,7 +57,7 @@ function IntakeModal({ patientId, onClose, onSaved }) {
   const [busy, setBusy] = useState(false);
   return (
     <Modal
-      title={patientId ? 'Review patient record' : 'Register a walk-in patient'}
+      title={patientId ? t('Review patient record') : t('Register a walk-in patient')}
       wide
       onClose={() => {
         if (!busy) onClose();
@@ -108,13 +111,14 @@ function IntakeForm({ initial, onSaved, busy, setBusy }) {
   return (
     <form onSubmit={submit}>
       <p className="muted small-text">
-        Record details provided by the patient. Allergy and blood-group entries are patient-reported
-        and require clinical confirmation.
+        {t(
+          'Record details provided by the patient. Allergy and blood-group entries are patient-reported and require clinical confirmation.',
+        )}{' '}
       </p>
       <Notice>{error?.message}</Notice>
       <div className="form-grid">
         <Field
-          label="Patient full name"
+          label={t('Patient full name')}
           name="name"
           defaultValue={user?.name || ''}
           required
@@ -122,7 +126,7 @@ function IntakeForm({ initial, onSaved, busy, setBusy }) {
           error={e('name')}
         />
         <Field
-          label="Patient email"
+          label={t('Patient email')}
           name="email"
           type="email"
           defaultValue={user?.email || ''}
@@ -132,12 +136,12 @@ function IntakeForm({ initial, onSaved, busy, setBusy }) {
           error={e('email')}
           hint={
             user
-              ? 'Account email is protected.'
-              : 'A unique email is required for the patient portal.'
+              ? t('Account email is protected.')
+              : t('A unique email is required for the patient portal.')
           }
         />
         <Field
-          label="Date of birth"
+          label={t('Date of birth')}
           name="dateOfBirth"
           type="date"
           min="1900-01-01"
@@ -147,22 +151,22 @@ function IntakeForm({ initial, onSaved, busy, setBusy }) {
           error={e('dateOfBirth')}
         />
         <Field
-          label="Gender"
+          label={t('Gender')}
           name="gender"
           as="select"
           defaultValue={profile?.gender || ''}
           required
         >
           <option value="" disabled>
-            Select an option
+            {t('Select an option')}{' '}
           </option>
-          <option value="female">Female</option>
-          <option value="male">Male</option>
-          <option value="other">Other</option>
-          <option value="prefer-not-to-say">Prefer not to say</option>
+          <option value="female">{t('Female')}</option>
+          <option value="male">{t('Male')}</option>
+          <option value="other">{t('Other')}</option>
+          <option value="prefer-not-to-say">{t('Prefer not to say')}</option>
         </Field>
         <Field
-          label="Patient phone"
+          label={t('Patient phone')}
           name="phone"
           type="tel"
           maxLength={25}
@@ -171,19 +175,19 @@ function IntakeForm({ initial, onSaved, busy, setBusy }) {
         />
         {!user && (
           <Field
-            label="Initial password"
+            label={t('Initial password')}
             name="password"
             type="password"
             minLength={10}
             required
             autoComplete="new-password"
-            hint="Share privately with the patient."
+            hint={t('Share privately with the patient.')}
             error={e('password')}
           />
         )}
       </div>
       <Field
-        label="Address"
+        label={t('Address')}
         name="address"
         as="textarea"
         rows={2}
@@ -191,41 +195,41 @@ function IntakeForm({ initial, onSaved, busy, setBusy }) {
         defaultValue={profile?.address || ''}
       />
       <div className="form-divider" />
-      <h3>Patient-reported health details</h3>
+      <h3>{t('Patient-reported health details')}</h3>
       <div className="form-grid">
         <Field
-          label="Reported blood group"
+          label={t('Reported blood group')}
           name="bloodType"
           as="select"
           defaultValue={profile?.bloodType || ''}
         >
-          <option value="">Not recorded</option>
+          <option value="">{t('Not recorded')}</option>
           {['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'].map((type) => (
             <option key={type}>{type}</option>
           ))}
         </Field>
         <Field
-          label="Reported allergies"
+          label={t('Reported allergies')}
           name="allergies"
           as="textarea"
           rows={3}
           defaultValue={profile?.allergies?.join('\n') || ''}
-          hint="One per line, up to 20. An empty record does not confirm no allergies."
+          hint={t('One per line, up to 20. An empty record does not confirm no allergies.')}
           maxLength={2000}
           error={e('allergies')}
         />
       </div>
       <div className="form-divider" />
-      <h3>Emergency contact</h3>
+      <h3>{t('Emergency contact')}</h3>
       <div className="form-grid">
         <Field
-          label="Emergency contact name"
+          label={t('Emergency contact name')}
           name="emergencyName"
           maxLength={100}
           defaultValue={profile?.emergencyContact?.name || ''}
         />
         <Field
-          label="Emergency contact phone"
+          label={t('Emergency contact phone')}
           name="emergencyPhone"
           type="tel"
           maxLength={25}
@@ -233,13 +237,15 @@ function IntakeForm({ initial, onSaved, busy, setBusy }) {
           error={e('emergencyContact.phone')}
         />
         <Field
-          label="Relationship"
+          label={t('Relationship')}
           name="relationship"
           maxLength={80}
           defaultValue={profile?.emergencyContact?.relationship || ''}
         />
       </div>
-      <Submit busy={busy}>{profile ? 'Save patient record' : 'Create patient account'}</Submit>
+      <Submit busy={busy}>
+        {profile ? t('Save patient record') : t('Create patient account')}
+      </Submit>
     </form>
   );
 }

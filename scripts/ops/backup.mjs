@@ -17,7 +17,13 @@ try {
     uri.password
   )
     throw new Error('This tool is restricted to the existing local development database.');
-  if (action === 'create' && (args.length !== 1 || args[0] !== '--writes-stopped'))
+  if (
+    action === 'create' &&
+    !(
+      args[0] === '--writes-stopped' &&
+      (args.length === 1 || (args.length === 2 && args[1] === '--json'))
+    )
+  )
     throw new Error(
       'Usage: npm run db:backup -- --writes-stopped (stop all database writers first).',
     );
@@ -47,9 +53,11 @@ try {
   await client.connect();
   if (action === 'create') {
     const backup = await createBackup({ client, secret, writesStopped: true });
-    console.log(
-      `Encrypted backup: ${backup.path}\nKey (store separately): ${keyPath}\nSessions excluded. Copy the backup and key to separate protected storage.`,
-    );
+    if (args.includes('--json')) console.log(JSON.stringify({ path: backup.path }));
+    else
+      console.log(
+        `Encrypted backup: ${backup.path}\nKey (store separately): ${keyPath}\nSessions and reset links excluded. Copy the backup and key to separate protected storage.`,
+      );
   } else {
     const result = await restoreBackup({ client, secret, path: resolve(args[0]) });
     console.log(

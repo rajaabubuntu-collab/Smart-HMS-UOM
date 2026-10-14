@@ -1,3 +1,4 @@
+import { t } from '../i18n/locale';
 import { useState } from 'react';
 import { ShieldCheck, UserRound } from 'lucide-react';
 import { api } from '../api';
@@ -46,25 +47,30 @@ function ProfileForm({ initial }) {
   return (
     <>
       <PageHeading
-        eyebrow="PATIENT WORKSPACE"
-        title="My profile"
-        description="A few details that help us take better care of you."
+        eyebrow={t('PATIENT WORKSPACE')}
+        title={t('My profile')}
+        description={t('A few details that help us take better care of you.')}
       />
       <div className="profile-layout">
         <form className="card padded" onSubmit={submit}>
           <div className="section-heading">
-            <h2>Contact information</h2>
+            <h2>{t('Contact information')}</h2>
             <UserRound size={21} />
           </div>
-          <p className="muted">Keep your phone, address and emergency contact current.</p>
+          <p className="muted">{t('Keep your phone, address and emergency contact current.')}</p>
           <Notice>{error?.message}</Notice>
           <Notice success>{success}</Notice>
           <div className="form-grid">
-            <Field label="Full name" name="name" defaultValue={user.name} disabled />
-            <Field label="Email address" name="email" defaultValue={user.email} disabled />
-            <Field label="Date of birth" name="dob" defaultValue={profile.dateOfBirth} disabled />
+            <Field label={t('Full name')} name="name" defaultValue={user.name} disabled />
+            <Field label={t('Email address')} name="email" defaultValue={user.email} disabled />
             <Field
-              label="Phone number"
+              label={t('Date of birth')}
+              name="dob"
+              defaultValue={profile.dateOfBirth}
+              disabled
+            />
+            <Field
+              label={t('Phone number')}
               name="phone"
               type="tel"
               autoComplete="tel"
@@ -74,7 +80,7 @@ function ProfileForm({ initial }) {
             />
           </div>
           <Field
-            label="Address"
+            label={t('Address')}
             name="address"
             as="textarea"
             rows={3}
@@ -84,25 +90,25 @@ function ProfileForm({ initial }) {
             error={error?.fields?.address}
           />
           <div className="form-divider" />
-          <h2 className="form-title">Emergency contact</h2>
-          <p className="muted small-text">Someone your care team can contact if needed.</p>
+          <h2 className="form-title">{t('Emergency contact')}</h2>
+          <p className="muted small-text">{t('Someone your care team can contact if needed.')}</p>
           <div className="form-grid">
             <Field
-              label="Contact name"
+              label={t('Contact name')}
               name="emergencyName"
               maxLength={100}
               defaultValue={profile.emergencyContact?.name}
               error={error?.fields?.['emergencyContact.name']}
             />
             <Field
-              label="Relationship"
+              label={t('Relationship')}
               name="relationship"
               maxLength={80}
               defaultValue={profile.emergencyContact?.relationship}
               error={error?.fields?.['emergencyContact.relationship']}
             />
             <Field
-              label="Contact phone"
+              label={t('Contact phone')}
               name="emergencyPhone"
               type="tel"
               maxLength={25}
@@ -111,35 +117,39 @@ function ProfileForm({ initial }) {
             />
           </div>
           <div className="form-actions">
-            <Submit busy={busy}>Save changes</Submit>
-            <span className="small-text muted">Updates are saved to your patient record.</span>
+            <Submit busy={busy}>{t('Save changes')}</Submit>
+            <span className="small-text muted">
+              {t('Updates are saved to your patient record.')}
+            </span>
           </div>
         </form>
         <aside className="card padded profile-aside">
           <span className="large-icon">
             <ShieldCheck size={27} />
           </span>
-          <h2>Your medical details</h2>
-          <p className="muted">Clinical information is maintained by your care team.</p>
+          <h2>{t('Your medical details')}</h2>
+          <p className="muted">{t('Clinical information is maintained by your care team.')}</p>
           <dl className="detail-list">
             <div>
-              <dt>Blood group</dt>
-              <dd>{profile.bloodType || 'Not recorded'}</dd>
+              <dt>{t('Blood group')}</dt>
+              <dd>{profile.bloodType || t('Not recorded')}</dd>
             </div>
           </dl>
           <div className="allergy-note">
             <ShieldCheck size={20} />
             <div>
-              <strong>Allergy information</strong>
+              <strong>{t('Allergy information')}</strong>
               <p>
                 {profile.allergies.length
                   ? profile.allergies.join(', ')
-                  : 'No allergy information recorded. This does not mean you have no allergies.'}
+                  : t('No allergy information recorded. This does not mean you have no allergies.')}
               </p>
             </div>
           </div>
           <p className="muted small-text">
-            Tell your care team about allergies and any corrections to your identity details.
+            {t(
+              'Tell your care team about allergies and any corrections to your identity details.',
+            )}{' '}
           </p>
         </aside>
       </div>

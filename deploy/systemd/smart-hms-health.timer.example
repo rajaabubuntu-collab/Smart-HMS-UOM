@@ -1,0 +1,10 @@
+[Unit]
+Description=Check Smart HMS readiness every minute
+
+[Timer]
+OnBootSec=1min
+OnUnitActiveSec=1min
+Unit=smart-hms-health.service
+
+[Install]
+WantedBy=timers.target

@@ -1,3 +1,4 @@
+import { t } from '../i18n/locale';
 import { createContext, useContext, useEffect, useState } from 'react';
 import { Contrast } from 'lucide-react';
 
@@ -30,11 +31,11 @@ export function DisplayPreference() {
       type="button"
       className="surface-toggle"
       aria-pressed={solid}
-      title="Use opaque surfaces for easier reading"
+      title={t('Use opaque surfaces for easier reading')}
       onClick={() => setSolid((value) => !value)}
     >
       <Contrast size={17} aria-hidden="true" />
-      <span>Solid surfaces</span>
+      <span>{t('Solid surfaces')}</span>
     </button>
   );
 }

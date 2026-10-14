@@ -1,3 +1,4 @@
+import { t } from '../i18n/locale';
 import { useState } from 'react';
 import { Field, Loading, Notice, PageHeading, Pager, useResource } from '../components/ui';
 import { today, dateAfter } from '../scheduling';
@@ -33,14 +34,16 @@ export default function AuditLog() {
   return (
     <>
       <PageHeading
-        eyebrow="ACCOUNTABILITY"
-        title="Audit log"
-        description="Read-only history of recorded actions. Filter dates use Sri Lanka time; each event timestamp is shown in UTC."
+        eyebrow={t('ACCOUNTABILITY')}
+        title={t('Audit log')}
+        description={t(
+          'Read-only history of recorded actions. Filter dates use Sri Lanka time; each event timestamp is shown in UTC.',
+        )}
       />
       <Notice>{options.error}</Notice>
       <form className="card padded audit-filters" onSubmit={apply}>
         <Field
-          label="From date"
+          label={t('From date')}
           name="auditFrom"
           type="date"
           required
@@ -50,7 +53,7 @@ export default function AuditLog() {
           onChange={(e) => change('from', e.target.value)}
         />
         <Field
-          label="To date"
+          label={t('To date')}
           name="auditTo"
           type="date"
           required
@@ -60,21 +63,21 @@ export default function AuditLog() {
           onChange={(e) => change('to', e.target.value)}
         />
         <Field
-          label="User name or user ID"
+          label={t('User name or user ID')}
           name="auditUser"
           value={draft.user}
           maxLength={100}
           onChange={(e) => change('user', e.target.value)}
-          hint="Search a current name or enter an exact user ID"
+          hint={t('Search a current name or enter an exact user ID')}
         />
         <Field
-          label="Action"
+          label={t('Action')}
           name="auditAction"
           as="select"
           value={draft.action}
           onChange={(e) => change('action', e.target.value)}
         >
-          <option value="">All actions</option>
+          <option value="">{t('All actions')}</option>
           {options.data?.actions.map((action) => (
             <option key={action} value={action}>
               {action.replaceAll('_', ' ')}
@@ -82,13 +85,13 @@ export default function AuditLog() {
           ))}
         </Field>
         <Field
-          label="Module"
+          label={t('Module')}
           name="auditModule"
           as="select"
           value={draft.module}
           onChange={(e) => change('module', e.target.value)}
         >
-          <option value="">All modules</option>
+          <option value="">{t('All modules')}</option>
           {options.data?.modules.map((module) => (
             <option key={module} value={module}>
               {module}
@@ -96,7 +99,7 @@ export default function AuditLog() {
           ))}
         </Field>
         <Field
-          label="Search action, module or target"
+          label={t('Search action, module or target')}
           name="auditSearch"
           value={draft.q}
           maxLength={100}
@@ -104,7 +107,7 @@ export default function AuditLog() {
         />
         <div className="clinical-actions">
           <button className="button primary" type="submit" disabled={pending}>
-            Apply filters
+            {t('Apply filters')}{' '}
           </button>
           <button
             className="button subtle"
@@ -118,41 +121,43 @@ export default function AuditLog() {
               refresh((v) => v + 1);
             }}
           >
-            Reset filters
+            {t('Reset filters')}{' '}
           </button>
         </div>
       </form>
       <Notice>{validation || error}</Notice>
       {dirty && (
         <p role="status" className="report-draft-note">
-          Filters changed. Select Apply filters to update the results below.
+          {t('Filters changed. Select Apply filters to update the results below.')}{' '}
         </p>
       )}
-      {pending && <Loading text="Loading audit events…" />}
+      {pending && <Loading text={t('Loading audit events…')} />}
       {data && (
         <>
           <p className="muted">
-            {data.total} {data.total === 1 ? 'event' : 'events'} · {data.period.from} to{' '}
-            {data.period.to} · {data.period.timezone}
+            {data.total} {data.total === 1 ? t('event') : t('events')} · {data.period.from}{' '}
+            {t('to')} {data.period.to} · {data.period.timezone}
           </p>
           {data.records.length > 0 && (
-            <p className="report-scroll-hint">Scroll sideways to see all columns.</p>
+            <p className="report-scroll-hint">{t('Scroll sideways to see all columns.')}</p>
           )}
           {data.records.length ? (
             <div
               className="card report-table-wrap"
               role="region"
-              aria-label="Audit events"
+              aria-label={t('Audit events')}
               tabIndex={0}
             >
               <table className="report-table audit-table">
                 <thead>
                   <tr>
-                    <th scope="col">Timestamp (UTC)</th>
-                    <th scope="col">User</th>
-                    <th scope="col">Action</th>
-                    <th scope="col">Module</th>
-                    <th scope="col">Target</th>
+                    <th scope="col">{t('Timestamp (UTC)')}</th>
+                    <th scope="col">{t('User')}</th>
+                    <th scope="col">{t('Action')}</th>
+                    <th scope="col">{t('Module')}</th>
+                    <th scope="col">{t('Target')}</th>
+                    <th scope="col">{t('Login IP')}</th>
+                    <th scope="col">{t('Reason')}</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -163,7 +168,7 @@ export default function AuditLog() {
                       </td>
                       <td>
                         <strong>{record.actorName}</strong>
-                        <small>{record.actorRole || 'No linked account'}</small>
+                        <small>{record.actorRole || t('No linked account')}</small>
                         <code>{record.actorId || '—'}</code>
                       </td>
                       <td>{record.action}</td>
@@ -171,6 +176,8 @@ export default function AuditLog() {
                       <td>
                         <code>{record.target || '—'}</code>
                       </td>
+                      <td>{record.ipAddress || '—'}</td>
+                      <td>{record.reason || '—'}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -178,17 +185,17 @@ export default function AuditLog() {
             </div>
           ) : (
             <section className="card padded">
-              <h2>No audit events found</h2>
-              <p>Try another date range or reset the filters.</p>
+              <h2>{t('No audit events found')}</h2>
+              <p>{t('Try another date range or reset the filters.')}</p>
             </section>
           )}
           <Pager {...data} onChange={setPage} />
         </>
       )}
       <p className="muted small-text">
-        Events cannot be edited or deleted here. User names and roles reflect current profiles.
-        “Unlinked actor” means the event has no available account, such as an unsuccessful sign-in.
-        Audit records contain action metadata, not clinical notes.
+        {t(
+          'Events cannot be edited or deleted here. User names and roles reflect current profiles. “Unlinked actor” means the event has no available account, such as an unsuccessful sign-in. Login IP addresses are retained for 30 days. Audit records contain action metadata, not clinical notes.',
+        )}{' '}
       </p>
     </>
   );

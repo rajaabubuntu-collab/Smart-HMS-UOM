@@ -27,9 +27,14 @@
     "db:restore": "node scripts/ops/backup.mjs restore",
     "test:recovery": "node scripts/ops/rehearsal.mjs",
     "test:production": "node scripts/ops/production-smoke.mjs",
-    "image:build": "docker build -t smart-hms:0.10.0 ."
+    "image:build": "docker build -t smart-hms:0.10.0 .",
+    "test:load": "node scripts/verification/load.mjs",
+    "test:translations": "node scripts/verification/translations.mjs",
+    "health:check": "node scripts/ops/health-check.mjs",
+    "db:offsite": "node scripts/ops/offsite-copy.mjs"
   },
   "devDependencies": {
+    "@axe-core/playwright": "^4.13.0",
     "@eslint/js": "^10.0.1",
     "@playwright/test": "^1.63.0",
     "concurrently": "^10.0.5",

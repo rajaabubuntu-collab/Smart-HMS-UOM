@@ -1,4 +1,4 @@
-# Smart HMS API (weeks 1–7)
+# Smart HMS API
 
 Base path: `/api`. JSON request/response bodies. Authenticated requests use the HTTP-only `hms_session` cookie. No bearer tokens are exposed to frontend JavaScript.
 
@@ -270,3 +270,39 @@ Report response: `{report:{id,title,basis}, period:{from,to,timezone,generatedAt
 Both date filters default to today and include the full calendar dates in Asia/Colombo. Valid range: 1900–2199, from<=to, at most 366 inclusive days. Page 1–10,000, limit 1–50. Unknown fields, invalid dates and unknown report types return 400. Unauthorized roles return 403; unauthenticated requests return 401.
 
 Audit `user` is a case-insensitive literal current-name search, or an exact actor ID when it is a 24-character hex ID. Action/module are exact strings; `q` searches action/module/target as literal substrings. Each filter is limited to 100 characters. Events return `{id,actorId,actorName,actorRole,action,module,target,createdAt}` in descending timestamp/ID order. Missing actors are retained with null or original ID. No audit update/delete routes are available.
+
+## Dashboard and delivery revision — 9 October 2026
+
+| Method | Endpoint                                    | Permission          | Behaviour                                                                                                                                                                                          |
+| ------ | ------------------------------------------- | ------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| GET    | `/dashboard/analytics?window=recent`        | All signed-in roles | Seven Colombo days of appointment/status aggregates; `recent` (default) or `upcoming`. Patient/doctor scope is session-derived; administrator also receives department and net-receipt aggregates. |
+| GET    | `/notifications/preferences`                | Patient             | Own `{ preferences: { email, sms }, modes: { email, sms } }`                                                                                                                                       |
+| PATCH  | `/notifications/preferences`                | Patient             | Strict `{ email: boolean, sms: boolean }`; enabling SMS requires a valid Sri Lankan mobile profile number. Audited transaction.                                                                    |
+| GET    | `/notifications/deliveries?page=1&limit=10` | Patient             | Own masked delivery history, current modes and local previews                                                                                                                                      |
+| GET    | `/admin/deliveries?page=1&limit=10`         | Administrator       | Hospital masked delivery history, current modes and local previews                                                                                                                                 |
+
+Delivery lists return `{ records, total, page, limit, modes }`. Records expose ID, channel, transport, masked destination, status, attempts, creation time, generic error code and optional local preview. Full destinations/provider IDs are never returned. No send/test-send/retry endpoint exists. Messages originate from committed patient-notification workflows after opt-in; mode changes do not backfill old events.
+
+Socket.IO connects at `/socket.io` outside `/api`, with WebSocket transport only. The handshake needs the existing session cookie and exact `APP_ORIGIN`. Server events are `realtime:availability` with `{ available: boolean }` and `data:changed` without a payload. The latter instructs the client to refresh its authorised REST projection. No client room selection or application-event protocol is accepted. Reconnect recovery fetches current state; see [connectivity](connectivity.md) for fallback, limits and delivery states.
+
+## Hospital settings — 9 October 2026
+
+| Method | Endpoint                             | Permission    | Behaviour                                                                                               |
+| ------ | ------------------------------------ | ------------- | ------------------------------------------------------------------------------------------------------- |
+| GET    | `/public/hospital`                   | Public        | `{ hospital, regional }`; hospital is null until publication. Explicit published fields only.           |
+| GET    | `/admin/hospital-settings`           | Administrator | `{ version, details, published, publishedAt, regional }`; blank defaults at version 0 until first save. |
+| PATCH  | `/admin/hospital-settings`           | Administrator | Strict `{ version, details }`; saves a draft without changing the published snapshot.                   |
+| POST   | `/admin/hospital-settings/publish`   | Administrator | Strict `{ version }`; validates and publishes the saved draft.                                          |
+| POST   | `/admin/hospital-settings/unpublish` | Administrator | Strict `{ version }`; removes publication, preserving draft.                                            |
+
+`details` contains `name` (120 characters), `description` (600), `address` (400), `phone` (30 before normalisation), `email` (254), `visitNotes` (600), `isDemo` (boolean) and `hours` (exactly seven ordered Monday–Sunday entries). Each entry contains `day`, `closed`, `allDay`, `opens`, `closes`; the latter two are empty or `HH:mm`. Closed and all-day are mutually exclusive; ordinary open intervals require a later closing time on the same day. Closed/all-day entries store empty clock values. Unknown fields, including provider secrets and regional overrides, are rejected. GET endpoints accept no query filters.
+
+Every successful mutation increments `version` and commits an audit record. Stale versions return 409 without overwriting settings. A public response omits draft/version/editor/timestamps/internal IDs. `regional` is `{ timezone: "Asia/Colombo", currency: "LKR", language: "English" }`; these values cannot be changed through this API. See [settings guide](hospital-settings.md) for publication requirements and UI behaviour.
+
+## Completion update 13 October 2026
+
+Public endpoints: `POST /auth/forgot-password {email}` returns generic 202; `POST /auth/reset-password {token,password}` consumes a 15-minute token and revokes sessions. Origin checks and authentication rate limits also cover these routes. `GET /public/departments` and `/public/doctors?department=ID` are paginated and expose only explicitly published active entries.
+
+Administrator endpoints: `GET /admin/patients?page&limit&search&status=all|active|inactive`; `PATCH /admin/patients/:userId/status {isActive,expectedActive,reason}`; `PATCH /admin/departments/:id {name,description,isActive,isPublic,revision,reason}`; `PATCH /admin/doctors/:doctorId/publication {isPublic,expectedPublic}`. Patient deactivation blocks open visits and preserves history. Department deactivation requires all doctors reassigned. Stale revisions/status expectations return 409.
+
+Doctor endpoints: `/clinical/queue?page&limit` now includes `total,page,limit`; `/clinical/timeline?date=YYYY-MM-DD&page&limit` returns only the authenticated doctor's chronological visits. Administrator report export: `GET /admin/reports/:type/export?from&to&format=csv|json`, one consistent snapshot, maximum 5,000 rows with explicit rejection above the cap. JSON feeds the complete print/Save as PDF view. Audit output includes administrative `reason` and login `ipAddress` where retained.

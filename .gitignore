@@ -9,3 +9,6 @@ test-results/
 playwright-report/
 *.log
 .DS_Store
+
+# Intermediate document renders; final PDFs are in output/pdf.
+tmp/pdfs/

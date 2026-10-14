@@ -1,3 +1,5 @@
+import { t } from '../i18n/locale';
+import { Link } from 'react-router-dom';
 import { useState } from 'react';
 import { Field, Loading, Notice, PageHeading, Pager, useResource } from '../components/ui';
 import { today, dateLabel, timeLabel, money } from '../scheduling';
@@ -46,28 +48,30 @@ export default function Reports() {
   return (
     <>
       <PageHeading
-        eyebrow="HOSPITAL OPERATIONS"
-        title="Reports & analytics"
-        description="Generate operational summaries from saved records. Date ranges include both dates and use Sri Lanka time."
+        eyebrow={t('HOSPITAL OPERATIONS')}
+        title={t('Reports & analytics')}
+        description={t(
+          'Generate operational summaries from saved records. Date ranges include both dates and use Sri Lanka time.',
+        )}
       />
       <Notice>{catalogue.error}</Notice>
       <form className="card padded report-filters" onSubmit={generate}>
         <Field
-          label="Report type"
+          label={t('Report type')}
           name="reportType"
           as="select"
           value={draft.type}
           onChange={(e) => update('type', e.target.value)}
         >
-          {!catalogue.data && <option value="appointments">Daily appointments</option>}
+          {!catalogue.data && <option value="appointments">{t('Daily appointments')}</option>}
           {catalogue.data?.reports.map((report) => (
             <option key={report.id} value={report.id}>
-              {report.title}
+              {t(report.title)}
             </option>
           ))}
         </Field>
         <Field
-          label={draft.type === 'appointments' ? 'Appointment date' : 'From date'}
+          label={draft.type === 'appointments' ? t('Appointment date') : t('From date')}
           name="reportFrom"
           type="date"
           required
@@ -78,7 +82,7 @@ export default function Reports() {
         />
         {draft.type !== 'appointments' && (
           <Field
-            label="To date"
+            label={t('To date')}
             name="reportTo"
             type="date"
             required
@@ -89,51 +93,69 @@ export default function Reports() {
           />
         )}
         <button className="button primary" type="submit" disabled={pending}>
-          Generate report
+          {t('Generate report')}{' '}
         </button>
       </form>
-      {selected && dirty && <p className="muted report-help">{selected.basis}</p>}
+      {selected && dirty && <p className="muted report-help">{t(selected.basis)}</p>}
       <Notice>{validation || error}</Notice>
       {dirty && (
         <p role="status" className="report-draft-note">
-          Filters changed. Select Generate report to update the results below.
+          {t('Filters changed. Select Generate report to update the results below.')}{' '}
         </p>
       )}
-      {pending && <Loading text="Generating report…" />}
+      {pending && <Loading text={t('Generating report…')} />}
       {data && (
-        <section className="report-results" aria-label="Generated report">
+        <section className="report-results" aria-label={t('Generated report')}>
           <div className="section-heading">
             <div>
-              <h2>{data.report.title}</h2>
+              <h2>{t(data.report.title)}</h2>
               <p className="muted">
-                {data.period.from} to {data.period.to} · {data.period.timezone}
+                {data.period.from} {t('to')} {data.period.to} · {data.period.timezone}
               </p>
             </div>
             <small className="muted">
-              Generated {dateLabel(data.period.generatedAt)} · {timeLabel(data.period.generatedAt)}
+              {t('Generated')} {dateLabel(data.period.generatedAt)} ·{' '}
+              {timeLabel(data.period.generatedAt)}
             </small>
           </div>
-          <p className="report-basis">{data.report.basis}</p>
+          <div className="clinical-actions">
+            <a
+              className="button subtle"
+              href={`/api/admin/reports/${applied.type}/export?${new URLSearchParams({ from: applied.from, to: applied.to })}`}
+            >
+              {t('Download CSV')}
+            </a>
+            <Link
+              className="button subtle"
+              target="_blank"
+              rel="noopener"
+              to={`/admin/reports/${applied.type}/print?${new URLSearchParams({ from: applied.from, to: applied.to })}`}
+            >
+              {t('Print / save PDF')}
+            </Link>
+          </div>
+          <p className="report-basis">{t(data.report.basis)}</p>
           <div className="report-metrics">
             {data.summary.map((metric) => (
               <div className="card padded" key={metric.key}>
-                <p>{metric.label}</p>
+                <p>{t(metric.label)}</p>
                 <strong>{formatted(metric.value, metric.format)}</strong>
               </div>
             ))}
           </div>
           <p className="muted small-text">
-            Summary totals cover the entire selected period, including rows on other pages.
-            Re-generating or changing pages reads current records.
+            {t(
+              'Summary totals cover the entire selected period, including rows on other pages. Re-generating or changing pages reads current records.',
+            )}{' '}
           </p>
           {data.records.length > 0 && (
-            <p className="report-scroll-hint">Scroll sideways to see all columns.</p>
+            <p className="report-scroll-hint">{t('Scroll sideways to see all columns.')}</p>
           )}
           {data.records.length ? (
             <div
               className="card report-table-wrap"
               role="region"
-              aria-label={`${data.report.title} results`}
+              aria-label={`${t(data.report.title)} results`}
               tabIndex={0}
             >
               <table className="report-table">
@@ -141,8 +163,8 @@ export default function Reports() {
                   <tr>
                     {data.columns.map((column) => (
                       <th key={column.key} scope="col">
-                        {column.label}
-                        {column.format === 'money' ? ' (LKR)' : ''}
+                        {t(column.label)}
+                        {column.format === 'money' ? t(' (LKR)') : ''}
                       </th>
                     ))}
                   </tr>
@@ -160,8 +182,8 @@ export default function Reports() {
             </div>
           ) : (
             <section className="card padded">
-              <h3>No records in this period</h3>
-              <p>Choose another date or report to view saved activity.</p>
+              <h3>{t('No records in this period')}</h3>
+              <p>{t('Choose another date or report to view saved activity.')}</p>
             </section>
           )}
           <Pager {...data} onChange={setPage} />

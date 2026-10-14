@@ -1,5 +1,6 @@
+import { t } from '../i18n/locale';
 import { useState } from 'react';
-import { Link, Navigate } from 'react-router-dom';
+import { Link, Navigate, useLocation } from 'react-router-dom';
 import { ArrowUpRight, Check, ShieldCheck, HeartPulse, Eye, EyeOff } from 'lucide-react';
 import { useAuth } from '../auth';
 import { Brand, Field, Notice, Submit } from '../components/ui';
@@ -8,10 +9,19 @@ import { DisplayPreference } from '../components/DisplayPreference';
 
 export default function AuthPage({ register = false }) {
   const auth = useAuth();
+  const location = useLocation();
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState(null);
   const [showPassword, setShowPassword] = useState(false);
-  if (auth.user) return <Navigate to="/dashboard" replace />;
+  // Email destinations must remain local and still pass the destination's role/ownership checks.
+  const returnTo = location.state?.returnTo;
+  const safeReturn =
+    auth.user?.role === 'patient' &&
+    typeof returnTo === 'string' &&
+    /^\/(?:notifications|messages|records|appointments(?:\?selected=[a-f\d]{24})?|billing\/[a-f\d]{24})$/i.test(
+      returnTo,
+    );
+  if (auth.user) return <Navigate to={safeReturn ? returnTo : '/dashboard'} replace />;
   async function submit(event) {
     event.preventDefault();
     setError(null);
@@ -37,31 +47,31 @@ export default function AuthPage({ register = false }) {
   return (
     <main className="auth-shell">
       <section className="auth-story">
-        <Link to="/" aria-label="Smart HMS home">
+        <Link to="/" aria-label={t('Smart HMS home')}>
           <Brand light />
         </Link>
         <div className="story-copy">
           <div className="story-kicker">
-            <span /> A little more connected. A lot more care.
+            <span /> {t('A little more connected. A lot more care.')}{' '}
           </div>
           <h1>
-            Good care starts
-            <br />
-            with a <em>connection.</em>
+            {t('Good care starts')} <br />
+            {t('with a')} <em>{t('connection.')}</em>
           </h1>
           <p>
-            One place for patients and care teams to come together. Simple, organised, and built
-            around you.
+            {t(
+              'One place for patients and care teams to come together. Simple, organised, and built around you.',
+            )}{' '}
           </p>
           <div className="story-points">
             <span>
-              <Check size={16} /> Your information, in one place
+              <Check size={16} /> {t('Your information, in one place')}{' '}
             </span>
             <span>
-              <Check size={16} /> A workspace for every care team
+              <Check size={16} /> {t('A workspace for every care team')}{' '}
             </span>
             <span>
-              <Check size={16} /> Secure access, made simple
+              <Check size={16} /> {t('Secure access, made simple')}{' '}
             </span>
           </div>
         </div>
@@ -72,58 +82,59 @@ export default function AuthPage({ register = false }) {
             <HeartPulse size={68} strokeWidth={1.3} />
           </div>
           <span className="art-label">
-            <span className="status-dot" /> Connected care
+            <span className="status-dot" /> {t('Connected care')}{' '}
           </span>
         </div>
         <footer>
-          SMART HOSPITAL MANAGEMENT SYSTEM <span>01 / A BETTER START</span>
+          {t('SMART HOSPITAL MANAGEMENT SYSTEM')} <span>{t('01 / A BETTER START')}</span>
         </footer>
       </section>
       <section className="auth-panel">
         <div className="auth-home-row">
           <Link className="text-link" to="/">
-            ← Hospital website
+            {t('← Hospital website')}{' '}
           </Link>
           <DisplayPreference />
         </div>
         <div className="auth-top">
           <span>
-            New here? {register ? 'Already have an account?' : 'Join your care community.'}
+            {t('New here?')}{' '}
+            {register ? t('Already have an account?') : t('Join your care community.')}
           </span>
           <Link to={register ? '/login' : '/register'}>
-            {register ? 'Sign in' : 'Create account'} <ArrowUpRight size={16} />
+            {register ? t('Sign in') : t('Create account')} <ArrowUpRight size={16} />
           </Link>
         </div>
         <div className={`auth-form-wrap ${register ? 'registration' : ''}`}>
           <div className="auth-icon">
             <HeartPulse size={25} />
           </div>
-          <p className="eyebrow">YOUR CARE WORKSPACE</p>
-          <h2>{register ? 'Let’s get you started.' : 'Welcome back.'}</h2>
+          <p className="eyebrow">{t('YOUR CARE WORKSPACE')}</p>
+          <h2>{register ? t('Let’s get you started.') : t('Welcome back.')}</h2>
           <p className="muted">
             {register
-              ? 'Create your patient account. Your care starts here.'
-              : 'Sign in to your Smart HMS account to continue.'}
+              ? t('Create your patient account. Your care starts here.')
+              : t('Sign in to your Smart HMS account to continue.')}
           </p>
           <Notice>{error?.message}</Notice>
           <form onSubmit={submit} className="auth-form">
             {register && (
               <Field
-                label="Full name"
+                label={t('Full name')}
                 name="name"
                 autoComplete="name"
-                placeholder="Your full name"
+                placeholder={t('Your full name')}
                 required
                 maxLength={100}
                 error={fieldError('name')}
               />
             )}
             <Field
-              label="Email address"
+              label={t('Email address')}
               name="email"
               type="email"
               autoComplete="email"
-              placeholder="you@example.com"
+              placeholder={t('you@example.com')}
               required
               maxLength={254}
               error={fieldError('email')}
@@ -131,7 +142,7 @@ export default function AuthPage({ register = false }) {
             {register && (
               <div className="form-grid">
                 <Field
-                  label="Date of birth"
+                  label={t('Date of birth')}
                   name="dateOfBirth"
                   type="date"
                   min="1900-01-01"
@@ -140,7 +151,7 @@ export default function AuthPage({ register = false }) {
                   error={fieldError('dateOfBirth')}
                 />
                 <Field
-                  label="Gender"
+                  label={t('Gender')}
                   name="gender"
                   as="select"
                   defaultValue=""
@@ -148,33 +159,33 @@ export default function AuthPage({ register = false }) {
                   error={fieldError('gender')}
                 >
                   <option value="" disabled>
-                    Select an option
+                    {t('Select an option')}{' '}
                   </option>
-                  <option value="female">Female</option>
-                  <option value="male">Male</option>
-                  <option value="other">Other</option>
-                  <option value="prefer-not-to-say">Prefer not to say</option>
+                  <option value="female">{t('Female')}</option>
+                  <option value="male">{t('Male')}</option>
+                  <option value="other">{t('Other')}</option>
+                  <option value="prefer-not-to-say">{t('Prefer not to say')}</option>
                 </Field>
               </div>
             )}
             {register && (
               <Field
-                label="Phone number"
+                label={t('Phone number')}
                 name="phone"
                 type="tel"
                 autoComplete="tel"
-                placeholder="e.g. +94 77 123 4567"
+                placeholder={t('e.g. +94 77 123 4567')}
                 maxLength={25}
                 error={fieldError('phone')}
               />
             )}
             <div className="password-field">
               <Field
-                label="Password"
+                label={t('Password')}
                 name="password"
                 type={showPassword ? 'text' : 'password'}
                 autoComplete={register ? 'new-password' : 'current-password'}
-                placeholder={register ? 'At least 10 characters' : 'Enter your password'}
+                placeholder={register ? t('At least 10 characters') : t('Enter your password')}
                 minLength={register ? 10 : undefined}
                 required
                 error={fieldError('password')}
@@ -182,7 +193,7 @@ export default function AuthPage({ register = false }) {
               <button
                 className="password-toggle"
                 type="button"
-                aria-label={showPassword ? 'Hide password' : 'Show password'}
+                aria-label={showPassword ? t('Hide password') : t('Show password')}
                 onClick={() => setShowPassword(!showPassword)}
               >
                 {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
@@ -190,17 +201,22 @@ export default function AuthPage({ register = false }) {
             </div>
             {register && (
               <Field
-                label="Confirm password"
+                label={t('Confirm password')}
                 name="confirmPassword"
                 type={showPassword ? 'text' : 'password'}
                 autoComplete="new-password"
-                placeholder="Re-enter your password"
+                placeholder={t('Re-enter your password')}
                 required
                 error={fieldError('confirmPassword')}
               />
             )}
+            {!register && (
+              <Link to="/forgot-password" className="text-link">
+                {t('Forgot your password?')}{' '}
+              </Link>
+            )}
             <Submit busy={busy}>
-              {register ? 'Create patient account' : 'Sign in to your workspace'}{' '}
+              {register ? t('Create patient account') : t('Sign in to your workspace')}{' '}
               <ArrowUpRight size={17} />
             </Submit>
           </form>
@@ -208,14 +224,14 @@ export default function AuthPage({ register = false }) {
             <ShieldCheck size={16} />
             <span>
               {register
-                ? 'Staff accounts are created by your administrator.'
-                : 'Your account connects you to the right workspace.'}
+                ? t('Staff accounts are created by your administrator.')
+                : t('Your account connects you to the right workspace.')}
             </span>
           </div>
         </div>
         <footer className="auth-bottom">
-          <span>Built for better hospital experiences.</span>
-          <span>Smart HMS · University project</span>
+          <span>{t('Built for better hospital experiences.')}</span>
+          <span>{t('Smart HMS · University project')}</span>
         </footer>
       </section>
     </main>

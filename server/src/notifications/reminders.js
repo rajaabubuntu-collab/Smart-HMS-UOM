@@ -2,6 +2,7 @@ import mongoose from 'mongoose';
 import { Appointment } from '../models.js';
 import { lockDoctors } from '../scheduling/service.js';
 import { notifyPatient, appointmentTime } from './service.js';
+import { appointmentEmailDetails } from './email-content.js';
 
 // A bounded batch makes startup/recovery safe. Undelivered candidates remain eligible.
 export async function runReminderBatch({ now = new Date(), limit = 100 } = {}) {
@@ -38,6 +39,7 @@ export async function runReminderBatch({ now = new Date(), limit = 100 } = {}) {
           title: 'Upcoming appointment',
           message: `Reminder: ${appointment.reference} is scheduled for ${appointmentTime(appointment.startsAt)} (Sri Lanka time), within the next 24 hours. Open the appointment for its current status.`,
           path: `/appointments?selected=${appointment._id}`,
+          email: appointmentEmailDetails(appointment, 'appointment_reminder'),
         },
         session,
       );

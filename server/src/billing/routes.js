@@ -206,6 +206,7 @@ export function billingRouter() {
         'Payment recorded',
         'A received payment has been recorded on your bill.',
         session,
+        payment,
       );
       await audit(req.user._id, 'payment_recorded', 'billing', payment._id, session);
     });
@@ -239,6 +240,7 @@ export function billingRouter() {
           'Payment record corrected',
           'A payment record was reversed and your balance updated. This was a record correction, not an online refund.',
           session,
+          payment,
         );
         await audit(req.user._id, 'payment_reversed', 'billing', payment._id, session);
       });

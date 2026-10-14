@@ -1,0 +1,32 @@
+SYNTHETIC PREVIEW — no email sent
+Subject: Smart HMS | Your bill is ready | INV-DEMO-001
+
+Smart HMS
+
+Your bill is ready
+
+Hello Demo Patient,
+
+A bill has been created for your completed appointment.
+
+Invoice reference: INV-DEMO-001
+Appointment reference: HMS-DEMO-001
+Invoice total: LKR 3,500.00
+Total paid: LKR 2,000.00
+Outstanding balance: LKR 1,500.00
+Payment due date: 25 October 2026
+
+Review the itemised bill in the portal. Contact reception for payment arrangements.
+
+View bill: http://localhost:5173/billing/aaaaaaaaaaaaaaaaaaaaaaaa
+
+This message records an update on Wednesday, 14 October 2026 at 09:30 (Sri Lanka time). The portal shows the latest status and balance.
+
+Smart HMS
+Colombo 09
+Reception: +94 115 279 429
+smarthms@gmail.com
+
+You received this email because email updates are enabled for your patient account.
+
+Manage email preferences: http://localhost:5173/messages

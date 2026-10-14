@@ -1,3 +1,4 @@
+import { t } from '../i18n/locale';
 import { useState } from 'react';
 import { Link, useParams, useSearchParams } from 'react-router-dom';
 import { api } from '../api';
@@ -18,7 +19,7 @@ function Status({ bill }) {
       className={`status-pill ${bill.status === 'Paid' ? 'completed' : bill.status === 'Overdue' ? 'cancelled' : 'waiting'}`}
     >
       {bill.status}
-      {bill.paidMinor > 0 && bill.balanceMinor > 0 ? ' · Part paid' : ''}
+      {bill.paidMinor > 0 && bill.balanceMinor > 0 ? t(' · Part paid') : ''}
     </span>
   );
 }
@@ -75,21 +76,24 @@ function BillEditor({ bill, appointment, onClose, onSaved }) {
   }
   return (
     <Modal
-      title={bill ? 'Edit unpaid bill' : 'Generate bill'}
+      title={bill ? t('Edit unpaid bill') : t('Generate bill')}
       onClose={busy ? () => {} : onClose}
       wide
     >
       <form onSubmit={save}>
         <Notice>{error}</Notice>
         <p>
-          The booked consultation fee is included automatically and cannot be changed here. Add only
-          applicable service charges. Bills are locked after the first payment record.
+          {t(
+            'The booked consultation fee is included automatically and cannot be changed here. Add only applicable service charges. Bills are locked after the first payment record.',
+          )}{' '}
         </p>
         <fieldset className="clinical-fieldset" disabled={busy}>
           {bill && <Charges items={[bill.items[0]]} />}
           {items.map((item, i) => (
             <fieldset className="medication-row" key={i}>
-              <legend>Additional charge {i + 1}</legend>
+              <legend>
+                {t('Additional charge')} {i + 1}
+              </legend>
               {[
                 ['description', 'Description'],
                 ['quantity', 'Quantity'],
@@ -118,7 +122,7 @@ function BillEditor({ bill, appointment, onClose, onSaved }) {
                 className="button subtle"
                 onClick={() => setItems((v) => v.filter((_, n) => n !== i))}
               >
-                Remove charge {i + 1}
+                {t('Remove charge')} {i + 1}
               </button>
             </fieldset>
           ))}
@@ -128,11 +132,11 @@ function BillEditor({ bill, appointment, onClose, onSaved }) {
             disabled={items.length >= 19}
             onClick={() => setItems((v) => [...v, { description: '', quantity: 1, price: '' }])}
           >
-            Add service charge
+            {t('Add service charge')}{' '}
           </button>
           <Field
             name="dueDate"
-            label="Due date"
+            label={t('Due date')}
             type="date"
             required
             value={dueDate}
@@ -142,17 +146,19 @@ function BillEditor({ bill, appointment, onClose, onSaved }) {
           />
           <Field
             name="billReason"
-            label="Reason / billing note"
+            label={t('Reason / billing note')}
             required
             maxLength={500}
             value={reason}
             onChange={(e) => setReason(e.target.value)}
           />
           <p className="muted">
-            An unpaid balance becomes overdue the day after the due date, in Sri Lanka time.
+            {t(
+              'An unpaid balance becomes overdue the day after the due date, in Sri Lanka time.',
+            )}{' '}
           </p>
           <button className="button primary">
-            {busy ? 'Saving…' : bill ? 'Save bill changes' : 'Generate bill'}
+            {busy ? t('Saving…') : bill ? t('Save bill changes') : t('Generate bill')}
           </button>
         </fieldset>
       </form>
@@ -176,9 +182,9 @@ export function Billing() {
   return (
     <>
       <PageHeading
-        eyebrow={staff ? 'RECEPTION & ACCOUNTS' : 'PATIENT PORTAL'}
-        title={staff ? 'Billing' : 'My bills & payments'}
-        description="Itemised bills, outstanding balances and recorded payment history."
+        eyebrow={staff ? t('RECEPTION & ACCOUNTS') : t('PATIENT PORTAL')}
+        title={staff ? t('Billing') : t('My bills & payments')}
+        description={t('Itemised bills, outstanding balances and recorded payment history.')}
       />
       <div className="card padded billing-filters">
         <form
@@ -190,16 +196,16 @@ export function Billing() {
         >
           <Field
             name="billSearch"
-            label="Search bills"
-            placeholder="Invoice, appointment or patient name"
+            label={t('Search bills')}
+            placeholder={t('Invoice, appointment or patient name')}
             value={search}
             onChange={(e) => setSearch(e.target.value)}
           />
-          <button className="button subtle">Search</button>
+          <button className="button subtle">{t('Search')}</button>
         </form>
         <Field
           name="billStatus"
-          label="Payment status"
+          label={t('Payment status')}
           as="select"
           value={status}
           onChange={(e) => {
@@ -207,13 +213,15 @@ export function Billing() {
             setPage(1);
           }}
         >
-          <option value="">All statuses</option>
+          <option value="">{t('All statuses')}</option>
           {['Pending', 'Paid', 'Overdue'].map((s) => (
-            <option key={s}>{s}</option>
+            <option key={s} value={s}>
+              {t(s)}
+            </option>
           ))}
         </Field>
         <button className="button subtle" onClick={() => refresh((v) => v + 1)}>
-          Refresh bills
+          {t('Refresh bills')}{' '}
         </button>
       </div>
       <Notice>{error}</Notice>
@@ -222,14 +230,14 @@ export function Billing() {
         <>
           {!data.records.length && (
             <div className="card padded">
-              <h2>No bills found</h2>
-              <p>Bills are generated when consultations are completed.</p>
+              <h2>{t('No bills found')}</h2>
+              <p>{t('Bills are generated when consultations are completed.')}</p>
               {staff &&
                 params.get('appointment') &&
                 !status &&
                 query === params.get('reference') && (
                   <button className="button primary" onClick={() => setCreate(true)}>
-                    Generate missing bill
+                    {t('Generate missing bill')}{' '}
                   </button>
                 )}
             </div>
@@ -242,19 +250,19 @@ export function Billing() {
                   {bill.patientName} · {bill.appointmentReference}
                 </p>
                 <p className="muted">
-                  {bill.doctorName} · Due {dateLabel(`${bill.dueDate}T00:00:00+05:30`)}
+                  {bill.doctorName} {t('· Due')} {dateLabel(`${bill.dueDate}T00:00:00+05:30`)}
                 </p>
                 <Status bill={bill} />
               </div>
               <div>
                 <p>
-                  Total <strong>{money(bill.totalMinor)}</strong>
+                  {t('Total')} <strong>{money(bill.totalMinor)}</strong>
                 </p>
                 <p>
-                  Balance <strong>{money(bill.balanceMinor)}</strong>
+                  {t('Balance')} <strong>{money(bill.balanceMinor)}</strong>
                 </p>
                 <Link className="button primary" to={`/billing/${bill._id}`}>
-                  View bill
+                  {t('View bill')}{' '}
                 </Link>
               </div>
             </article>
@@ -264,9 +272,11 @@ export function Billing() {
       )}
       {staff && (
         <p className="muted">
-          For an older completed appointment without a bill, open{' '}
-          <Link to="/appointments">Appointments</Link> and choose Billing. Payments are recorded by
-          staff after receipt; this app does not process online payments.
+          {t('For an older completed appointment without a bill, open')}{' '}
+          <Link to="/appointments">{t('Appointments')}</Link>{' '}
+          {t(
+            'and choose Billing. Payments are recorded by staff after receipt; this app does not process online payments.',
+          )}{' '}
         </p>
       )}
       {create && (
@@ -317,16 +327,16 @@ function PaymentForm({ bill, onClose, onSaved }) {
     }
   }
   return (
-    <Modal title="Record received payment" onClose={busy ? () => {} : onClose}>
+    <Modal title={t('Record received payment')} onClose={busy ? () => {} : onClose}>
       <form onSubmit={pay}>
         <Notice>{error}</Notice>
         <p>
-          Outstanding balance: <strong>{money(bill.balanceMinor)}</strong>
+          {t('Outstanding balance:')} <strong>{money(bill.balanceMinor)}</strong>
         </p>
         <fieldset className="clinical-fieldset" disabled={busy}>
           <Field
             name="paymentAmount"
-            label="Amount received (LKR)"
+            label={t('Amount received (LKR)')}
             required
             inputMode="decimal"
             value={amount}
@@ -337,7 +347,7 @@ function PaymentForm({ bill, onClose, onSaved }) {
           />
           <Field
             name="paymentMethod"
-            label="Payment method"
+            label={t('Payment method')}
             as="select"
             value={method}
             onChange={(e) => {
@@ -345,16 +355,16 @@ function PaymentForm({ bill, onClose, onSaved }) {
               setConfirmed(false);
             }}
           >
-            <option>Cash</option>
-            <option>Bank transfer</option>
+            <option value="Cash">{t('Cash')}</option>
+            <option value="Bank transfer">{t('Bank transfer')}</option>
           </Field>
           <Field
             name="paymentReference"
-            label="Payment reference"
+            label={t('Payment reference')}
             hint={
               method === 'Bank transfer'
-                ? 'Required bank transfer reference.'
-                : 'Optional receipt note.'
+                ? t('Required bank transfer reference.')
+                : t('Optional receipt note.')
             }
             required={method === 'Bank transfer'}
             maxLength={100}
@@ -367,10 +377,10 @@ function PaymentForm({ bill, onClose, onSaved }) {
               checked={confirmed}
               onChange={(e) => setConfirmed(e.target.checked)}
             />{' '}
-            I confirm this payment has been received.
+            {t('I confirm this payment has been received.')}{' '}
           </label>
           <button className="button primary" disabled={!confirmed}>
-            {busy ? 'Recording…' : 'Confirm received payment'}
+            {busy ? t('Recording…') : t('Confirm received payment')}
           </button>
         </fieldset>
       </form>
@@ -398,24 +408,25 @@ function ReversePayment({ bill, payment, onClose, onSaved }) {
     }
   }
   return (
-    <Modal title="Reverse payment record" onClose={busy ? () => {} : onClose}>
+    <Modal title={t('Reverse payment record')} onClose={busy ? () => {} : onClose}>
       <form onSubmit={reverse}>
         <Notice>{error}</Notice>
         <p>
-          Reverse {payment.reference} for {money(payment.amountMinor)}? The balance will increase
-          and the original entry will remain visible. This corrects a record; it does not transfer
-          or refund money.
+          {t('Reverse')} {payment.reference} {t('for')} {money(payment.amountMinor)}
+          {t(
+            '? The balance will increase and the original entry will remain visible. This corrects a record; it does not transfer or refund money.',
+          )}{' '}
         </p>
         <Field
           name="reversalReason"
-          label="Reason for reversal"
+          label={t('Reason for reversal')}
           required
           maxLength={500}
           value={reason}
           onChange={(e) => setReason(e.target.value)}
         />
         <button className="button primary" disabled={busy}>
-          Confirm reversal
+          {t('Confirm reversal')}{' '}
         </button>
       </form>
     </Modal>
@@ -435,12 +446,12 @@ export function BillDetail() {
   return (
     <div className="bill-detail">
       <PageHeading
-        eyebrow="SMART HMS · LKR"
-        title="Bill & payment statement"
-        description="Charges and payment records for this appointment."
+        eyebrow={t('SMART HMS · LKR')}
+        title={t('Bill & payment statement')}
+        description={t('Charges and payment records for this appointment.')}
       >
         <Link className="button subtle billing-no-print" to="/billing">
-          Back to bills
+          {t('Back to bills')}{' '}
         </Link>
       </PageHeading>
       <Notice>{error}</Notice>
@@ -456,7 +467,7 @@ export function BillDetail() {
                   {data.bill.doctorName} · {data.bill.appointmentReference}
                 </p>
                 <p>
-                  Issued {dateLabel(data.bill.createdAt)} · Due{' '}
+                  {t('Issued')} {dateLabel(data.bill.createdAt)} {t('· Due')}{' '}
                   {dateLabel(`${data.bill.dueDate}T00:00:00+05:30`)}
                 </p>
               </div>
@@ -465,37 +476,37 @@ export function BillDetail() {
             <Charges items={data.bill.items} />
             <div className="billing-totals">
               <p>
-                Total <strong>{money(data.bill.totalMinor)}</strong>
+                {t('Total')} <strong>{money(data.bill.totalMinor)}</strong>
               </p>
               <p>
-                Paid <strong>{money(data.bill.paidMinor)}</strong>
+                {t('Paid')} <strong>{money(data.bill.paidMinor)}</strong>
               </p>
               <p>
-                Outstanding <strong>{money(data.bill.balanceMinor)}</strong>
+                {t('Outstanding')} <strong>{money(data.bill.balanceMinor)}</strong>
               </p>
             </div>
             <div className="clinical-actions billing-no-print">
               <button className="button subtle" onClick={() => window.print()}>
-                Print statement
+                {t('Print statement')}{' '}
               </button>
               <button className="button subtle" onClick={() => refresh((v) => v + 1)}>
-                Refresh statement
+                {t('Refresh statement')}{' '}
               </button>
               {staff && data.bill.balanceMinor > 0 && (
                 <button className="button primary" onClick={() => setModal('payment')}>
-                  Record payment
+                  {t('Record payment')}{' '}
                 </button>
               )}
               {staff && data.payments.length === 0 && (
                 <button className="button subtle" onClick={() => setModal('edit')}>
-                  Edit charges / due date
+                  {t('Edit charges / due date')}{' '}
                 </button>
               )}
             </div>
           </article>
           <section className="card padded clinical-record">
-            <h2>Payment history</h2>
-            {!data.payments.length && <p>No payments recorded.</p>}
+            <h2>{t('Payment history')}</h2>
+            {!data.payments.length && <p>{t('No payments recorded.')}</p>}
             {data.payments.map((p) => (
               <article className="prescription-version" key={p._id}>
                 <h3>
@@ -504,15 +515,19 @@ export function BillDetail() {
                 <p>
                   {p.method} · {dateLabel(p.createdAt)} · {timeLabel(p.createdAt)}
                 </p>
-                {p.externalReference && <p>Reference: {p.externalReference}</p>}
+                {p.externalReference && (
+                  <p>
+                    {t('Reference:')} {p.externalReference}
+                  </p>
+                )}
                 {p.reversedAt ? (
                   <Notice>
-                    Reversed on {dateLabel(p.reversedAt)}: {p.reversalReason}
+                    {t('Reversed on')} {dateLabel(p.reversedAt)}: {p.reversalReason}
                   </Notice>
                 ) : (
                   user.role === 'admin' && (
                     <button className="button subtle billing-no-print" onClick={() => setModal(p)}>
-                      Reverse record
+                      {t('Reverse record')}{' '}
                     </button>
                   )
                 )}
@@ -520,14 +535,16 @@ export function BillDetail() {
             ))}
           </section>
           <section className="card padded clinical-record billing-no-print">
-            <h2>Bill revisions</h2>
+            <h2>{t('Bill revisions')}</h2>
             {data.bill.versions.map((v, i) => (
               <details key={i}>
                 <summary>
-                  Version {i + 1} · {dateLabel(v.at)} · {money(v.totalMinor)}
+                  {t('Version')} {i + 1} · {dateLabel(v.at)} · {money(v.totalMinor)}
                 </summary>
                 <p>{v.reason}</p>
-                <p>Due {v.dueDate}</p>
+                <p>
+                  {t('Due')} {v.dueDate}
+                </p>
                 <Charges items={v.items} />
               </details>
             ))}

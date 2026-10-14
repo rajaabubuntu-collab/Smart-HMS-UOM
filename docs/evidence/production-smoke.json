@@ -1,0 +1,14 @@
+{
+  "at": "2026-10-13T11:39:07.536Z",
+  "image": "smart-hms:0.10.0",
+  "passed": [
+    "container startup and database readiness",
+    "non-root runtime excludes environment files, local data and Vite",
+    "HTTPS proxy and HSTS header",
+    "unsafe requests without trusted Origin rejected",
+    "production login with Secure HttpOnly SameSite Strict cookie",
+    "built React assets and direct SPA route",
+    "logout revokes session replay",
+    "graceful container shutdown"
+  ]
+}

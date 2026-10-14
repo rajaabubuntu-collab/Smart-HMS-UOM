@@ -1,0 +1,4 @@
+{
+  "host": "backupuser@backup.example.invalid",
+  "directory": "/srv/encrypted-hms-backups"
+}

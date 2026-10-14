@@ -4,8 +4,8 @@ import { hospitalDate } from './scheduling/time.js';
 const text = (max) => z.string().trim().max(max);
 const requiredText = (max) => text(max).min(1, 'This field is required.');
 const phone = text(25).regex(/^[+\d\s().-]*$/, 'Enter a valid phone number.');
-const email = z.string().trim().toLowerCase().pipe(z.email().max(254));
-const password = z
+export const email = z.string().trim().toLowerCase().pipe(z.email().max(254));
+export const password = z
   .string()
   .min(10, 'Use at least 10 characters.')
   .refine((v) => Buffer.byteLength(v, 'utf8') <= 72, 'Password must be at most 72 UTF-8 bytes.');

@@ -1,0 +1,32 @@
+digraph G {
+graph [rankdir=LR, bgcolor="transparent", pad="0.15", nodesep="0.13", ranksep="0.55", fontname="DejaVu Sans", fontsize=14];
+node [fontname="DejaVu Sans", fontsize=11, color="#506481", penwidth=1, style=filled, fillcolor="#edf4fc"];
+edge [color="#708096", penwidth=0.9, arrowhead=none];
+Patient [shape=box, style="rounded,filled", fillcolor="#ffffff", label="<<actor>>\nPatient"];
+Gateway [shape=box, style="rounded,filled", fillcolor="#ffffff", label="<<actor>>\nEmail / SMS gateway\n(live setup pending)"];
+subgraph cluster_system {
+label="Smart HMS: patient workspace"; color="#617494"; style=rounded; margin=16;
+Profile [shape=ellipse, margin="0.13,0.07", label="Update contact profile"];
+Book [shape=ellipse, margin="0.13,0.07", label="Browse slots and\nbook appointment"];
+Validate [shape=ellipse, margin="0.13,0.07", label="Validate availability\nand booking conflicts"];
+Change [shape=ellipse, margin="0.13,0.07", label="Reschedule or cancel visit"];
+Records [shape=ellipse, margin="0.13,0.07", label="Read own records,\nprescriptions and bills"];
+Guide [shape=ellipse, margin="0.13,0.07", label="Get department guidance"];
+Rules [shape=ellipse, margin="0.13,0.07", label="Evaluate bounded\nEnglish keyword rules"];
+Feedback [shape=ellipse, margin="0.13,0.07", label="Submit completed-visit\nfeedback"];
+Updates [shape=ellipse, margin="0.13,0.07", label="Read notifications\nand appointment charts"];
+Preferences [shape=ellipse, margin="0.13,0.07", label="Set delivery preferences\nand view delivery history"];
+Deliver [shape=ellipse, margin="0.13,0.07", label="Deliver queued update"];
+}
+Patient -> Profile;
+Patient -> Book;
+Patient -> Change;
+Patient -> Records;
+Patient -> Guide;
+Patient -> Feedback;
+Patient -> Updates;
+Patient -> Preferences;
+Gateway -> Deliver;
+Book -> Validate [style=dashed, arrowhead=vee, label="<<include>>", fontname="DejaVu Sans", fontsize=9, color="#326b88"];
+Guide -> Rules [style=dashed, arrowhead=vee, label="<<include>>", fontname="DejaVu Sans", fontsize=9, color="#326b88"];
+}

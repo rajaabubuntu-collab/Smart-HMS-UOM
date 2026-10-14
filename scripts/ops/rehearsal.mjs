@@ -14,6 +14,7 @@ import {
   Feedback,
   Notification,
   Session,
+  PasswordReset,
   AuditLog,
 } from '../../server/src/models.js';
 import { seedTestAccounts } from '../../server/test/helpers.js';
@@ -101,6 +102,11 @@ try {
     message: 'Recovery fixture',
     path: '/billing',
   });
+  await PasswordReset.create({
+    user: fixtures.users.patient._id,
+    tokenHash: 'synthetic-only',
+    expiresAt: new Date(Date.now() + 900000),
+  });
   await Session.create({
     user: fixtures.users.patient._id,
     expiresAt: new Date(Date.now() + 3600000),
@@ -158,6 +164,8 @@ try {
   checks.push('all document hashes, collection options and indexes match');
   assert.equal(await client.db(target).collection('sessions').countDocuments(), 0);
   checks.push('login sessions excluded');
+  assert.equal(await client.db(target).collection('passwordresets').countDocuments(), 0);
+  checks.push('password reset links excluded');
   const saved = await client.db(target).collection('patients').findOne();
   await assert.rejects(
     client

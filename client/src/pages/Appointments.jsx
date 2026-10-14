@@ -1,3 +1,4 @@
+import { t } from '../i18n/locale';
 import { useEffect, useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { CalendarDays, CalendarPlus, RefreshCw, Clock, ArrowRight } from 'lucide-react';
@@ -25,7 +26,7 @@ export default function Appointments() {
     ...(date ? { date } : {}),
     ...(status ? { status } : {}),
   });
-  const resource = useResource(`/appointments?${query}`, revision);
+  const resource = useResource(`/appointments?${query}`, revision, true);
   const detailId = params.get('selected');
   const details = useResource(detailId ? `/appointments/${detailId}` : null, revision);
   // The appointment list refreshes quietly, with an explicit refresh button too.
@@ -50,20 +51,20 @@ export default function Appointments() {
   return (
     <>
       <PageHeading
-        eyebrow={user.role === 'patient' ? 'PATIENT WORKSPACE' : 'CARE WORKSPACE'}
-        title={user.role === 'patient' ? 'My appointments' : 'Appointments'}
-        description="From booking to arrival. All dates and times are shown in Sri Lanka time."
+        eyebrow={user.role === 'patient' ? t('PATIENT WORKSPACE') : t('CARE WORKSPACE')}
+        title={user.role === 'patient' ? t('My appointments') : t('Appointments')}
+        description={t('From booking to arrival. All dates and times are shown in Sri Lanka time.')}
       >
         {user.role !== 'doctor' && (
           <Link className="button primary" to="/book">
-            <CalendarPlus size={17} /> Book an appointment
+            <CalendarPlus size={17} /> {t('Book an appointment')}{' '}
           </Link>
         )}
       </PageHeading>
       <Notice success>{success}</Notice>
       <section className="card">
         <div className="appointments-toolbar">
-          <div className="tab-list" aria-label="Appointment view">
+          <div className="tab-list" aria-label={t('Appointment view')}>
             {[
               ['upcoming', 'Upcoming'],
               ['history', 'History'],
@@ -75,13 +76,13 @@ export default function Appointments() {
                 aria-pressed={view === value}
                 onClick={() => changeView(value)}
               >
-                {label}
+                {t(label)}
               </button>
             ))}
           </div>
           <button
             className="button subtle small"
-            aria-label="Refresh appointments"
+            aria-label={t('Refresh appointments')}
             onClick={() => setRevision((r) => r + 1)}
           >
             <RefreshCw size={16} />
@@ -89,7 +90,7 @@ export default function Appointments() {
         </div>
         <div className="appointment-filters">
           <Field
-            label="Appointment date"
+            label={t('Appointment date')}
             name="filterDate"
             type="date"
             value={date}
@@ -99,7 +100,7 @@ export default function Appointments() {
             }}
           />
           <Field
-            label="Status"
+            label={t('Status')}
             name="filterStatus"
             as="select"
             value={status}
@@ -108,9 +109,11 @@ export default function Appointments() {
               setPage(1);
             }}
           >
-            <option value="">All statuses</option>
+            <option value="">{t('All statuses')}</option>
             {['Scheduled', 'Waiting', 'In Consultation', 'Completed', 'Cancelled'].map((value) => (
-              <option key={value}>{value}</option>
+              <option key={value} value={value}>
+                {t(value)}
+              </option>
             ))}
           </Field>
           <button
@@ -122,7 +125,7 @@ export default function Appointments() {
               setPage(1);
             }}
           >
-            Today
+            {t('Today')}{' '}
           </button>
           {date && (
             <button
@@ -132,12 +135,12 @@ export default function Appointments() {
                 setPage(1);
               }}
             >
-              Clear date
+              {t('Clear date')}{' '}
             </button>
           )}
         </div>
         {resource.pending ? (
-          <Loading text="Loading appointments…" />
+          <Loading text={t('Loading appointments…')} />
         ) : resource.error ? (
           <div className="padded">
             <Notice>{resource.error}</Notice>
@@ -155,7 +158,9 @@ export default function Appointments() {
                   <div className="appointment-person">
                     <span className="appointment-reference">{item.reference}</span>
                     <h3>
-                      {user.role === 'patient' ? item.doctorName : item.patient?.name || 'Patient'}
+                      {user.role === 'patient'
+                        ? item.doctorName
+                        : item.patient?.name || t('Patient')}
                     </h3>
                     <p>
                       {user.role === 'patient'
@@ -164,7 +169,7 @@ export default function Appointments() {
                     </p>
                     {item.checkedInAt && (
                       <small>
-                        <Clock size={12} /> Arrived {timeLabel(item.checkedInAt)}
+                        <Clock size={12} /> {t('Arrived')} {timeLabel(item.checkedInAt)}
                       </small>
                     )}
                   </div>
@@ -174,34 +179,36 @@ export default function Appointments() {
                         className="button subtle small"
                         to={`/billing?appointment=${item.id}&reference=${encodeURIComponent(item.reference)}`}
                       >
-                        Billing
+                        {t('Billing')}{' '}
                       </Link>
                     )}
                     {user.role === 'doctor' && item.status !== 'Cancelled' && (
                       <Link className="button primary small" to={`/clinical/${item.id}`}>
-                        Open clinical record
+                        {t('Open clinical record')}{' '}
                       </Link>
                     )}
                     {user.role === 'patient' && item.status === 'Completed' && (
                       <>
                         <Link className="button subtle small" to="/records">
-                          Medical record
+                          {t('Medical record')}{' '}
                         </Link>
                         <Link
                           className="button subtle small"
                           to={`/feedback?appointment=${item.id}`}
                         >
-                          Feedback
+                          {t('Feedback')}{' '}
                         </Link>
                       </>
                     )}
-                    <span className={`status-pill ${statusClass(item.status)}`}>{item.status}</span>
+                    <span className={`status-pill ${statusClass(item.status)}`}>
+                      {t(item.status)}
+                    </span>
                     <div>
                       <button
                         className="button subtle small"
                         onClick={() => setParams({ selected: item.id })}
                       >
-                        Details
+                        {t('Details')}{' '}
                       </button>
                       {staff &&
                         item.status === 'Scheduled' &&
@@ -210,7 +217,7 @@ export default function Appointments() {
                             className="button primary small"
                             onClick={() => setAction({ type: 'check-in', item })}
                           >
-                            Check in
+                            {t('Check in')}{' '}
                           </button>
                         )}
                       {staff && item.status === 'Scheduled' && (
@@ -218,7 +225,7 @@ export default function Appointments() {
                           className="button subtle small"
                           onClick={() => setAction({ type: 'reschedule', item })}
                         >
-                          Reschedule
+                          {t('Reschedule')}{' '}
                         </button>
                       )}
                       {((staff && ['Scheduled', 'Waiting'].includes(item.status)) ||
@@ -229,7 +236,7 @@ export default function Appointments() {
                           className="button danger-text small"
                           onClick={() => setAction({ type: 'cancel', item })}
                         >
-                          Cancel
+                          {t('Cancel')}{' '}
                         </button>
                       )}
                     </div>
@@ -240,10 +247,10 @@ export default function Appointments() {
             {!resource.data.items.length && (
               <div className="empty-state">
                 <CalendarDays size={32} />
-                <h3>No appointments in this view</h3>
+                <h3>{t('No appointments in this view')}</h3>
                 <p>
-                  Try a different date or status.
-                  {user.role === 'patient' ? ' Your bookings will appear here.' : ''}
+                  {t('Try a different date or status.')}{' '}
+                  {user.role === 'patient' ? t(' Your bookings will appear here.') : ''}
                 </p>
               </div>
             )}
@@ -252,7 +259,7 @@ export default function Appointments() {
         )}
       </section>
       {detailId && (
-        <Modal title="Appointment details" onClose={() => setParams({})}>
+        <Modal title={t('Appointment details')} onClose={() => setParams({})}>
           {details.pending ? (
             <Loading />
           ) : details.error ? (
@@ -289,55 +296,55 @@ export default function Appointments() {
 function AppointmentDetail({ item }) {
   return (
     <>
-      <span className={`status-pill ${statusClass(item.status)}`}>{item.status}</span>
+      <span className={`status-pill ${statusClass(item.status)}`}>{t(item.status)}</span>
       <p className="eyebrow detail-reference">{item.reference}</p>
       <h3>{item.doctorName}</h3>
       <p className="muted">{item.departmentName}</p>
       <dl className="detail-list">
         <div>
-          <dt>Patient</dt>
+          <dt>{t('Patient')}</dt>
           <dd>{item.patient?.name}</dd>
         </div>
         <div>
-          <dt>Date</dt>
+          <dt>{t('Date')}</dt>
           <dd>{dateLabel(item.startsAt)}</dd>
         </div>
         <div>
-          <dt>Time</dt>
+          <dt>{t('Time')}</dt>
           <dd>
             {timeLabel(item.startsAt)} – {timeLabel(item.endsAt)}
           </dd>
         </div>
         <div>
-          <dt>Consultation fee</dt>
+          <dt>{t('Consultation fee')}</dt>
           <dd>{money(item.consultationFeeMinor)}</dd>
         </div>
       </dl>
       {item.reason && (
         <div className="detail-note">
-          <strong>Reason for visit</strong>
+          <strong>{t('Reason for visit')}</strong>
           <p>{item.reason}</p>
         </div>
       )}
       {item.cancellationReason && (
         <div className="detail-note">
-          <strong>Cancellation reason</strong>
+          <strong>{t('Cancellation reason')}</strong>
           <p>{item.cancellationReason}</p>
         </div>
       )}
       {item.patient?.allergies && (
         <div className="allergy-note">
           <div>
-            <strong>Patient-reported allergies</strong>
+            <strong>{t('Patient-reported allergies')}</strong>
             <p>
               {item.patient.allergies.length
                 ? item.patient.allergies.join(', ')
-                : 'No allergy information recorded. Confirm with the patient.'}
+                : t('No allergy information recorded. Confirm with the patient.')}
             </p>
           </div>
         </div>
       )}
-      <h3>Appointment history</h3>
+      <h3>{t('Appointment history')}</h3>
       <ol className="appointment-history">
         {item.history.map((event, index) => (
           <li key={index}>
@@ -380,7 +387,7 @@ function AppointmentAction({ action, onClose, onDone }) {
   }
   return (
     <Modal
-      title={cancelling ? 'Cancel this appointment?' : 'Confirm patient arrival'}
+      title={cancelling ? t('Cancel this appointment?') : t('Confirm patient arrival')}
       onClose={() => {
         if (!busy) onClose();
       }}
@@ -388,19 +395,29 @@ function AppointmentAction({ action, onClose, onDone }) {
       <p className="muted">
         {action.item.patient?.name} · {action.item.doctorName}
         <br />
-        {dateLabel(action.item.startsAt)} at {timeLabel(action.item.startsAt)}
+        {dateLabel(action.item.startsAt)} {t('at')} {timeLabel(action.item.startsAt)}
       </p>
       <p className="small-text muted">
         {cancelling
-          ? 'The appointment will remain in history and its slot will be released.'
-          : 'Mark this patient as present at the hospital. Their appointment will change to Waiting.'}
+          ? t('The appointment will remain in history and its slot will be released.')
+          : t(
+              'Mark this patient as present at the hospital. Their appointment will change to Waiting.',
+            )}
       </p>
       <Notice>{error}</Notice>
       <form onSubmit={submit}>
         {cancelling && (
-          <Field label="Cancellation reason" name="reason" as="textarea" required maxLength={300} />
+          <Field
+            label={t('Cancellation reason')}
+            name="reason"
+            as="textarea"
+            required
+            maxLength={300}
+          />
         )}
-        <Submit busy={busy}>{cancelling ? 'Confirm cancellation' : 'Confirm check-in'}</Submit>
+        <Submit busy={busy}>
+          {cancelling ? t('Confirm cancellation') : t('Confirm check-in')}
+        </Submit>
       </form>
     </Modal>
   );
@@ -433,15 +450,15 @@ function RescheduleModal({ item, onClose, onDone }) {
   }
   return (
     <Modal
-      title="Move appointment to a new time"
+      title={t('Move appointment to a new time')}
       wide
       onClose={() => {
         if (!busy) onClose();
       }}
     >
       <p className="muted">
-        {item.patient?.name} · Currently {dateLabel(item.startsAt)} at {timeLabel(item.startsAt)}{' '}
-        with {item.doctorName}.
+        {item.patient?.name} {t('· Currently')} {dateLabel(item.startsAt)} {t('at')}{' '}
+        {timeLabel(item.startsAt)} {t('with')} {item.doctorName}.
       </p>
       <DoctorPicker
         selected={doctor}
@@ -463,18 +480,19 @@ function RescheduleModal({ item, onClose, onDone }) {
       <Notice>{error}</Notice>
       <form onSubmit={submit}>
         <Field
-          label="Reason for rescheduling"
+          label={t('Reason for rescheduling')}
           name="reason"
           as="textarea"
           required
           maxLength={300}
         />
         <p className="small-text muted">
-          The original booking stays in place until the new time is successfully reserved. The
-          selected doctor’s current fee will apply.
+          {t(
+            'The original booking stays in place until the new time is successfully reserved. The selected doctor’s current fee will apply.',
+          )}{' '}
         </p>
         <Submit busy={busy} disabled={!slot}>
-          Confirm new appointment time
+          {t('Confirm new appointment time')}{' '}
         </Submit>
       </form>
     </Modal>

@@ -9,13 +9,16 @@ export default defineConfig({
   reporter: 'list',
   use: {
     baseURL: 'http://localhost:5174',
+    browserName: process.env.E2E_BROWSER || 'chromium',
     viewport: { width: 1440, height: 1000 },
     trace: 'retain-on-failure',
     screenshot: 'only-on-failure',
     launchOptions: {
       executablePath:
-        process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH ||
-        (existsSync('/usr/bin/google-chrome') ? '/usr/bin/google-chrome' : undefined),
+        process.env.E2E_BROWSER && process.env.E2E_BROWSER !== 'chromium'
+          ? process.env.PLAYWRIGHT_WEBKIT_EXECUTABLE_PATH
+          : process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH ||
+            (existsSync('/usr/bin/google-chrome') ? '/usr/bin/google-chrome' : undefined),
     },
   },
   webServer: [

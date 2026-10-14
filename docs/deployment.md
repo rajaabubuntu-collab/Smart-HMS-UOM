@@ -4,7 +4,7 @@ This is a prepared deployment procedure, not evidence of a live production deplo
 
 ## 1. Provision the target
 
-Choose a Linux host with Docker Compose, an HTTPS domain and a separately protected MongoDB replica set (MongoDB 7/compatible FCV). Use a database account restricted to the application database, encrypted transport and network access limited to the application host. The app initializes its collection indexes at startup, so grant required database/index privileges during provisioning. Confirm those permissions and transactional writes in staging. Keep the database inaccessible from the public internet except through the provider's controlled access mechanism.
+Choose a Linux host with Docker Compose, an HTTPS domain and a separately protected MongoDB replica set (MongoDB 7/compatible FCV). Use a database account restricted to the application database, encrypted transport and network access limited to the application host. The app initializes its collection indexes at startup, so grant required database/index privileges during provisioning. Confirm those permissions, transactional writes and database-scoped change-stream read privileges in staging. Keep the database inaccessible from the public internet except through the provider's controlled access mechanism.
 
 Configure daily managed snapshots and restore access. Proposed retention: 14 daily and four weekly backups. Test restoration to a separate database before launch; the local backup CLI is intentionally not a cloud/remote tool. Record the chosen provider, schedule, retention, backup owner, restore credentials storage and measured recovery time. No production RPO/RTO has been established by the small local rehearsal.
 
@@ -43,7 +43,7 @@ Remove the private input file when done and transfer credentials through your ch
 
 ## 4. Enable HTTPS and acceptance checks
 
-Install Caddy on the host using its official instructions. Copy `deploy/Caddyfile.example` into its configuration and replace `hms.example.com` with the exact domain from `APP_ORIGIN`. Validate the config before reloading Caddy. Caddy connects to `127.0.0.1:4000` and handles HTTPS at the host; its certificate storage must persist.
+Install Caddy on the host using its official instructions. Copy `deploy/Caddyfile.example` into its configuration and replace `hms.example.com` with the exact domain from `APP_ORIGIN`. Validate the config before reloading Caddy. Caddy connects to `127.0.0.1:4000` and handles HTTPS at the host; its certificate storage must persist. Preserve WebSocket upgrades at `/socket.io` (Caddy reverse_proxy supports these). The client uses WebSocket transport; unavailable sockets fall back to periodic REST refresh.
 
 Before inviting users, verify through the actual domain:
 
@@ -51,6 +51,8 @@ Before inviting users, verify through the actual domain:
 - `/api/health`, administrator login, Secure/HttpOnly/SameSite=Strict cookie and logout revocation.
 - One synthetic appointment → check-in → completed consultation → bill/payment → feedback workflow, plus report totals and audit visibility.
 - Non-admin denial on admin screens/APIs, CSRF Origin rejection and absence of private content in operational logs.
+- **Live updates** status through the actual HTTPS proxy and a cross-session appointment refresh; the periodic fallback remains usable when sockets are disconnected.
+- Email/SMS modes, patient opt-in and masked delivery history. Defaults are local previews; follow [provider setup](connectivity.md) and use only approved test recipients before claiming external delivery works.
 - Actual provider backup restore into an isolated database, validated data/index counts, and the documented rollback path.
 
 The built-in symptom guide remains an unvalidated navigation prototype. This deployment procedure does not authorize use as clinical triage or certify real-patient operational readiness.
@@ -61,6 +63,10 @@ Check `docker compose -f compose.production.yaml ps` and `logs --tail=100 app` (
 
 For an application-only rollback, stop traffic, retain the current database backup, change to the previous tested image tag and recreate the app. Confirm schema/index compatibility before doing so; there is no automatic schema-downgrade migration in this project. Do not restore an older database merely to roll back a frontend/server release, because that would discard later clinical/payment changes.
 
-For database recovery, keep writers stopped; restore to a fresh database using the provider's tooling, verify collections/indexes and critical linked records, revoke recovered sessions, then deliberately update the app URI during the maintenance window. Preserve the old database until acceptance is complete. Check payment reconciliation with the operator before resuming writes. Resume service only after the actual environment's checks pass. Never run a destructive drop/overwrite command against the working database as a rehearsal.
+For database recovery, keep writers stopped; restore to a fresh database using the provider's tooling, verify collections/indexes and critical linked records, revoke recovered sessions, then deliberately update the app URI during the maintenance window. Preserve the old database until acceptance is complete. Check payment reconciliation with the operator before resuming writes. Set both notification transports to `local` or `off` during restoration and reconcile the restored outbox against provider records before enabling live delivery; archived queued jobs may already have been sent after the backup. Resume service only after the actual environment's checks pass. Never run a destructive drop/overwrite command against the working database as a rehearsal.
 
 The local commands and optional daily timer are documented in [week 10](week-10.md). They do not install a production backup service or perform a live cutover.
+
+## Local automation and recovery update
+
+The development installation now uses enabled user services for the app, daily encrypted backup at 03:00 Asia/Colombo and one-minute readiness checks. See [operations](operations.md). This does not activate cloud backups, a public domain or external alerts. Off-site encrypted copying requires a separately supplied approved SSH storage account. Password recovery requires live SMTP for real users; local recovery previews are intentionally disabled in production. Revoke both sessions and reset links after restoring any provider snapshot.

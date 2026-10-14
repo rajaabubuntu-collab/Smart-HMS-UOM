@@ -47,6 +47,7 @@ test('public homepage stays usable without session API and links to real entry p
   await page.getByRole('link', { name: 'Create patient account' }).click();
   await expect(page.getByRole('heading', { name: 'Let’s get you started.' })).toBeVisible();
   await page.getByRole('link', { name: 'Sign in', exact: true }).click();
+  await expect(page.getByRole('heading', { name: 'Welcome back.' })).toBeVisible();
   await page.getByLabel('Email address').fill('patient@test.local');
   await page.getByLabel(/^Password/).fill(testPassword);
   await page.getByRole('button', { name: 'Sign in to your workspace' }).click();

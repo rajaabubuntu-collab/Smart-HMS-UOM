@@ -1,0 +1,43 @@
+{
+  "generatedAt": "2026-10-13T06:10:22.194Z",
+  "database": "Disposable synthetic database; dropped after measurement",
+  "scope": "Loopback HTTP API benchmark; no broadband, browser rendering, clinical use or production uptime claim. 100 pre-established JWT sessions; authentication setup excluded. Rate limiter disabled for shared generator IP.",
+  "results": [
+    {
+      "name": "role-scoped dashboard API",
+      "concurrency": 50,
+      "requests": 100,
+      "statuses": {
+        "200": 100
+      },
+      "durationMs": 467,
+      "p50Ms": 106,
+      "p95Ms": 440,
+      "maxMs": 452
+    },
+    {
+      "name": "100 valid sessions reading appointments",
+      "concurrency": 100,
+      "requests": 100,
+      "statuses": {
+        "200": 100
+      },
+      "durationMs": 271,
+      "p50Ms": 174,
+      "p95Ms": 263,
+      "maxMs": 267
+    },
+    {
+      "name": "transactional profile writes",
+      "concurrency": 50,
+      "requests": 100,
+      "statuses": {
+        "200": 100
+      },
+      "durationMs": 309,
+      "p50Ms": 143,
+      "p95Ms": 178,
+      "maxMs": 200
+    }
+  ]
+}

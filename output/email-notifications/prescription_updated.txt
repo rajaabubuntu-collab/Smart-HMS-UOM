@@ -1,0 +1,30 @@
+SYNTHETIC PREVIEW — no email sent
+Subject: Smart HMS | Prescription updated | HMS-DEMO-001
+
+Smart HMS
+
+Prescription updated
+
+Hello Demo Patient,
+
+Your doctor has updated the prescription record for your visit.
+
+Appointment reference: HMS-DEMO-001
+Appointment date & time: Tuesday, 20 October 2026 at 09:00 (Sri Lanka time)
+Doctor: Dr Demo Perera
+Department: General Medicine
+
+Sign in to review the latest version and its recorded instructions. Previous versions remain available in your record history.
+
+View medical records: http://localhost:5173/records
+
+This message records an update on Wednesday, 14 October 2026 at 09:30 (Sri Lanka time). The portal shows the latest status and balance.
+
+Smart HMS
+Colombo 09
+Reception: +94 115 279 429
+smarthms@gmail.com
+
+You received this email because email updates are enabled for your patient account.
+
+Manage email preferences: http://localhost:5173/messages

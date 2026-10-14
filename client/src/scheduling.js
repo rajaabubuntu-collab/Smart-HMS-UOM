@@ -1,3 +1,4 @@
+import { getLocale, getLanguage } from './i18n/locale';
 export const hospitalTimezone = 'Asia/Colombo';
 export function today() {
   return new Intl.DateTimeFormat('en-CA', {
@@ -16,7 +17,7 @@ export function dateAfter(days) {
   }).format(new Date(Date.now() + days * 86400000));
 }
 export function dateLabel(value) {
-  return new Intl.DateTimeFormat('en-GB', {
+  return new Intl.DateTimeFormat(getLocale(), {
     timeZone: hospitalTimezone,
     day: 'numeric',
     month: 'short',
@@ -24,7 +25,7 @@ export function dateLabel(value) {
   }).format(new Date(value));
 }
 export function timeLabel(value) {
-  return new Intl.DateTimeFormat('en-GB', {
+  return new Intl.DateTimeFormat(getLanguage() === 'en' ? 'en-GB' : getLocale(), {
     timeZone: hospitalTimezone,
     hour: '2-digit',
     minute: '2-digit',
@@ -40,7 +41,9 @@ export function localDate(value) {
   }).format(new Date(value));
 }
 export function money(minor) {
-  return new Intl.NumberFormat('en-LK', { style: 'currency', currency: 'LKR' }).format(minor / 100);
+  return new Intl.NumberFormat(getLocale(), { style: 'currency', currency: 'LKR' }).format(
+    minor / 100,
+  );
 }
 export function statusClass(value) {
   return value.toLowerCase().replaceAll(' ', '-');

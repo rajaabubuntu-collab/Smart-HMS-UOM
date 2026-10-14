@@ -1,6 +1,7 @@
 import dotenv from 'dotenv';
 import { fileURLToPath } from 'node:url';
 import { z } from 'zod';
+import { deliveryConfig } from './notifications/delivery-config.js';
 
 dotenv.config({ path: fileURLToPath(new URL('../../.env', import.meta.url)), quiet: true });
 
@@ -44,5 +45,6 @@ export function loadConfig(environment = process.env) {
     jwtSecret: env.JWT_SECRET,
     sessionHours: env.SESSION_HOURS,
     trustProxy: env.TRUST_PROXY === 'true',
+    delivery: deliveryConfig(environment),
   };
 }

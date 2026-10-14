@@ -5,3 +5,5 @@ package-lock.json
 test-results
 playwright-report
 .env
+# Generated from the email template source by scripts/verification/email-previews.mjs
+output/email-notifications

@@ -1,3 +1,4 @@
+import { t } from '../i18n/locale';
 import { useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { CalendarPlus, CheckCircle2, ArrowRight } from 'lucide-react';
@@ -22,7 +23,7 @@ export default function BookAppointment() {
       <>
         <Notice>{selectedDoctor.error}</Notice>
         <Link className="button primary" to="/book">
-          Browse doctors
+          {t('Browse doctors')}{' '}
         </Link>
       </>
     );
@@ -85,9 +86,9 @@ function BookingForm({ preset, presetDoctor, presetDepartment }) {
     return (
       <>
         <PageHeading
-          eyebrow="APPOINTMENT CONFIRMED"
-          title="You’re booked in."
-          description="Your appointment is saved and visible to the care team."
+          eyebrow={t('APPOINTMENT CONFIRMED')}
+          title={t('You’re booked in.')}
+          description={t('Your appointment is saved and visible to the care team.')}
         />
         <section className="card confirmation-card">
           <span className="confirmation-icon">
@@ -99,15 +100,17 @@ function BookingForm({ preset, presetDoctor, presetDepartment }) {
           <div className="confirmation-details">
             <strong>{dateLabel(created.startsAt)}</strong>
             <span>
-              {timeLabel(created.startsAt)} – {timeLabel(created.endsAt)} · Sri Lanka time
+              {timeLabel(created.startsAt)} – {timeLabel(created.endsAt)}{' '}
+              {t('· Sri Lanka time')}{' '}
             </span>
             <span>{created.patient.name}</span>
             <span>
-              {money(created.consultationFeeMinor)} consultation fee · Payment is not collected here
+              {money(created.consultationFeeMinor)}{' '}
+              {t('consultation fee · Payment is not collected here')}{' '}
             </span>
           </div>
           <Link className="button primary" to={`/appointments?selected=${created.id}`}>
-            View appointment <ArrowRight size={17} />
+            {t('View appointment')} <ArrowRight size={17} />
           </Link>
           <button
             type="button"
@@ -118,7 +121,7 @@ function BookingForm({ preset, presetDoctor, presetDepartment }) {
               setRevision((r) => r + 1);
             }}
           >
-            Book another
+            {t('Book another')}{' '}
           </button>
         </section>
       </>
@@ -126,27 +129,30 @@ function BookingForm({ preset, presetDoctor, presetDepartment }) {
   return (
     <>
       <PageHeading
-        eyebrow={user.role === 'patient' ? 'PATIENT WORKSPACE' : 'FRONT DESK'}
-        title="Book an appointment"
-        description="Find the right doctor and a time that works for you."
+        eyebrow={user.role === 'patient' ? t('PATIENT WORKSPACE') : t('FRONT DESK')}
+        title={t('Book an appointment')}
+        description={t('Find the right doctor and a time that works for you.')}
       />
       <div className="booking-layout">
         <div>
           <section className="card padded">
             {user.role !== 'patient' && (
               <>
-                <h2>1. Choose the patient</h2>
+                <h2>{t('1. Choose the patient')}</h2>
                 <PatientPicker selected={patient} onSelect={setPatient} />
                 <p className="small-text muted">
-                  New patient?{' '}
+                  {t('New patient?')}{' '}
                   <Link className="text-link" to="/reception/patients">
-                    Register a walk-in
+                    {t('Register a walk-in')}{' '}
                   </Link>
                 </p>
                 <div className="form-divider" />
               </>
             )}
-            <h2>{user.role === 'patient' ? '1' : '2'}. Choose your doctor</h2>
+            <h2>
+              {user.role === 'patient' ? '1' : '2'}
+              {t('. Choose your doctor')}
+            </h2>
             <DoctorPicker
               initialDepartment={presetDepartment}
               selected={doctor}
@@ -174,53 +180,54 @@ function BookingForm({ preset, presetDoctor, presetDepartment }) {
           <span className="large-icon">
             <CalendarPlus size={25} />
           </span>
-          <h2>Appointment summary</h2>
-          <p className="muted small-text">Review the details before confirming.</p>
+          <h2>{t('Appointment summary')}</h2>
+          <p className="muted small-text">{t('Review the details before confirming.')}</p>
           <dl className="detail-list">
             <div>
-              <dt>Patient</dt>
+              <dt>{t('Patient')}</dt>
               <dd>
-                {user.role === 'patient' ? user.name : patient?.user.name || 'Choose a patient'}
+                {user.role === 'patient' ? user.name : patient?.user.name || t('Choose a patient')}
               </dd>
             </div>
             <div>
-              <dt>Doctor</dt>
-              <dd>{doctor?.name || 'Choose a doctor'}</dd>
+              <dt>{t('Doctor')}</dt>
+              <dd>{doctor?.name || t('Choose a doctor')}</dd>
             </div>
             <div>
-              <dt>Department</dt>
+              <dt>{t('Department')}</dt>
               <dd>{doctor?.department.name || '—'}</dd>
             </div>
             <div>
-              <dt>Date</dt>
-              <dd>{slot ? dateLabel(slot.startsAt) : 'Choose a time'}</dd>
+              <dt>{t('Date')}</dt>
+              <dd>{slot ? dateLabel(slot.startsAt) : t('Choose a time')}</dd>
             </div>
             <div>
-              <dt>Time</dt>
+              <dt>{t('Time')}</dt>
               <dd>{slot ? timeLabel(slot.startsAt) : '—'}</dd>
             </div>
             <div>
-              <dt>Consultation fee</dt>
+              <dt>{t('Consultation fee')}</dt>
               <dd>{doctor ? money(doctor.consultationFeeMinor) : '—'}</dd>
             </div>
           </dl>
           <Notice>{error}</Notice>
           <form onSubmit={submit}>
             <Field
-              label="Reason for visit (optional)"
+              label={t('Reason for visit (optional)')}
               name="reason"
               as="textarea"
               rows={3}
               maxLength={500}
-              placeholder="Briefly tell the care team why you’re visiting."
+              placeholder={t('Briefly tell the care team why you’re visiting.')}
             />
             <Submit busy={busy} disabled={!slot || (user.role !== 'patient' && !patient)}>
-              {busy ? 'Confirming…' : 'Confirm appointment'}
+              {busy ? t('Confirming…') : t('Confirm appointment')}
             </Submit>
           </form>
           <p className="small-text muted">
-            A time slot is reserved only after confirmation. Fees shown are for consultation;
-            billing comes later.
+            {t(
+              'A time slot is reserved only after confirmation. Fees shown are for consultation; billing comes later.',
+            )}{' '}
           </p>
         </aside>
       </div>

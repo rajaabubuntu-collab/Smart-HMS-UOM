@@ -1,3 +1,4 @@
+import { t } from '../i18n/locale';
 import { useState } from 'react';
 import { CalendarDays, CalendarPlus } from 'lucide-react';
 import { useAuth } from '../auth';
@@ -42,23 +43,23 @@ export default function Schedules() {
   return (
     <>
       <PageHeading
-        eyebrow={user.role === 'admin' ? 'HOSPITAL ADMINISTRATION' : 'DOCTOR WORKSPACE'}
-        title="Doctor schedules"
-        description="Plan available sessions. All times are Sri Lanka time (UTC+05:30)."
+        eyebrow={user.role === 'admin' ? t('HOSPITAL ADMINISTRATION') : t('DOCTOR WORKSPACE')}
+        title={t('Doctor schedules')}
+        description={t('Plan available sessions. All times are Sri Lanka time (UTC+05:30).')}
       >
         {user.role === 'admin' && (
           <button className="button primary" onClick={() => setCreating(true)}>
-            <CalendarPlus size={18} /> Add a session
+            <CalendarPlus size={18} /> {t('Add a session')}{' '}
           </button>
         )}
       </PageHeading>
       <Notice success>{success}</Notice>
       <section className="card">
         <div className="card-header">
-          <h2>{date ? 'Sessions on selected date' : 'Upcoming sessions'}</h2>
+          <h2>{date ? t('Sessions on selected date') : t('Upcoming sessions')}</h2>
           <div className="inline-filter">
             <Field
-              label="Filter by date"
+              label={t('Filter by date')}
               name="scheduleDate"
               type="date"
               value={date}
@@ -75,7 +76,7 @@ export default function Schedules() {
                   setPage(1);
                 }}
               >
-                Clear
+                {t('Clear')}{' '}
               </button>
             )}
           </div>
@@ -101,15 +102,18 @@ export default function Schedules() {
                       {timeLabel(session.endsAt)}
                     </p>
                     <small>
-                      {session.slotMinutes}-minute slots · {session.capacity} total slots ·{' '}
-                      {session.booked} open appointments
+                      {session.slotMinutes}
+                      {t('-minute slots ·')} {session.capacity} {t('total slots ·')}{' '}
+                      {session.booked} {t('open appointments')}{' '}
                     </small>
                     {!session.isActive && (
-                      <p className="small-text muted">Closed: {session.closedReason}</p>
+                      <p className="small-text muted">
+                        {t('Closed:')} {session.closedReason}
+                      </p>
                     )}
                   </div>
                   <span className={`status-pill ${session.isActive ? 'scheduled' : 'cancelled'}`}>
-                    {session.isActive ? 'Open' : 'Closed'}
+                    {session.isActive ? t('Open') : t('Closed')}
                   </span>
                   {user.role === 'admin' && session.isActive && (
                     <button
@@ -119,7 +123,7 @@ export default function Schedules() {
                         setError('');
                       }}
                     >
-                      Close session
+                      {t('Close session')}{' '}
                     </button>
                   )}
                 </article>
@@ -128,11 +132,11 @@ export default function Schedules() {
             {!resource.data.items.length && (
               <div className="empty-state">
                 <CalendarDays size={30} />
-                <h3>No sessions yet</h3>
+                <h3>{t('No sessions yet')}</h3>
                 <p>
                   {user.role === 'admin'
-                    ? 'Add a dated session to make appointment slots available.'
-                    : 'Your administrator will publish sessions here.'}
+                    ? t('Add a dated session to make appointment slots available.')
+                    : t('Your administrator will publish sessions here.')}
                 </p>
               </div>
             )}
@@ -154,27 +158,30 @@ export default function Schedules() {
       )}{' '}
       {closing && (
         <Modal
-          title="Close this session?"
+          title={t('Close this session?')}
           onClose={() => {
             if (!busy) setClosing(null);
           }}
         >
           <p className="muted">
-            {closing.doctorName} · {dateLabel(closing.startsAt)} at {timeLabel(closing.startsAt)}
+            {closing.doctorName} · {dateLabel(closing.startsAt)} {t('at')}{' '}
+            {timeLabel(closing.startsAt)}
           </p>
           <p className="small-text muted">
-            This makes the session unavailable. Move or cancel any open appointments first.
+            {t(
+              'This makes the session unavailable. Move or cancel any open appointments first.',
+            )}{' '}
           </p>
           <Notice>{error}</Notice>
           <form onSubmit={close}>
             <Field
-              label="Reason for closure"
+              label={t('Reason for closure')}
               name="reason"
               as="textarea"
               required
               maxLength={300}
             />
-            <Submit busy={busy}>Confirm session closure</Submit>
+            <Submit busy={busy}>{t('Confirm session closure')}</Submit>
           </form>
         </Modal>
       )}
@@ -204,7 +211,7 @@ function CreateSession({ onClose, onCreated }) {
   }
   return (
     <Modal
-      title="Publish a doctor session"
+      title={t('Publish a doctor session')}
       wide
       onClose={() => {
         if (!busy) onClose();
@@ -216,7 +223,7 @@ function CreateSession({ onClose, onCreated }) {
       <form onSubmit={submit}>
         <div className="form-grid">
           <Field
-            label="Session date"
+            label={t('Session date')}
             name="date"
             type="date"
             min={today()}
@@ -225,23 +232,35 @@ function CreateSession({ onClose, onCreated }) {
             required
             error={error?.fields?.date}
           />
-          <Field label="Slot duration (minutes)" name="slotMinutes" as="select" defaultValue="15">
-            <option value="5">5 minutes</option>
-            <option value="10">10 minutes</option>
-            <option value="15">15 minutes</option>
-            <option value="20">20 minutes</option>
-            <option value="30">30 minutes</option>
-            <option value="60">60 minutes</option>
+          <Field
+            label={t('Slot duration (minutes)')}
+            name="slotMinutes"
+            as="select"
+            defaultValue="15"
+          >
+            <option value="5">{t('5 minutes')}</option>
+            <option value="10">{t('10 minutes')}</option>
+            <option value="15">{t('15 minutes')}</option>
+            <option value="20">{t('20 minutes')}</option>
+            <option value="30">{t('30 minutes')}</option>
+            <option value="60">{t('60 minutes')}</option>
           </Field>
-          <Field label="Start time" name="startTime" type="time" defaultValue="09:00" required />
-          <Field label="End time" name="endTime" type="time" defaultValue="12:00" required />
+          <Field
+            label={t('Start time')}
+            name="startTime"
+            type="time"
+            defaultValue="09:00"
+            required
+          />
+          <Field label={t('End time')} name="endTime" type="time" defaultValue="12:00" required />
         </div>
         <p className="small-text muted">
-          Sri Lanka time. Sessions must divide evenly into slots and cannot overlap. Dates can be up
-          to 180 days ahead.
+          {t(
+            'Sri Lanka time. Sessions must divide evenly into slots and cannot overlap. Dates can be up to 180 days ahead.',
+          )}{' '}
         </p>
         <Submit busy={busy} disabled={!doctor}>
-          Publish session
+          {t('Publish session')}{' '}
         </Submit>
       </form>
     </Modal>

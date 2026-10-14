@@ -1,3 +1,4 @@
+import { t } from '../i18n/locale';
 import { useEffect, useState } from 'react';
 import { Search, Stethoscope, CalendarDays, Check } from 'lucide-react';
 import { api } from '../api';
@@ -43,7 +44,7 @@ export function DoctorPicker({ onSelect, selected, initialDepartment = '' }) {
     <div className="doctor-picker">
       <div className="booking-filters">
         <Field
-          label="Department"
+          label={t('Department')}
           name="browseDepartment"
           as="select"
           value={department}
@@ -53,7 +54,7 @@ export function DoctorPicker({ onSelect, selected, initialDepartment = '' }) {
             onSelect(null);
           }}
         >
-          <option value="">All departments</option>
+          <option value="">{t('All departments')}</option>
           {departments.map((d) => (
             <option key={d._id} value={d._id}>
               {d.name}
@@ -70,21 +71,21 @@ export function DoctorPicker({ onSelect, selected, initialDepartment = '' }) {
           }}
         >
           <Field
-            label="Find a doctor"
+            label={t('Find a doctor')}
             name="doctorSearch"
             value={search}
             onChange={(event) => setSearch(event.target.value)}
-            placeholder="Name or specialisation"
+            placeholder={t('Name or specialisation')}
             maxLength={80}
           />
-          <button className="button subtle" aria-label="Search doctors">
+          <button className="button subtle" aria-label={t('Search doctors')}>
             <Search size={18} />
           </button>
         </form>
       </div>
       <Notice>{error || resource.error}</Notice>
       {resource.pending ? (
-        <Loading text="Finding your care team…" />
+        <Loading text={t('Finding your care team…')} />
       ) : (
         resource.data && (
           <>
@@ -106,7 +107,7 @@ export function DoctorPicker({ onSelect, selected, initialDepartment = '' }) {
                       {doctor.specialization} · {doctor.department.name}
                     </small>
                     <span className="doctor-price">
-                      {money(doctor.consultationFeeMinor)} <span>consultation</span>
+                      {money(doctor.consultationFeeMinor)} <span>{t('consultation')}</span>
                     </span>
                   </span>
                   {selected?.id === doctor.id && <Check size={18} />}
@@ -116,8 +117,8 @@ export function DoctorPicker({ onSelect, selected, initialDepartment = '' }) {
             {!resource.data.items.length && (
               <div className="empty-state">
                 <Stethoscope size={28} />
-                <h3>No matching doctors</h3>
-                <p>Try another department or search term.</p>
+                <h3>{t('No matching doctors')}</h3>
+                <p>{t('Try another department or search term.')}</p>
               </div>
             )}
             <Pager
@@ -143,11 +144,11 @@ export function SlotPicker({ doctor, date, onDate, selected, onSelect, revision 
     <div className="slot-picker">
       <div className="slot-heading">
         <div>
-          <h3>Choose an available time</h3>
-          <p className="small-text muted">All times are Sri Lanka time (UTC+05:30).</p>
+          <h3>{t('Choose an available time')}</h3>
+          <p className="small-text muted">{t('All times are Sri Lanka time (UTC+05:30).')}</p>
         </div>
         <Field
-          label="Appointment date"
+          label={t('Appointment date')}
           name="appointmentDate"
           type="date"
           min={today()}
@@ -164,7 +165,7 @@ export function SlotPicker({ doctor, date, onDate, selected, onSelect, revision 
       </div>
       <Notice>{resource.error}</Notice>
       {resource.pending ? (
-        <Loading text="Checking availability…" />
+        <Loading text={t('Checking availability…')} />
       ) : (
         resource.data && (
           <>
@@ -179,21 +180,25 @@ export function SlotPicker({ doctor, date, onDate, selected, onSelect, revision 
                     onClick={() => onSelect(slot)}
                   >
                     {timeLabel(slot.startsAt)}
-                    <small>to {timeLabel(slot.endsAt)}</small>
+                    <small>
+                      {t('to')} {timeLabel(slot.endsAt)}
+                    </small>
                   </button>
                 ))}
               </div>
             ) : (
               <div className="empty-state compact">
                 <CalendarDays size={27} />
-                <h3>No available slots on this date</h3>
+                <h3>{t('No available slots on this date')}</h3>
                 <p>
-                  Choose another date or doctor. Reception can help you find a suitable appointment.
+                  {t(
+                    'Choose another date or doctor. Reception can help you find a suitable appointment.',
+                  )}{' '}
                 </p>
               </div>
             )}
             <p className="small-text muted">
-              Times remain available until someone confirms a booking.
+              {t('Times remain available until someone confirms a booking.')}{' '}
             </p>
           </>
         )
@@ -220,16 +225,16 @@ export function PatientPicker({ selected, onSelect }) {
         }}
       >
         <Field
-          label="Find a patient"
+          label={t('Find a patient')}
           name="patientSearch"
           value={search}
           onChange={(event) => setSearch(event.target.value)}
           minLength={2}
           maxLength={100}
           required
-          placeholder="Name, email or phone"
+          placeholder={t('Name, email or phone')}
         />
-        <button className="button subtle" aria-label="Search patients">
+        <button className="button subtle" aria-label={t('Search patients')}>
           <Search size={18} />
         </button>
       </form>
@@ -239,11 +244,11 @@ export function PatientPicker({ selected, onSelect }) {
           <div>
             <strong>{selected.user.name}</strong>
             <small>
-              {selected.user.email} · Born {selected.dateOfBirth}
+              {selected.user.email} {t('· Born')} {selected.dateOfBirth}
             </small>
           </div>
           <button type="button" className="button subtle small" onClick={() => onSelect(null)}>
-            Change
+            {t('Change')}{' '}
           </button>
         </div>
       )}
@@ -264,17 +269,17 @@ export function PatientPicker({ selected, onSelect }) {
                   <span>
                     <strong>{patient.user.name}</strong>
                     <small>
-                      {patient.user.email} · {patient.user.phone || 'No phone'} · Born{' '}
+                      {patient.user.email} · {patient.user.phone || t('No phone')} {t('· Born')}{' '}
                       {patient.dateOfBirth}
                     </small>
                   </span>
-                  <span className="text-link">Select</span>
+                  <span className="text-link">{t('Select')}</span>
                 </button>
               ))}
             </div>
             {!resource.data.items.length && (
               <p className="muted small-text">
-                No matching patients. Register a walk-in patient first if they are new.
+                {t('No matching patients. Register a walk-in patient first if they are new.')}{' '}
               </p>
             )}
             <Pager {...resource.data} onChange={setPage} />

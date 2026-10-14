@@ -5,7 +5,9 @@ Description=Smart HMS local development server
 [Service]
 Type=simple
 WorkingDirectory=/ABSOLUTE/PROJECT/PATH
+ExecStartPre=/usr/bin/npm run db:up
 ExecStart=/usr/bin/npm run dev
+TimeoutStartSec=300
 KillMode=control-group
 TimeoutStopSec=20
 Restart=on-failure

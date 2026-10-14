@@ -1,12 +1,14 @@
+import { t } from '../i18n/locale';
 import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { api } from '../api';
 import { Field, Loading, Notice, PageHeading, Pager, useResource } from '../components/ui';
-import { dateLabel, timeLabel } from '../scheduling';
+import { dateLabel, timeLabel, today } from '../scheduling';
 
 export function DoctorQueue() {
   const [revision, refresh] = useState(0);
-  const { data, error, pending } = useResource('/clinical/queue', revision);
+  const [page, setPage] = useState(1);
+  const { data, error, pending } = useResource(`/clinical/queue?page=${page}`, revision, true);
   useEffect(() => {
     const timer = setInterval(() => {
       if (!document.hidden) refresh((v) => v + 1);
@@ -16,12 +18,14 @@ export function DoctorQueue() {
   return (
     <>
       <PageHeading
-        eyebrow="DOCTOR WORKSPACE"
-        title="Consultation queue"
-        description="Waiting order follows check-in time. Unfinished visits remain here across days."
+        eyebrow={t('DOCTOR WORKSPACE')}
+        title={t('Consultation queue')}
+        description={t(
+          'Waiting order follows check-in time. Unfinished visits remain here across days.',
+        )}
       >
         <button className="button subtle" onClick={() => refresh((v) => v + 1)}>
-          Refresh queue
+          {t('Refresh queue')}{' '}
         </button>
       </PageHeading>
       <Notice>{error}</Notice>
@@ -31,36 +35,40 @@ export function DoctorQueue() {
           <div className="clinical-stats">
             {Object.entries(data.counts).map(([label, value]) => (
               <div className="card padded" key={label}>
-                <span>Today · {label}</span>
+                <span>
+                  {t('Today ·')} {t(label)}
+                </span>
                 <strong>{value}</strong>
               </div>
             ))}
           </div>
           <section className="card padded">
-            <h2>Ready for care</h2>
+            <h2>{t('Ready for care')}</h2>
             <p className="muted">
-              Refreshes every 15 seconds.{' '}
-              <Link to="/appointments">View scheduled appointments</Link>
+              {t('Refreshes every 15 seconds.')}{' '}
+              <Link to="/appointments">{t('View scheduled appointments')}</Link>
             </p>
-            {!data.queue.length && <p>No patients are waiting.</p>}
+            {!data.queue.length && <p>{t('No patients are waiting.')}</p>}
             {data.queue.map((a, i) => (
               <div className="clinical-queue-row" key={a.id}>
-                <span className="avatar">{i + 1}</span>
+                <span className="avatar">{(data.page - 1) * data.limit + i + 1}</span>
                 <div>
                   <strong>{a.name}</strong>
                   <p>
                     {a.reference} · {dateLabel(a.startsAt)} · {timeLabel(a.startsAt)}
                   </p>
-                  <span>{a.status}</span>
+                  <span>{t(a.status)}</span>
                 </div>
                 <Link className="button primary" to={`/clinical/${a.id}`}>
-                  {a.status === 'In Consultation' ? 'Resume consultation' : 'Open patient'}
+                  {a.status === 'In Consultation' ? t('Resume consultation') : t('Open patient')}
                 </Link>
               </div>
             ))}
+            <Pager {...data} onChange={setPage} />
           </section>
         </>
       )}
+      <DoctorTimeline />
     </>
   );
 }
@@ -76,7 +84,9 @@ function MedicationList({ medications, noMedicationReason }) {
           ))}
         </ul>
       ) : (
-        <p>No medication prescribed: {noMedicationReason}</p>
+        <p>
+          {t('No medication prescribed:')} {noMedicationReason}
+        </p>
       )}
     </>
   );
@@ -89,16 +99,18 @@ export function MedicalHistory({ appointment }) {
   return (
     <section>
       <PageHeading
-        eyebrow="HEALTH RECORDS"
-        title={appointment ? 'Previous consultations' : 'My medical records'}
-        description="Completed visits and prescription history. Reported medication lists describe what was recorded at that visit; they are not a live medication list."
+        eyebrow={t('HEALTH RECORDS')}
+        title={appointment ? t('Previous consultations') : t('My medical records')}
+        description={t(
+          'Completed visits and prescription history. Reported medication lists describe what was recorded at that visit; they are not a live medication list.',
+        )}
       />
       <Notice>{error}</Notice>
       {pending && <Loading />}
       {data && (
         <>
           {!data.records.length && (
-            <div className="card padded">No completed consultations yet.</div>
+            <div className="card padded">{t('No completed consultations yet.')}</div>
           )}
           {data.records.map((r) => (
             <article className="card padded clinical-record" key={r._id}>
@@ -106,22 +118,25 @@ export function MedicalHistory({ appointment }) {
               <p className="muted">
                 {r.appointment.doctorName} · {dateLabel(r.completedAt)}
               </p>
-              <h3>Diagnosis</h3>
+              <h3>{t('Diagnosis')}</h3>
               <p className="clinical-text">{r.diagnosis}</p>
-              <h3>Consultation notes</h3>
+              <h3>{t('Consultation notes')}</h3>
               <p className="clinical-text">{r.notes}</p>
-              <h3>Treatment plan</h3>
-              <p className="clinical-text">{r.treatment || 'None recorded'}</p>
-              <h3>Reported medications at this visit</h3>
-              <p className="clinical-text">{r.currentMedications || 'None recorded'}</p>
-              <h3>Latest prescription</h3>
+              <h3>{t('Treatment plan')}</h3>
+              <p className="clinical-text">{r.treatment || t('None recorded')}</p>
+              <h3>{t('Reported medications at this visit')}</h3>
+              <p className="clinical-text">{r.currentMedications || t('None recorded')}</p>
+              <h3>{t('Latest prescription')}</h3>
               <MedicationList {...r} />
               <details>
-                <summary>Prescription versions ({r.prescriptions.length})</summary>
+                <summary>
+                  {t('Prescription versions (')}
+                  {r.prescriptions.length})
+                </summary>
                 {r.prescriptions.map((p, i) => (
                   <div className="prescription-version" key={i}>
                     <h4>
-                      Version {i + 1} · {dateLabel(p.at)} · {timeLabel(p.at)}
+                      {t('Version')} {i + 1} · {dateLabel(p.at)} · {timeLabel(p.at)}
                     </h4>
                     <p>{p.reason}</p>
                     <MedicationList {...p} />
@@ -221,41 +236,47 @@ function ConsultationEditor({ data, reload }) {
         </p>
         <div className="detail-list">
           <p>
-            Birth date: {patient.dateOfBirth} · Gender: {patient.gender}
+            {t('Birth date:')} {patient.dateOfBirth} {t('· Gender:')} {patient.gender}
           </p>
-          <p>Blood group: {patient.bloodType || 'Not recorded'}</p>
           <p>
-            Contact: {patient.user.phone || 'Not recorded'} · {patient.user.email}
+            {t('Blood group:')} {patient.bloodType || t('Not recorded')}
           </p>
-          <p>Address: {patient.address || 'Not recorded'}</p>
           <p>
-            Emergency contact: {patient.emergencyContact?.name || 'Not recorded'}{' '}
+            {t('Contact:')} {patient.user.phone || t('Not recorded')} · {patient.user.email}
+          </p>
+          <p>
+            {t('Address:')} {patient.address || t('Not recorded')}
+          </p>
+          <p>
+            {t('Emergency contact:')} {patient.emergencyContact?.name || t('Not recorded')}{' '}
             {patient.emergencyContact?.phone}
           </p>
-          <p>Reason for visit: {appointment.reason || 'Not recorded'}</p>
+          <p>
+            {t('Reason for visit:')} {appointment.reason || t('Not recorded')}
+          </p>
         </div>
         <div className="allergy-note">
-          <strong>Reported allergies</strong>
+          <strong>{t('Reported allergies')}</strong>
           <p>
             {patient.allergies.length
               ? patient.allergies.join(', ')
-              : 'No allergies recorded. This does not confirm there are no allergies.'}
+              : t('No allergies recorded. This does not confirm there are no allergies.')}
           </p>
         </div>
         <Notice>{error}</Notice>
         <Notice success>{message}</Notice>
         {!record ? (
           <>
-            <p>Review the patient’s history below before starting.</p>
+            <p>{t('Review the patient’s history below before starting.')}</p>
             <button
               className="button primary"
               disabled={busy || appointment.status !== 'Waiting'}
               onClick={() => mutate('start')}
             >
-              Start consultation
+              {t('Start consultation')}{' '}
             </button>
             {appointment.status === 'Scheduled' && (
-              <p>Reception must check this patient in first.</p>
+              <p>{t('Reception must check this patient in first.')}</p>
             )}
           </>
         ) : (
@@ -266,7 +287,7 @@ function ConsultationEditor({ data, reload }) {
             }}
           >
             <fieldset disabled={busy} className="clinical-fieldset">
-              <h3>{completed ? 'Completed consultation' : 'Consultation draft'}</h3>
+              <h3>{completed ? t('Completed consultation') : t('Consultation draft')}</h3>
               {['notes', 'diagnosis', 'treatment', 'currentMedications'].map((key, i) => (
                 <Field
                   key={key}
@@ -287,20 +308,23 @@ function ConsultationEditor({ data, reload }) {
                   onChange={(e) => change(key, e.target.value)}
                 />
               ))}
-              <h3>{completed ? 'Revise prescription' : 'Prescription'}</h3>
+              <h3>{completed ? t('Revise prescription') : t('Prescription')}</h3>
               <p className="muted">
-                Enter clinician-selected medication instructions. No automated allergy or
-                interaction checking is provided.
+                {t(
+                  'Enter clinician-selected medication instructions. No automated allergy or interaction checking is provided.',
+                )}{' '}
               </p>
               {form.medications.map((m, i) => (
                 <fieldset className="medication-row" key={i}>
-                  <legend>Medication {i + 1}</legend>
+                  <legend>
+                    {t('Medication')} {i + 1}
+                  </legend>
                   {['name', 'dosage', 'frequency', 'duration'].map((key) => (
                     <Field
                       key={key}
                       name={`med-${i}-${key}`}
                       label={
-                        key === 'name' ? 'Medication name' : key[0].toUpperCase() + key.slice(1)
+                        key === 'name' ? t('Medication name') : key[0].toUpperCase() + key.slice(1)
                       }
                       required
                       maxLength={key === 'name' ? 120 : 100}
@@ -325,7 +349,7 @@ function ConsultationEditor({ data, reload }) {
                       )
                     }
                   >
-                    Remove medication {i + 1}
+                    {t('Remove medication')} {i + 1}
                   </button>
                 </fieldset>
               ))}
@@ -335,12 +359,12 @@ function ConsultationEditor({ data, reload }) {
                 disabled={form.medications.length >= 20}
                 onClick={() => change('medications', [...form.medications, blankMedication()])}
               >
-                Add medication
+                {t('Add medication')}{' '}
               </button>
               {!form.medications.length && (
                 <Field
                   name="noMedicationReason"
-                  label="Reason for no medication"
+                  label={t('Reason for no medication')}
                   maxLength={500}
                   value={form.noMedicationReason}
                   onChange={(e) => change('noMedicationReason', e.target.value)}
@@ -352,13 +376,13 @@ function ConsultationEditor({ data, reload }) {
                   className="button subtle"
                   onClick={() => change('noMedicationReason', '')}
                 >
-                  Clear previous no-medication reason
+                  {t('Clear previous no-medication reason')}{' '}
                 </button>
               )}
               {completed && (
                 <Field
                   name="revisionReason"
-                  label="Reason for prescription change"
+                  label={t('Reason for prescription change')}
                   required
                   maxLength={500}
                   value={reason}
@@ -374,14 +398,16 @@ function ConsultationEditor({ data, reload }) {
                   checked={reviewed}
                   onChange={(e) => setReviewed(e.target.checked)}
                 />{' '}
-                I have reviewed the reported allergies with the patient.
+                {t('I have reviewed the reported allergies with the patient.')}{' '}
               </label>
               <p className="muted">
-                {dirty ? 'Unsaved changes. Save before leaving this page.' : 'No unsaved changes.'}
+                {dirty
+                  ? t('Unsaved changes. Save before leaving this page.')
+                  : t('No unsaved changes.')}
               </p>
               <div className="clinical-actions">
                 <button className="button primary" disabled={!reviewed}>
-                  {completed ? 'Save prescription revision' : 'Save draft'}
+                  {completed ? t('Save prescription revision') : t('Save draft')}
                 </button>
                 {!completed && (
                   <button
@@ -390,29 +416,30 @@ function ConsultationEditor({ data, reload }) {
                     disabled={!reviewed}
                     onClick={() => setConfirmComplete(true)}
                   >
-                    Complete visit
+                    {t('Complete visit')}{' '}
                   </button>
                 )}
               </div>
               {confirmComplete && (
                 <div className="allergy-note">
                   <p>
-                    Completing publishes this record to the patient and locks the consultation
-                    notes. Prescription changes remain possible with a reason.
+                    {t(
+                      'Completing publishes this record to the patient and locks the consultation notes. Prescription changes remain possible with a reason.',
+                    )}{' '}
                   </p>
                   <button
                     type="button"
                     className="button primary"
                     onClick={() => mutate('complete')}
                   >
-                    Confirm completion
+                    {t('Confirm completion')}{' '}
                   </button>
                   <button
                     type="button"
                     className="button subtle"
                     onClick={() => setConfirmComplete(false)}
                   >
-                    Keep editing
+                    {t('Keep editing')}{' '}
                   </button>
                 </div>
               )}
@@ -431,12 +458,12 @@ export function ConsultationPage() {
   return (
     <>
       <PageHeading
-        eyebrow="CLINICAL WORKSPACE"
-        title="Patient consultation"
-        description="Review the patient, record the visit, and manage prescriptions."
+        eyebrow={t('CLINICAL WORKSPACE')}
+        title={t('Patient consultation')}
+        description={t('Review the patient, record the visit, and manage prescriptions.')}
       >
         <Link className="button subtle" to="/queue">
-          Back to queue
+          {t('Back to queue')}{' '}
         </Link>
       </PageHeading>
       <Notice>{error}</Notice>
@@ -449,5 +476,61 @@ export function ConsultationPage() {
         />
       )}
     </>
+  );
+}
+
+function DoctorTimeline() {
+  const [date, setDate] = useState(today),
+    [page, setPage] = useState(1);
+  const { data, error, pending } = useResource(
+    `/clinical/timeline?${new URLSearchParams({ date, page })}`,
+    0,
+    true,
+  );
+  return (
+    <section className="card padded doctor-timeline">
+      <h2>{t('Daily timeline')}</h2>
+      <Field
+        label={t('Timeline date')}
+        name="timelineDate"
+        type="date"
+        value={date}
+        required
+        onChange={(e) => {
+          if (e.target.value) {
+            setDate(e.target.value);
+            setPage(1);
+          }
+        }}
+      />
+      <Notice>{error}</Notice>
+      {pending && <Loading />}
+      {data && (
+        <>
+          {!data.items.length && <p>{t('No appointments on this date.')}</p>}
+          <ol className="timeline-list">
+            {data.items.map((item) => (
+              <li key={item.id}>
+                <time dateTime={item.startsAt}>
+                  {timeLabel(item.startsAt)}–{timeLabel(item.endsAt)}
+                </time>
+                <div>
+                  <strong>{item.name}</strong>
+                  <p>
+                    {item.reference} · {t(item.status)}
+                  </p>
+                </div>
+                {item.status !== 'Cancelled' && (
+                  <Link className="button subtle small" to={`/clinical/${item.id}`}>
+                    {t('Open patient')}{' '}
+                  </Link>
+                )}
+              </li>
+            ))}
+          </ol>
+          <Pager {...data} onChange={setPage} />
+        </>
+      )}
+    </section>
   );
 }

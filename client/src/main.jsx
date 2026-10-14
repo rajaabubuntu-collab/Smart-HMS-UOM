@@ -1,3 +1,11 @@
+import LanguageSwitcher from './components/LanguageSwitcher';
+import { useLanguage } from './i18n/locale';
+import { t } from './i18n/locale';
+import ReportPrint from './pages/ReportPrint';
+import PatientAccounts from './pages/PatientAccounts';
+import PublicDirectory from './pages/PublicDirectory';
+import Recovery from './pages/Recovery';
+import HospitalSettings from './pages/HospitalSettings';
 import Reports from './pages/Reports';
 import AuditLog from './pages/AuditLog';
 import { PatientFeedback, AdminFeedback } from './pages/Feedback';
@@ -16,6 +24,7 @@ import {
   useLocation,
 } from 'react-router-dom';
 import PublicHome from './pages/PublicHome';
+import Delivery from './pages/Delivery';
 import { DisplayProvider } from './components/DisplayPreference';
 import { AuthProvider, useAuth } from './auth';
 import { Loading, Notice } from './components/ui';
@@ -36,24 +45,32 @@ import './glass.css';
 
 function Protected({ roles }) {
   const { user } = useAuth();
-  if (!user) return <Navigate to="/login" replace />;
+  const location = useLocation();
+  if (!user)
+    return (
+      <Navigate to="/login" state={{ returnTo: location.pathname + location.search }} replace />
+    );
   if (roles && !roles.includes(user.role))
     return (
       <div className="card padded">
-        <h1>Access restricted</h1>
-        <p>This page is not part of your workspace.</p>
+        <h1>{t('Access restricted')}</h1>
+        <p>{t('This page is not part of your workspace.')}</p>
         <Link className="button primary" to="/dashboard">
-          Back to overview
+          {t('Back to overview')}{' '}
         </Link>
       </div>
     );
   return <Outlet />;
 }
 function App() {
+  useLanguage();
   const { loading, error, refresh } = useAuth();
   const { pathname } = useLocation();
   // Public information remains usable while session lookup is loading or unavailable.
   if (pathname === '/') return <PublicHome />;
+  if (pathname === '/doctors') return <PublicDirectory />;
+  if (pathname === '/forgot-password') return <Recovery key="forgot" />;
+  if (pathname === '/reset-password') return <Recovery key="reset" reset />;
   if (loading)
     return (
       <div className="full-state">
@@ -64,10 +81,10 @@ function App() {
     return (
       <div className="full-state">
         <div className="card padded">
-          <h1>Let’s reconnect.</h1>
+          <h1>{t('Let’s reconnect.')}</h1>
           <Notice>{error}</Notice>
           <button className="button primary" onClick={refresh}>
-            Try again
+            {t('Try again')}{' '}
           </button>
         </div>
       </div>
@@ -76,10 +93,16 @@ function App() {
     <Routes>
       <Route path="/login" element={<AuthPage key="login" />} />
       <Route path="/register" element={<AuthPage key="register" register />} />
+      <Route element={<Protected roles={['admin']} />}>
+        <Route path="/admin/reports/:type/print" element={<ReportPrint />} />
+      </Route>
       <Route element={<Protected />}>
         <Route element={<Layout />}>
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/notifications" element={<Notifications />} />
+          <Route element={<Protected roles={['patient', 'admin']} />}>
+            <Route path="/messages" element={<Delivery />} />
+          </Route>
           <Route path="/appointments" element={<Appointments />} />
           <Route element={<Protected roles={['doctor']} />}>
             <Route path="/queue" element={<DoctorQueue />} />
@@ -103,6 +126,8 @@ function App() {
             <Route path="/records" element={<MedicalHistory />} />
           </Route>
           <Route element={<Protected roles={['admin']} />}>
+            <Route path="/admin/patients" element={<PatientAccounts />} />
+            <Route path="/admin/settings" element={<HospitalSettings />} />
             <Route path="/admin/reports" element={<Reports />} />
             <Route path="/admin/audit" element={<AuditLog />} />
             <Route path="/admin/feedback" element={<AdminFeedback />} />
@@ -133,6 +158,7 @@ ReactDOM.createRoot(document.getElementById('root')).render(
     <BrowserRouter>
       <DisplayProvider>
         <AuthProvider>
+          <LanguageSwitcher />
           <App />
         </AuthProvider>
       </DisplayProvider>

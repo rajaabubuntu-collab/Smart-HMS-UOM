@@ -7,7 +7,10 @@ export default defineConfig({
     host: '127.0.0.1',
     port: Number(process.env.WEB_PORT || 5173),
     strictPort: true,
-    proxy: { '/api': process.env.API_PROXY_TARGET || 'http://127.0.0.1:4000' },
+    proxy: {
+      '/api': process.env.API_PROXY_TARGET || 'http://127.0.0.1:4000',
+      '/socket.io': { target: process.env.API_PROXY_TARGET || 'http://127.0.0.1:4000', ws: true },
+    },
   },
   preview: { host: '127.0.0.1', port: 4173 },
 });

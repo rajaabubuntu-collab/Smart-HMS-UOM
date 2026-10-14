@@ -1,0 +1,31 @@
+digraph G {
+graph [rankdir=LR, bgcolor="transparent", pad="0.15", nodesep="0.13", ranksep="0.55", fontname="DejaVu Sans", fontsize=14];
+node [fontname="DejaVu Sans", fontsize=11, color="#506481", penwidth=1, style=filled, fillcolor="#edf4fc"];
+edge [color="#708096", penwidth=0.9, arrowhead=none];
+Admin [shape=box, style="rounded,filled", fillcolor="#ffffff", label="<<actor>>\nAdministrator"];
+subgraph cluster_system {
+label="Smart HMS: administration"; color="#617494"; style=rounded; margin=16;
+Staff [shape=ellipse, margin="0.13,0.07", label="Manage staff access\nand approved public profiles"];
+Patients [shape=ellipse, margin="0.13,0.07", label="Deactivate or reactivate\npatient accounts"];
+Departments [shape=ellipse, margin="0.13,0.07", label="Create, edit, publish\nor deactivate departments"];
+Schedule [shape=ellipse, margin="0.13,0.07", label="Manage appointments\nand doctor schedules"];
+Billing [shape=ellipse, margin="0.13,0.07", label="Review billing\nand reverse recorded payment"];
+Reports [shape=ellipse, margin="0.13,0.07", label="Generate reports\nand export CSV / print PDF"];
+Feedback [shape=ellipse, margin="0.13,0.07", label="Review private feedback"];
+Audit [shape=ellipse, margin="0.13,0.07", label="Review audit events\nand recent login IPs"];
+Hospital [shape=ellipse, margin="0.13,0.07", label="Draft, publish or withdraw\nhospital information"];
+Charts [shape=ellipse, margin="0.13,0.07", label="Explore role-scoped charts"];
+Delivery [shape=ellipse, margin="0.13,0.07", label="Monitor email / SMS\ndelivery history"];
+}
+Admin -> Staff;
+Admin -> Patients;
+Admin -> Departments;
+Admin -> Schedule;
+Admin -> Billing;
+Admin -> Reports;
+Admin -> Feedback;
+Admin -> Audit;
+Admin -> Hospital;
+Admin -> Charts;
+Admin -> Delivery;
+}

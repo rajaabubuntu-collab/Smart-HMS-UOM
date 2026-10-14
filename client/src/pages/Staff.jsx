@@ -1,3 +1,4 @@
+import { t } from '../i18n/locale';
 import { useEffect, useState } from 'react';
 import { UsersRound, Plus } from 'lucide-react';
 import { api } from '../api';
@@ -32,13 +33,32 @@ export default function Staff() {
         items = items.concat(data.items);
         total = data.total;
       } while (items.length < total);
-      setDepartments(items);
+      setDepartments(items.filter((d) => d.isActive));
     }
     load().catch((err) => {
       if (err.name !== 'AbortError') setDepartmentError(err.message);
     });
     return () => controller.abort();
   }, []);
+  async function publication(person) {
+    setError(null);
+    setBusy(true);
+    try {
+      await api(`/admin/doctors/${person.doctor._id}/publication`, {
+        method: 'PATCH',
+        body: {
+          isPublic: !person.doctor.isPublic,
+          expectedPublic: Boolean(person.doctor.isPublic),
+        },
+      });
+      setRevision((v) => v + 1);
+      setSuccess('Public directory updated.');
+    } catch (err) {
+      setError(err);
+    } finally {
+      setBusy(false);
+    }
+  }
   async function submit(event) {
     event.preventDefault();
     const form = event.currentTarget;
@@ -67,14 +87,14 @@ export default function Staff() {
   return (
     <>
       <PageHeading
-        eyebrow="HOSPITAL ADMINISTRATION"
-        title="Your care team"
-        description="Give your doctors and receptionists a connected workspace."
+        eyebrow={t('HOSPITAL ADMINISTRATION')}
+        title={t('Your care team')}
+        description={t('Give your doctors and receptionists a connected workspace.')}
       />
       <div className="staff-grid">
         <section className="card">
           <div className="card-header">
-            <h2>Staff directory</h2>
+            <h2>{t('Staff directory')}</h2>
             <span className="count-badge">{data?.total ?? '—'}</span>
           </div>
           {pending ? (
@@ -93,18 +113,29 @@ export default function Staff() {
                       <div className="staff-person">
                         <h3>{person.name}</h3>
                         <p>{person.email}</p>
-                        <small>{person.doctor?.department?.name || 'Front desk'}</small>
+                        <small>{person.doctor?.department?.name || t('Front desk')}</small>
                       </div>
                       <div className="staff-controls">
+                        {person.doctor && (
+                          <button
+                            className="button subtle small"
+                            disabled={busy}
+                            onClick={() => publication(person)}
+                          >
+                            {person.doctor.isPublic
+                              ? t('Unpublish profile')
+                              : t('Publish approved profile')}
+                          </button>
+                        )}
                         <span className={`role-badge ${person.isActive ? '' : 'neutral'}`}>
-                          {person.isActive ? person.role : 'Inactive'}
+                          {person.isActive ? person.role : t('Inactive')}
                         </span>
                         <button
                           type="button"
                           className="button subtle small"
                           onClick={() => setEditing(person)}
                         >
-                          Edit
+                          {t('Edit')}{' '}
                         </button>
                       </div>
                     </div>
@@ -112,8 +143,8 @@ export default function Staff() {
                 ) : (
                   <div className="empty-state">
                     <UsersRound size={32} />
-                    <h3>Bring your team together</h3>
-                    <p>Create the first staff account to get started.</p>
+                    <h3>{t('Bring your team together')}</h3>
+                    <p>{t('Create the first staff account to get started.')}</p>
                   </div>
                 )}
               </div>
@@ -123,50 +154,58 @@ export default function Staff() {
         </section>
         <form className="card padded staff-form" onSubmit={submit}>
           <div className="section-heading">
-            <h2>Add a team member</h2>
+            <h2>{t('Add a team member')}</h2>
             <Plus size={21} />
           </div>
-          <p className="muted small-text">Staff accounts are created here by an administrator.</p>
+          <p className="muted small-text">
+            {t('Staff accounts are created here by an administrator.')}
+          </p>
           <Notice>{error?.message || departmentError}</Notice>
           <Notice success>{success}</Notice>
           <Field
-            label="Role"
+            label={t('Role')}
             name="role"
             as="select"
             value={role}
             onChange={(event) => setRole(event.target.value)}
           >
-            <option value="doctor">Doctor</option>
-            <option value="receptionist">Receptionist</option>
+            <option value="doctor">{t('Doctor')}</option>
+            <option value="receptionist">{t('Receptionist')}</option>
           </Field>
           <Field
-            label="Full name"
+            label={t('Full name')}
             name="name"
             required
             maxLength={100}
-            placeholder="Full name"
+            placeholder={t('Full name')}
             error={e('name')}
           />
           <Field
-            label="Email address"
+            label={t('Email address')}
             name="email"
             type="email"
             required
             maxLength={254}
             autoComplete="off"
-            placeholder="name@hospital.lk"
+            placeholder={t('name@hospital.lk')}
             error={e('email')}
           />
           <div className="form-grid">
-            <Field label="Phone number" name="phone" type="tel" maxLength={25} error={e('phone')} />
             <Field
-              label="Initial password"
+              label={t('Phone number')}
+              name="phone"
+              type="tel"
+              maxLength={25}
+              error={e('phone')}
+            />
+            <Field
+              label={t('Initial password')}
               name="password"
               type="password"
               minLength={10}
               required
               autoComplete="new-password"
-              hint="At least 10 characters"
+              hint={t('At least 10 characters')}
               error={e('password')}
             />
           </div>
@@ -174,7 +213,7 @@ export default function Staff() {
             <>
               <div className="form-divider" />
               <Field
-                label="Department"
+                label={t('Department')}
                 name="department"
                 as="select"
                 defaultValue=""
@@ -182,7 +221,7 @@ export default function Staff() {
                 error={e('department')}
               >
                 <option value="" disabled>
-                  {departments.length ? 'Select a department' : 'Create a department first'}
+                  {departments.length ? t('Select a department') : t('Create a department first')}
                 </option>
                 {departments.map((d) => (
                   <option key={d._id} value={d._id}>
@@ -191,23 +230,23 @@ export default function Staff() {
                 ))}
               </Field>
               <Field
-                label="Specialisation"
+                label={t('Specialisation')}
                 name="specialization"
                 required
                 maxLength={100}
-                placeholder="e.g. General Medicine"
+                placeholder={t('e.g. General Medicine')}
                 error={e('specialization')}
               />
               <div className="form-grid">
                 <Field
-                  label="Qualifications"
+                  label={t('Qualifications')}
                   name="qualification"
                   maxLength={200}
-                  placeholder="e.g. MBBS"
+                  placeholder={t('e.g. MBBS')}
                   error={e('qualification')}
                 />
                 <Field
-                  label="Consultation fee (LKR)"
+                  label={t('Consultation fee (LKR)')}
                   name="fee"
                   type="number"
                   min="0"
@@ -221,11 +260,12 @@ export default function Staff() {
             </>
           )}
           <p className="small-text muted">
-            Share credentials privately with the intended staff member. Use sample accounts for this
-            prototype.
+            {t(
+              'Share credentials privately with the intended staff member. Use sample accounts for this prototype.',
+            )}{' '}
           </p>
           <Submit busy={busy}>
-            Create staff account <Plus size={16} />
+            {t('Create staff account')} <Plus size={16} />
           </Submit>
         </form>
       </div>
@@ -275,31 +315,32 @@ function StaffEditor({ person, departments, onClose, onSaved }) {
       }}
     >
       <p className="muted small-text">
-        {person.email} · {person.role}. Role and email cannot be changed here.
+        {person.email} · {person.role}
+        {t('. Role and email cannot be changed here.')}{' '}
       </p>
       <Notice>{error?.message}</Notice>
       <form onSubmit={submit}>
         <Field
-          label="Staff full name"
+          label={t('Staff full name')}
           name="name"
           defaultValue={person.name}
           required
           maxLength={100}
         />
-        <Field label="Staff phone" name="phone" defaultValue={person.phone} maxLength={25} />
+        <Field label={t('Staff phone')} name="phone" defaultValue={person.phone} maxLength={25} />
         <Field
-          label="Account status"
+          label={t('Account status')}
           name="isActive"
           as="select"
           defaultValue={String(person.isActive)}
         >
-          <option value="true">Active</option>
-          <option value="false">Inactive — revoke all sessions</option>
+          <option value="true">{t('Active')}</option>
+          <option value="false">{t('Inactive — revoke all sessions')}</option>
         </Field>
         {person.role === 'doctor' && (
           <>
             <Field
-              label="Staff department"
+              label={t('Staff department')}
               name="department"
               as="select"
               defaultValue={person.doctor.department._id}
@@ -312,20 +353,20 @@ function StaffEditor({ person, departments, onClose, onSaved }) {
               ))}
             </Field>
             <Field
-              label="Staff specialisation"
+              label={t('Staff specialisation')}
               name="specialization"
               defaultValue={person.doctor.specialization}
               required
               maxLength={100}
             />
             <Field
-              label="Staff qualifications"
+              label={t('Staff qualifications')}
               name="qualification"
               defaultValue={person.doctor.qualification}
               maxLength={200}
             />
             <Field
-              label="Staff consultation fee (LKR)"
+              label={t('Staff consultation fee (LKR)')}
               name="fee"
               type="number"
               min="0"
@@ -337,10 +378,11 @@ function StaffEditor({ person, departments, onClose, onSaved }) {
           </>
         )}
         <p className="small-text muted">
-          Before deactivating a doctor, move or cancel their open appointments. Past booking details
-          stay unchanged.
+          {t(
+            'Before deactivating a doctor, move or cancel their open appointments. Past booking details stay unchanged.',
+          )}{' '}
         </p>
-        <Submit busy={busy}>Save staff changes</Submit>
+        <Submit busy={busy}>{t('Save staff changes')}</Submit>
       </form>
     </Modal>
   );

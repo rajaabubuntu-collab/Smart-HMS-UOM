@@ -1,3 +1,4 @@
+import { lockDepartments } from '../settings/administration.js';
 import { Router } from 'express';
 import mongoose from 'mongoose';
 import bcrypt from 'bcryptjs';
@@ -443,6 +444,10 @@ export function schedulingRouter() {
       if (user.role === 'doctor') {
         const doctor = await Doctor.findOne({ user: id }).session(session);
         await lockDoctors([doctor._id], session);
+        await lockDepartments(
+          [doctor.department, ...(data.department ? [data.department] : [])],
+          session,
+        );
         if (
           !data.isActive &&
           (await Appointment.exists({ doctor: doctor._id, status: { $in: openStatuses } }).session(

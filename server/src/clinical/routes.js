@@ -1,4 +1,6 @@
+import { dateSchema } from '../scheduling/validation.js';
 import { appointmentNotice, notifyPatient } from '../notifications/service.js';
+import { appointmentEmailDetails } from '../notifications/email-content.js';
 import { Router } from 'express';
 import { generateBill } from '../billing/service.js';
 import mongoose from 'mongoose';
@@ -66,25 +68,31 @@ export function clinicalRouter() {
   router.get('/clinical/queue', allowRoles('doctor'), async (req, res) => {
     const doctor = await Doctor.findOne({ user: req.user._id });
     const { start, end } = dayBounds(hospitalDate());
-    const today = await Appointment.find({
-      doctor: doctor._id,
-      startsAt: { $gte: start, $lt: end },
-    })
-      .sort({ startsAt: 1 })
-      .lean();
-    const queue = await Appointment.find({
-      doctor: doctor._id,
-      status: { $in: ['Waiting', 'In Consultation'] },
-    })
-      .sort({ checkedInAt: 1, startsAt: 1 })
-      .populate({ path: 'patient', select: 'user', populate: { path: 'user', select: 'name' } })
-      .lean();
+    const { page, limit } = parse(pageSchema, req.query);
+    const filter = { doctor: doctor._id, status: { $in: ['Waiting', 'In Consultation'] } };
+    const [statuses, queue, total] = await Promise.all([
+      Appointment.aggregate([
+        { $match: { doctor: doctor._id, startsAt: { $gte: start, $lt: end } } },
+        { $group: { _id: '$status', count: { $sum: 1 } } },
+      ]),
+      Appointment.find(filter)
+        .sort({ checkedInAt: 1, startsAt: 1, _id: 1 })
+        .skip((page - 1) * limit)
+        .limit(limit)
+        .select('reference patient startsAt checkedInAt status')
+        .populate({ path: 'patient', select: 'user', populate: { path: 'user', select: 'name' } })
+        .lean(),
+      Appointment.countDocuments(filter),
+    ]);
+    const byStatus = Object.fromEntries(statuses.map((item) => [item._id, item.count]));
     const counts = {
-      total: today.length,
-      completed: today.filter((a) => a.status === 'Completed').length,
-      pending: today.filter((a) => ['Scheduled', 'Waiting', 'In Consultation'].includes(a.status))
-        .length,
-      cancelled: today.filter((a) => a.status === 'Cancelled').length,
+      total: statuses.reduce((sum, item) => sum + item.count, 0),
+      completed: byStatus.Completed || 0,
+      pending: ['Scheduled', 'Waiting', 'In Consultation'].reduce(
+        (sum, status) => sum + (byStatus[status] || 0),
+        0,
+      ),
+      cancelled: byStatus.Cancelled || 0,
     };
     res.json({
       queue: queue.map((a) => ({
@@ -96,6 +104,42 @@ export function clinicalRouter() {
         status: a.status,
       })),
       counts,
+      total,
+      page,
+      limit,
+    });
+  });
+  router.get('/clinical/timeline', allowRoles('doctor'), async (req, res) => {
+    const { date, page, limit } = parse(
+      pageSchema.extend({ date: dateSchema.default(hospitalDate) }).strict(),
+      req.query,
+    );
+    const doctor = await Doctor.findOne({ user: req.user._id });
+    const { start, end } = dayBounds(date);
+    const filter = { doctor: doctor._id, startsAt: { $gte: start, $lt: end } };
+    const [items, total] = await Promise.all([
+      Appointment.find(filter)
+        .select('reference patient startsAt endsAt status')
+        .sort({ startsAt: 1, _id: 1 })
+        .skip((page - 1) * limit)
+        .limit(limit)
+        .populate({ path: 'patient', select: 'user', populate: { path: 'user', select: 'name' } })
+        .lean(),
+      Appointment.countDocuments(filter),
+    ]);
+    res.json({
+      items: items.map((a) => ({
+        id: a._id,
+        name: a.patient?.user?.name || 'Patient',
+        reference: a.reference,
+        startsAt: a.startsAt,
+        endsAt: a.endsAt,
+        status: a.status,
+      })),
+      total,
+      page,
+      limit,
+      date,
     });
   });
   router.get('/clinical/appointments/:id', allowRoles('doctor'), async (req, res) => {
@@ -222,6 +266,7 @@ export function clinicalRouter() {
               title: 'Prescription updated',
               message: `Your prescription record for ${appointment.reference} has been updated. Review the latest version in Medical records.`,
               path: '/records',
+              email: appointmentEmailDetails(appointment, 'prescription_updated'),
             },
             session,
           );

@@ -1,3 +1,4 @@
+import { t } from '../i18n/locale';
 import { useEffect, useRef, useId } from 'react';
 import { X } from 'lucide-react';
 
@@ -21,7 +22,12 @@ export default function Modal({ title, onClose, children, wide = false }) {
     >
       <div className="modal-heading">
         <h2 id={id}>{title}</h2>
-        <button type="button" className="icon-button" aria-label="Close dialog" onClick={onClose}>
+        <button
+          type="button"
+          className="icon-button"
+          aria-label={t('Close dialog')}
+          onClick={onClose}
+        >
           <X size={20} />
         </button>
       </div>

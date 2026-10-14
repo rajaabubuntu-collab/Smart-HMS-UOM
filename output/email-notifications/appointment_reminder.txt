@@ -1,0 +1,31 @@
+SYNTHETIC PREVIEW — no email sent
+Subject: Smart HMS | Appointment reminder | HMS-DEMO-001
+
+Smart HMS
+
+Appointment reminder
+
+Hello Demo Patient,
+
+Your appointment is scheduled within the next 24 hours.
+
+Appointment reference: HMS-DEMO-001
+Appointment date & time: Tuesday, 20 October 2026 at 09:00 (Sri Lanka time)
+Doctor: Dr Demo Perera
+Department: General Medicine
+Consultation fee: LKR 2,500.00
+
+Check the date and time below. If you cannot attend, reschedule or cancel through the portal or contact reception.
+
+View appointment: http://localhost:5173/appointments?selected=aaaaaaaaaaaaaaaaaaaaaaaa
+
+This message records an update on Wednesday, 14 October 2026 at 09:30 (Sri Lanka time). The portal shows the latest status and balance.
+
+Smart HMS
+Colombo 09
+Reception: +94 115 279 429
+smarthms@gmail.com
+
+You received this email because email updates are enabled for your patient account.
+
+Manage email preferences: http://localhost:5173/messages

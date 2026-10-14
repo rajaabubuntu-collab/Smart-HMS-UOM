@@ -17,8 +17,14 @@ const userSchema = new Schema(
     },
     phone: { type: String, default: '', maxlength: 25 },
     passwordHash: { type: String, required: true, select: false },
+    securityRevision: { type: Number, default: 0, select: false },
+    recoveryRequestedAt: { type: Date, select: false },
     role: { type: String, enum: roles, required: true },
     isActive: { type: Boolean, default: true },
+    notificationPreferences: {
+      email: { type: Boolean, default: false },
+      sms: { type: Boolean, default: false },
+    },
   },
   { timestamps: true },
 );
@@ -57,6 +63,8 @@ const departmentSchema = new Schema(
     nameKey: { type: String, required: true, unique: true, select: false },
     description: { type: String, default: '', maxlength: 500 },
     isActive: { type: Boolean, default: true },
+    isPublic: { type: Boolean, default: false },
+    revision: { type: Number, default: 0 },
   },
   { timestamps: true },
 );
@@ -67,6 +75,7 @@ const doctorSchema = new Schema(
     department: reference('Department'),
     specialization: { type: String, required: true, maxlength: 100 },
     qualification: { type: String, default: '', maxlength: 200 },
+    isPublic: { type: Boolean, default: false },
     // Store LKR in minor units to avoid floating-point billing errors.
     consultationFeeMinor: { type: Number, min: 0, required: true, validate: Number.isSafeInteger },
     bookingRevision: { type: Number, default: 0, select: false },
@@ -91,6 +100,8 @@ const auditSchema = new Schema(
     action: { type: String, required: true },
     module: { type: String, required: true },
     target: { type: String, default: '' },
+    ipAddress: { type: String, select: false, maxlength: 45 },
+    reason: { type: String, maxlength: 300 },
   },
   { timestamps: { createdAt: true, updatedAt: false } },
 );
@@ -105,6 +116,21 @@ export const Doctor = model('Doctor', doctorSchema);
 export const Department = model('Department', departmentSchema);
 export const Session = model('Session', sessionSchema);
 export const AuditLog = model('AuditLog', auditSchema);
+export const PasswordReset = model(
+  'PasswordReset',
+  new Schema(
+    {
+      user: reference('User'),
+      tokenHash: { type: String, select: false, index: true },
+      sealedToken: { type: String, select: false },
+      destination: { type: String, select: false },
+      kind: { type: String, enum: ['reset', 'changed'], default: 'reset' },
+      status: { type: String, default: 'queued' },
+      expiresAt: { type: Date, required: true, index: { expires: 0 } },
+    },
+    { timestamps: true },
+  ),
+);
 
 const scheduleSchema = new Schema(
   {
@@ -330,6 +356,72 @@ notificationSchema.index({ recipient: 1, createdAt: -1, _id: -1 });
 notificationSchema.index({ recipient: 1, readAt: 1 });
 export const Notification = model('Notification', notificationSchema);
 
+const emailContentSchema = new Schema(
+  {
+    version: { type: Number, enum: [1], required: true },
+    kind: { type: String, required: true, maxlength: 60 },
+    subject: { type: String, required: true, maxlength: 300 },
+    title: { type: String, required: true, maxlength: 120 },
+    summary: { type: String, required: true, maxlength: 600 },
+    nextStep: { type: String, required: true, maxlength: 600 },
+    actionLabel: { type: String, required: true, maxlength: 100 },
+    tone: { type: String, enum: ['blue', 'green', 'amber'] },
+    path: { type: String, required: true, maxlength: 300 },
+    recipientName: { type: String, maxlength: 120 },
+    occurredAt: { type: Date, required: true },
+    hospital: {
+      name: { type: String, maxlength: 120 },
+      address: { type: String, maxlength: 400 },
+      phone: { type: String, maxlength: 30 },
+      email: { type: String, maxlength: 254 },
+    },
+    details: [
+      {
+        _id: false,
+        label: { type: String, maxlength: 100 },
+        value: { type: String, maxlength: 500 },
+      },
+    ],
+  },
+  { _id: false },
+);
+const deliverySchema = new Schema(
+  {
+    recipient: reference('User'),
+    eventKey: { type: String, required: true },
+    channel: { type: String, enum: ['email', 'sms'], required: true },
+    transport: { type: String, enum: ['local', 'smtp', 'twilio'], required: true },
+    destination: { type: String, required: true, select: false },
+    emailContent: { type: emailContentSchema, select: false },
+    status: {
+      type: String,
+      enum: [
+        'queued',
+        'processing',
+        'simulated',
+        'accepted',
+        'delivered',
+        'failed',
+        'skipped',
+        'unknown',
+      ],
+      default: 'queued',
+    },
+    attempts: { type: Number, default: 0 },
+    nextAttemptAt: { type: Date, default: Date.now },
+    startedAt: Date,
+    providerId: { type: String, select: false },
+    providerStatus: String,
+    lastError: String,
+    checkedAt: Date,
+  },
+  { timestamps: true },
+);
+deliverySchema.index({ recipient: 1, eventKey: 1, channel: 1 }, { unique: true });
+deliverySchema.index({ status: 1, nextAttemptAt: 1 });
+deliverySchema.index({ recipient: 1, createdAt: -1 });
+export const Delivery = model('Delivery', deliverySchema);
+
 const feedbackSchema = new Schema(
   {
     appointment: { ...reference('Appointment'), unique: true },
@@ -350,6 +442,38 @@ feedbackSchema.index({ createdAt: -1, _id: -1 });
 feedbackSchema.index({ rating: 1, createdAt: -1, _id: -1 });
 export const Feedback = model('Feedback', feedbackSchema);
 
+const hospitalDetailsSchema = new Schema(
+  {
+    name: String,
+    description: String,
+    address: String,
+    phone: String,
+    email: String,
+    visitNotes: String,
+    isDemo: Boolean,
+    hours: [
+      new Schema(
+        { day: String, closed: Boolean, allDay: Boolean, opens: String, closes: String },
+        { _id: false },
+      ),
+    ],
+  },
+  { _id: false },
+);
+export const HospitalSettings = model(
+  'HospitalSettings',
+  new Schema(
+    {
+      draft: { type: hospitalDetailsSchema, required: true },
+      published: { type: hospitalDetailsSchema, default: null },
+      version: { type: Number, default: 0 },
+      publishedAt: { type: Date, default: null },
+      updatedBy: reference('User'),
+    },
+    { timestamps: true },
+  ),
+);
+
 export async function connectDatabase(uri) {
   await mongoose.connect(uri, { serverSelectionTimeoutMS: 10000 });
   await Promise.all(
@@ -359,6 +483,7 @@ export async function connectDatabase(uri) {
       Doctor,
       Department,
       Session,
+      PasswordReset,
       AuditLog,
       DoctorSchedule,
       AppointmentSlot,
@@ -367,6 +492,8 @@ export async function connectDatabase(uri) {
       Bill,
       Payment,
       Notification,
+      Delivery,
+      HospitalSettings,
       Feedback,
     ].map((m) => m.init()),
   );
@@ -383,6 +510,18 @@ export function publicUser(user) {
   };
 }
 
-export async function audit(actor, action, module, target = '', session) {
-  await AuditLog.create([{ actor, action, module, target: String(target) }], { session });
+export async function audit(actor, action, module, target = '', session, metadata = {}) {
+  await AuditLog.create(
+    [
+      {
+        actor,
+        action,
+        module,
+        target: String(target),
+        ipAddress: metadata.ipAddress,
+        reason: metadata.reason,
+      },
+    ],
+    { session },
+  );
 }

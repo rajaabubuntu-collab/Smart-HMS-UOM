@@ -1,3 +1,4 @@
+import { csvReport } from './export.js';
 import { Router } from 'express';
 import mongoose from 'mongoose';
 import { z } from 'zod';
@@ -43,6 +44,49 @@ export function reportingRouter() {
   router.get('/admin/reports', (req, res) => {
     parse(z.object({}).strict(), req.query);
     res.json({ reports: Object.entries(reports).map(([id, report]) => ({ id, ...report })) });
+  });
+  router.get('/admin/reports/:type/export', async (req, res) => {
+    const type = parse(z.enum(Object.keys(reports)), req.params.type);
+    const query = parse(
+      range(
+        z.object({ from: date, to: date, format: z.enum(['csv', 'json']).default('csv') }).strict(),
+      ),
+      req.query,
+    );
+    const definition = reports[type];
+    if (definition.singleDay && query.from !== query.to)
+      throw httpError(400, 'Daily appointments requires the same start and end date.');
+    const generatedAt = new Date();
+    let result;
+    await mongoose.connection.transaction(
+      async (session) => {
+        result = await generateReport(
+          type,
+          { ...query, page: 1, limit: 5000 },
+          generatedAt,
+          session,
+        );
+        if (result.total > 5000)
+          throw httpError(400, 'Export is limited to 5,000 rows. Choose a shorter date range.');
+      },
+      { readConcern: { level: 'snapshot' } },
+    );
+    const data = {
+      report: { id: type, title: definition.title, basis: definition.basis },
+      period: { from: query.from, to: query.to, timezone: hospitalTimezone, generatedAt },
+      columns: definition.columns,
+      summary: definition.metrics.map((metric) => ({
+        ...metric,
+        value: result.totals[metric.key] ?? 0,
+      })),
+      records: result.records,
+      total: result.total,
+    };
+    if (query.format === 'json') return res.json(data);
+    res
+      .attachment(`smart-hms-${type}-${query.from}-${query.to}.csv`)
+      .type('text/csv; charset=utf-8')
+      .send(csvReport(data));
   });
   router.get('/admin/reports/:type', async (req, res) => {
     const type = parse(z.enum(Object.keys(reports)), req.params.type);
@@ -108,6 +152,14 @@ export function reportingRouter() {
           action: 1,
           module: 1,
           target: 1,
+          reason: 1,
+          ipAddress: {
+            $cond: [
+              { $gte: ['$createdAt', new Date(Date.now() - 30 * 86400000)] },
+              '$ipAddress',
+              null,
+            ],
+          },
           createdAt: 1,
         },
       },

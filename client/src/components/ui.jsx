@@ -1,3 +1,4 @@
+import { t } from '../i18n/locale';
 import { useEffect, useState } from 'react';
 import {
   AlertCircle,
@@ -16,8 +17,9 @@ export function Brand({ light = false }) {
         <HeartPulse size={24} />
       </span>
       <span>
-        Smart<span className="brand-weight">HMS</span>
-        <small>CARE, CONNECTED.</small>
+        {t('Smart')}
+        <span className="brand-weight">{t('HMS')}</span>
+        <small>{t('CARE, CONNECTED.')}</small>
       </span>
     </div>
   );
@@ -26,7 +28,7 @@ export function Loading({ text = 'Loading your workspace…' }) {
   return (
     <div className="loading" role="status">
       <LoaderCircle className="spin" size={22} />
-      {text}
+      {t(text)}
     </div>
   );
 }
@@ -38,7 +40,7 @@ export function Notice({ children, success = false }) {
       role={success ? 'status' : 'alert'}
     >
       {success ? <CheckCircle2 size={19} /> : <AlertCircle size={19} />}
-      <div>{children}</div>
+      <div>{t(children)}</div>
     </div>
   );
 }
@@ -57,7 +59,7 @@ export function Field({
   return (
     <div className={`field ${className}`}>
       <label htmlFor={id}>
-        {label}
+        {t(label)}
         {props.required && (
           <span className="required" aria-hidden="true">
             {' '}
@@ -74,10 +76,10 @@ export function Field({
       >
         {children}
       </Component>
-      {hint && <small id={`${id}-hint`}>{hint}</small>}
+      {hint && <small id={`${id}-hint`}>{t(hint)}</small>}
       {error && (
         <small id={`${id}-error`} className="field-error">
-          {error}
+          {t(error)}
         </small>
       )}
     </div>
@@ -87,7 +89,7 @@ export function Submit({ busy, disabled = false, children }) {
   return (
     <button type="submit" className="button primary" disabled={busy || disabled}>
       {busy ? <LoaderCircle size={17} className="spin" /> : null}
-      {busy ? 'Please wait…' : children}
+      {busy ? t('Please wait…') : children}
     </button>
   );
 }
@@ -95,9 +97,9 @@ export function PageHeading({ eyebrow, title, description, children }) {
   return (
     <div className="page-heading">
       <div>
-        <p className="eyebrow">{eyebrow}</p>
-        <h1>{title}</h1>
-        <p className="muted">{description}</p>
+        <p className="eyebrow">{t(eyebrow)}</p>
+        <h1>{t(title)}</h1>
+        <p className="muted">{t(description)}</p>
       </div>
       {children}
     </div>
@@ -107,13 +109,11 @@ export function Pager({ page, total, limit, onChange }) {
   const pages = Math.max(1, Math.ceil(total / limit));
   return (
     <div className="pager">
-      <span>
-        {total} {total === 1 ? 'record' : 'records'} · Page {page} of {pages}
-      </span>
+      <span>{t('{count} records · Page {page} of {pages}', { count: total, page, pages })}</span>
       <div>
         <button
           className="button subtle small"
-          aria-label="Previous page"
+          aria-label={t('Previous page')}
           disabled={page <= 1}
           onClick={() => onChange(page - 1)}
         >
@@ -121,7 +121,7 @@ export function Pager({ page, total, limit, onChange }) {
         </button>
         <button
           className="button subtle small"
-          aria-label="Next page"
+          aria-label={t('Next page')}
           disabled={page >= pages}
           onClick={() => onChange(page + 1)}
         >
@@ -132,8 +132,15 @@ export function Pager({ page, total, limit, onChange }) {
   );
 }
 // eslint-disable-next-line react-refresh/only-export-components
-export function useResource(path, revision = 0) {
+export function useResource(path, revision = 0, live = false) {
   const key = `${path}:${revision}`;
+  const [signal, setSignal] = useState(0);
+  useEffect(() => {
+    if (!live) return;
+    const update = () => setSignal((value) => value + 1);
+    window.addEventListener('hms:data-updated', update);
+    return () => window.removeEventListener('hms:data-updated', update);
+  }, [live]);
   const [state, setState] = useState({ key: '', data: null, error: '', pending: true });
   useEffect(() => {
     if (!path) return;
@@ -147,7 +154,7 @@ export function useResource(path, revision = 0) {
           setState({ key, data: null, error: err.message, pending: false });
       });
     return () => controller.abort();
-  }, [path, key]);
+  }, [path, key, signal]);
   if (!path) return { data: null, error: '', pending: false };
   return state.key === key ? state : { data: null, error: '', pending: true };
 }

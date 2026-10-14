@@ -5,6 +5,7 @@ import request from 'supertest';
 import { createApp } from '../src/app.js';
 import {
   Notification,
+  Delivery,
   Appointment,
   AppointmentSlot,
   Doctor,
@@ -17,6 +18,9 @@ import { runReminderBatch, startReminderWorker } from '../src/notifications/remi
 import { hospitalDate } from '../src/scheduling/time.js';
 import { testPassword, testConfig, isolatedUri, seedTestAccounts } from './helpers.js';
 import { randomUUID } from 'node:crypto';
+import { renderEmail } from '../src/notifications/email-content.js';
+import { runDeliveryBatch } from '../src/notifications/delivery-worker.js';
+import { deliveryConfig } from '../src/notifications/delivery-config.js';
 let app, fixtures, doctor, patient, slots;
 const tokens = {};
 const send = (method, path, role = 'patient') =>
@@ -36,6 +40,10 @@ const notices = (id) =>
 before(async () => {
   await connectDatabase(isolatedUri('notifications'));
   fixtures = await seedTestAccounts();
+  await User.updateOne(
+    { _id: fixtures.users.patient._id },
+    { $set: { 'notificationPreferences.email': true } },
+  );
   doctor = await Doctor.findOne({ user: fixtures.users.doctor._id });
   patient = await Patient.findOne({ user: fixtures.users.patient._id });
   const passwordHash = (await User.findById(fixtures.users.patient._id).select('+passwordHash'))
@@ -81,6 +89,15 @@ test('booking, rescheduling and cancellation commit patient notifications only o
   assert.equal(rows.length, 1);
   assert.equal(rows[0].title, 'Appointment confirmed');
   assert.equal(rows[0].path, `/appointments?selected=${a.id}`);
+  const confirmation = await Delivery.findOne({
+    eventKey: rows[0].eventKey,
+    channel: 'email',
+  }).select('+emailContent');
+  assert.equal(confirmation.emailContent.kind, 'appointment_booked');
+  assert.match(
+    renderEmail(confirmation.emailContent, testConfig.origin).text,
+    /Doctor: Test doctor/,
+  );
   await send('post', '/appointments')
     .send({ slot: String(slots[0]._id) })
     .expect(409);
@@ -91,10 +108,22 @@ test('booking, rescheduling and cancellation commit patient notifications only o
   rows = await notices(a.id);
   assert.equal(rows.length, 2);
   assert.equal(rows[1].title, 'Appointment rescheduled');
+  const moved = await Delivery.findOne({ eventKey: rows[1].eventKey }).select('+emailContent');
+  const movedText = renderEmail(moved.emailContent, testConfig.origin).text;
+  assert.match(movedText, /Previous appointment:/);
+  assert.match(movedText, /New appointment:/);
+  assert.doesNotMatch(movedText, /Synthetic move|Synthetic visit/);
   await send('post', `/appointments/${a.id}/cancel`)
     .send({ reason: 'Synthetic cancellation' })
     .expect(200);
   assert.equal((await notices(a.id)).length, 3);
+  const cancelled = await Delivery.findOne({ eventKey: `appointment:${a.id}:cancelled:1` }).select(
+    '+emailContent',
+  );
+  assert.equal(cancelled.emailContent.kind, 'appointment_cancelled');
+  assert.equal(await Delivery.countDocuments({ eventKey: { $regex: a.id } }), 3);
+  const unchanged = await Delivery.findById(confirmation._id).select('+emailContent');
+  assert.deepEqual(unchanged.emailContent.toObject(), confirmation.emailContent.toObject());
   await send('post', `/appointments/${a.id}/cancel`).send({ reason: 'Repeated' }).expect(409);
   assert.equal((await notices(a.id)).length, 3);
 });
@@ -150,6 +179,11 @@ test('24-hour reminder window skips far/past/non-scheduled visits and is safe ac
   assert.equal(await Notification.countDocuments({ eventKey: `reminder:${a.id}:0` }), 0);
   await Promise.all([runReminderBatch({ now }), runReminderBatch({ now })]);
   assert.equal(await Notification.countDocuments({ eventKey: `reminder:${a.id}:0` }), 1);
+  const reminder = await Delivery.findOne({ eventKey: `reminder:${a.id}:0` }).select(
+    '+emailContent',
+  );
+  assert.equal(reminder.emailContent.kind, 'appointment_reminder');
+  assert.ok(reminder.emailContent.details.some((row) => row.value === a.reference));
   await runReminderBatch({ now });
   assert.equal(await Notification.countDocuments({ eventKey: `reminder:${a.id}:0` }), 1);
   const b = await book(3);
@@ -283,6 +317,75 @@ test('consultation and billing updates notify the patient without clinical text 
   assert.ok(!JSON.stringify(all).includes('PRIVATE-SYNTHETIC'));
   assert.ok(all.some((n) => n.title === 'Prescription updated'));
   assert.ok(all.some((n) => n.title === 'Consultation record available'));
+  const jobs = await Delivery.find({ recipient: fixtures.users.patient._id }).select(
+    '+emailContent',
+  );
+  for (const kind of [
+    'appointment_checked_in',
+    'consultation_started',
+    'consultation_completed',
+    'prescription_updated',
+    'bill_created',
+    'bill_updated',
+    'payment_recorded',
+    'payment_reversed',
+  ]) {
+    const matching = jobs.filter((job) => job.emailContent?.kind === kind);
+    assert.equal(matching.length, 1, kind);
+    assert.doesNotMatch(
+      renderEmail(matching[0].emailContent, testConfig.origin).text,
+      /PRIVATE-SYNTHETIC|None needed|Correction/,
+    );
+  }
+  const recorded = jobs.find((job) => job.emailContent?.kind === 'payment_recorded');
+  const reversed = jobs.find((job) => job.emailContent?.kind === 'payment_reversed');
+  assert.match(
+    renderEmail(recorded.emailContent, testConfig.origin).text,
+    /Outstanding balance: LKR 0.00/,
+  );
+  assert.match(
+    renderEmail(reversed.emailContent, testConfig.origin).text,
+    /Outstanding balance: LKR 100.00/,
+  );
+  assert.ok(
+    renderEmail(recorded.emailContent, testConfig.origin).text.includes(
+      receipt.body.payment.reference,
+    ),
+  );
+  assert.ok(jobs.every((job) => job.emailContent.kind !== 'portal_update'));
+});
+test('worker renders stored snapshots, patient history is private and admin history excludes email bodies', async () => {
+  const config = { ...testConfig, delivery: deliveryConfig({}) };
+  const sent = [];
+  await runDeliveryBatch(config, {
+    now: new Date(Date.now() + 1000),
+    limit: 100,
+    transports: {
+      send: async (job, content) => {
+        sent.push({ job, content });
+        return { status: 'simulated' };
+      },
+    },
+  });
+  assert.ok(sent.length > 5);
+  assert.ok(
+    sent.every(
+      ({ content }) =>
+        content?.html && content?.text && !content.text.includes('PRIVATE-SYNTHETIC'),
+    ),
+  );
+  assert.equal((await Delivery.findOne()).emailContent, undefined);
+  const own = (await send('get', '/notifications/deliveries?limit=50').expect(200)).body;
+  assert.ok(own.records.some((row) => row.preview.includes('Receipt reference:')));
+  assert.ok(own.records.every((row) => row.emailSubject && !row.emailContent && !row.html));
+  const admin = (await send('get', '/admin/deliveries', 'admin').expect(200)).body;
+  assert.ok(
+    admin.records.every(
+      (row) => !row.emailSubject && !row.emailContent && !row.preview.includes('Doctor:'),
+    ),
+  );
+  const other = (await send('get', '/notifications/deliveries', 'other').expect(200)).body;
+  assert.equal(other.total, 0);
 });
 test('reminder worker starts immediately, avoids overlap, drains on shutdown and retries failures', async () => {
   let calls = 0,

@@ -1,4 +1,13 @@
+import {
+  administrationRouter,
+  publicDirectoryRouter,
+  lockDepartments,
+} from './settings/administration.js';
+import { recoveryRouter, loginMetadata } from './security/recovery.js';
+import { publicHospitalRouter, hospitalSettingsRouter } from './settings/hospital.js';
 import { reportingRouter } from './reporting/routes.js';
+import { dashboardRouter } from './reporting/dashboard.js';
+import { deliveryRouter } from './notifications/delivery-routes.js';
 import { feedbackRouter } from './feedback/routes.js';
 import { recommendationRouter } from './recommendations/routes.js';
 import { notificationRouter } from './notifications/routes.js';
@@ -71,7 +80,16 @@ export function createApp(config, { rateLimitEnabled = true } = {}) {
     legacyHeaders: false,
     message: { message: 'Too many sign-in attempts. Please try again in 15 minutes.' },
   });
-  if (rateLimitEnabled) app.use(['/api/auth/login', '/api/auth/register'], authLimiter);
+  if (rateLimitEnabled)
+    app.use(
+      [
+        '/api/auth/login',
+        '/api/auth/register',
+        '/api/auth/forgot-password',
+        '/api/auth/reset-password',
+      ],
+      authLimiter,
+    );
 
   app.get('/api/health', (req, res) => {
     const ready = mongoose.connection.readyState === 1;
@@ -105,18 +123,29 @@ export function createApp(config, { rateLimitEnabled = true } = {}) {
     const user = await User.findOne({ email: data.email }).select('+passwordHash');
     const valid = await bcrypt.compare(data.password, user?.passwordHash ?? dummyHash);
     if (!valid || !user?.isActive) {
-      await audit(undefined, 'login_failed', 'authentication');
+      await audit(undefined, 'login_failed', 'authentication', '', undefined, loginMetadata(req));
       throw httpError(401, 'Email or password is incorrect.');
     }
     let authSession;
     await mongoose.connection.transaction(async (session) => {
-      authSession = await createSession(user, config, session);
-      await audit(user._id, 'login', 'authentication', user._id, session);
+      const current = await User.findOneAndUpdate(
+        { _id: user._id, passwordHash: user.passwordHash, isActive: true },
+        { $inc: { securityRevision: 1 } },
+        { session, returnDocument: 'after' },
+      );
+      if (!current) throw httpError(401, 'Email or password is incorrect.');
+      authSession = await createSession(current, config, session);
+      await audit(user._id, 'login', 'authentication', user._id, session, loginMetadata(req));
     });
     sendSession(res, authSession, config);
   });
 
+  app.use('/api', recoveryRouter(config));
+  app.use('/api', publicHospitalRouter());
+  app.use('/api', publicDirectoryRouter());
   app.use('/api', authenticate(config));
+  app.use('/api', hospitalSettingsRouter());
+  app.use('/api', administrationRouter());
   app.get('/api/auth/me', (req, res) => res.json({ user: publicUser(req.user) }));
   app.post('/api/auth/logout', async (req, res) => {
     await mongoose.connection.transaction(async (session) => {
@@ -232,6 +261,7 @@ export function createApp(config, { rateLimitEnabled = true } = {}) {
     const passwordHash = await bcrypt.hash(data.password, 12);
     let user;
     await mongoose.connection.transaction(async (session) => {
+      if (data.role === 'doctor') await lockDepartments([data.department], session);
       if (
         data.role === 'doctor' &&
         !(await Department.exists({ _id: data.department, isActive: true }).session(session))
@@ -262,10 +292,12 @@ export function createApp(config, { rateLimitEnabled = true } = {}) {
   app.use('/api', schedulingRouter());
   app.use('/api', clinicalRouter());
   app.use('/api', billingRouter());
+  app.use('/api', deliveryRouter(config));
   app.use('/api', notificationRouter());
   app.use('/api', recommendationRouter());
   app.use('/api', feedbackRouter());
   app.use('/api', reportingRouter());
+  app.use('/api', dashboardRouter());
   app.use('/api', (req, res, next) => next(httpError(404, 'API endpoint not found.')));
   const clientDist = fileURLToPath(new URL('../../client/dist', import.meta.url));
   if (config.env === 'production' && existsSync(clientDist)) {

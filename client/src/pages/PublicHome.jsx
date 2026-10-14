@@ -1,3 +1,4 @@
+import { t, getLanguage } from '../i18n/locale';
 import { Link } from 'react-router-dom';
 import {
   ArrowRight,
@@ -12,7 +13,8 @@ import {
   ShieldCheck,
   Stethoscope,
 } from 'lucide-react';
-import { Brand } from '../components/ui';
+import { Brand, useResource } from '../components/ui';
+import HospitalInformation from '../components/HospitalInformation';
 import { DisplayPreference } from '../components/DisplayPreference';
 import { useAuth } from '../auth';
 
@@ -45,24 +47,31 @@ const services = [
 
 export default function PublicHome() {
   const { user } = useAuth();
+  const {
+    data: information,
+    error: informationError,
+    pending: informationPending,
+  } = useResource('/public/hospital');
+  const hospital = information?.hospital;
   const portal = user ? '/dashboard' : '/login';
   return (
     <div className="public-home">
       <a className="skip-link" href="#public-main">
-        Skip to content
+        {t('Skip to content')}{' '}
       </a>
       <div className="public-container">
         <header className="public-header glass-surface">
-          <Link to="/" aria-label="Smart HMS home">
+          <Link to="/" aria-label={t('Smart HMS home')}>
             <Brand />
           </Link>
-          <nav aria-label="Hospital navigation">
-            <a href="#services">Patient services</a>
-            <a href="#your-visit">Your visit</a>
-            <a href="#hospital-info">Hospital information</a>
+          <nav aria-label={t('Hospital navigation')}>
+            <Link to="/doctors">{t('Doctors & services')}</Link>
+            <a href="#services">{t('Patient services')}</a>
+            <a href="#your-visit">{t('Your visit')}</a>
+            <a href="#hospital-info">{t('Hospital information')}</a>
           </nav>
           <Link className="button primary" to={portal}>
-            {user ? 'My workspace' : 'Patient portal'} <ArrowUpRight size={16} />
+            {user ? t('My workspace') : t('Patient portal')} <ArrowUpRight size={16} />
           </Link>
         </header>
 
@@ -70,32 +79,38 @@ export default function PublicHome() {
           <section className="public-hero" aria-labelledby="home-title">
             <div className="public-hero-copy">
               <p className="public-kicker">
-                <span /> CARE, CONNECTED. IN SRI LANKA.
+                <span /> {hospital?.name || t('CARE, CONNECTED. IN SRI LANKA.')}
               </p>
               <h1 id="home-title">
-                A little simpler.
-                <br />A lot more <em>care.</em>
+                {t('A little simpler.')} <br />
+                {t('A lot more')} <em>{t('care.')}</em>
               </h1>
               <p className="public-lead">
-                From your first appointment to your next step. One thoughtful space to manage your
-                hospital visits.
+                {t(
+                  'From your first appointment to your next step. One thoughtful space to manage your hospital visits.',
+                )}{' '}
               </p>
               <div className="public-actions">
                 <Link className="button primary" to={user ? '/dashboard' : '/register'}>
-                  {user ? 'Go to my workspace' : 'Create patient account'} <ArrowRight size={18} />
+                  {user ? t('Go to my workspace') : t('Create patient account')}{' '}
+                  <ArrowRight size={18} />
                 </Link>
                 <a className="button subtle" href="#your-visit">
-                  See how it works
+                  {t('See how it works')}{' '}
                 </a>
               </div>
               <p className="public-assurance">
-                <ShieldCheck size={16} /> Personal records. Account-protected access.
+                <ShieldCheck size={16} /> {t('Personal records. Account-protected access.')}{' '}
               </p>
-              <span className="demo-label">University project · Demonstration website</span>
+              {(!hospital || hospital.isDemo) && (
+                <span className="demo-label">
+                  {t('University project · Demonstration website')}
+                </span>
+              )}
             </div>
             <div
               className="care-composition"
-              aria-label="Illustration of a connected patient journey"
+              aria-label={t('Illustration of a connected patient journey')}
               role="img"
             >
               <div className="care-halo halo-outer" />
@@ -108,9 +123,9 @@ export default function PublicHome() {
                   <CalendarDays size={23} />
                 </div>
                 <div>
-                  <small>ONE CONNECTED JOURNEY</small>
-                  <strong>Your next visit</strong>
-                  <span>Plan. Arrive. Follow up.</span>
+                  <small>{t('ONE CONNECTED JOURNEY')}</small>
+                  <strong>{t('Your next visit')}</strong>
+                  <span>{t('Plan. Arrive. Follow up.')}</span>
                 </div>
                 <span className="journey-check">
                   <Check size={17} />
@@ -119,41 +134,40 @@ export default function PublicHome() {
               <div className="care-float glass-surface">
                 <Stethoscope size={20} />
                 <span>
-                  Patients & care teams
-                  <br />
-                  <strong>Better connected.</strong>
+                  {t('Patients & care teams')} <br />
+                  <strong>{t('Better connected.')}</strong>
                 </span>
               </div>
-              <span className="composition-caption">Designed around the patient journey</span>
+              <span className="composition-caption">
+                {t('Designed around the patient journey')}
+              </span>
             </div>
           </section>
 
-          <div className="local-strip" aria-label="Local information">
+          <div className="local-strip" aria-label={t('Local information')}>
             <span>
-              <MapPin size={18} /> Built for Sri Lanka
+              <MapPin size={18} /> {t('Built for Sri Lanka')}{' '}
             </span>
             <span>
-              <Clock3 size={18} /> Appointments in Sri Lanka time
+              <Clock3 size={18} /> {t('Appointments in Sri Lanka time')}{' '}
             </span>
             <span>
-              <ReceiptText size={18} /> Billing in LKR
+              <ReceiptText size={18} /> {t('Billing in LKR')}{' '}
             </span>
           </div>
 
           <section id="services" className="public-section" aria-labelledby="services-title">
             <div className="public-section-heading">
               <div>
-                <p className="public-kicker">YOUR PATIENT PORTAL</p>
+                <p className="public-kicker">{t('YOUR PATIENT PORTAL')}</p>
                 <h2 id="services-title">
-                  Less to organise.
-                  <br />
-                  More peace of mind.
+                  {t('Less to organise.')} <br />
+                  {t('More peace of mind.')}{' '}
                 </h2>
               </div>
               <p>
-                Simple tools for the details around your care.
-                <br />
-                Sign in to access your personal information.
+                {t('Simple tools for the details around your care.')} <br />
+                {t('Sign in to access your personal information.')}{' '}
               </p>
             </div>
             <div className="public-service-grid">
@@ -165,10 +179,10 @@ export default function PublicHome() {
                     </span>
                     <span>0{index + 1}</span>
                   </div>
-                  <h3>{title}</h3>
-                  <p>{description}</p>
+                  <h3>{t(title)}</h3>
+                  <p>{t(description)}</p>
                   <Link to={!user ? '/login' : user.role === 'patient' ? link : '/dashboard'}>
-                    {action}
+                    {t(action)}
                     <ArrowUpRight size={17} />
                   </Link>
                 </article>
@@ -182,42 +196,47 @@ export default function PublicHome() {
             aria-labelledby="visit-title"
           >
             <div>
-              <p className="public-kicker">A CLEARER PATH</p>
+              <p className="public-kicker">{t('A CLEARER PATH')}</p>
               <h2 id="visit-title">
-                Your visit.
-                <br />
-                One step at a time.
+                {t('Your visit.')} <br />
+                {t('One step at a time.')}{' '}
               </h2>
-              <p>New to the portal? Start with an account, then choose an available appointment.</p>
+              <p>
+                {t(
+                  'New to the portal? Start with an account, then choose an available appointment.',
+                )}
+              </p>
               <Link className="text-link" to={portal}>
-                Open your portal <ArrowRight size={17} />
+                {t('Open your portal')} <ArrowRight size={17} />
               </Link>
             </div>
             <ol className="visit-steps">
               <li>
                 <span>01</span>
                 <div>
-                  <h3>Choose your appointment</h3>
-                  <p>Sign in, browse available doctors and select a suitable time slot.</p>
+                  <h3>{t('Choose your appointment')}</h3>
+                  <p>{t('Sign in, browse available doctors and select a suitable time slot.')}</p>
                 </div>
               </li>
               <li>
                 <span>02</span>
                 <div>
-                  <h3>Check in at reception</h3>
+                  <h3>{t('Check in at reception')}</h3>
                   <p>
-                    Bring your appointment reference. Reception will help you check in for your
-                    visit.
+                    {t(
+                      'Bring your appointment reference. Reception will help you check in for your visit.',
+                    )}{' '}
                   </p>
                 </div>
               </li>
               <li>
                 <span>03</span>
                 <div>
-                  <h3>Keep everything together</h3>
+                  <h3>{t('Keep everything together')}</h3>
                   <p>
-                    After your consultation, view your records, prescription and bill through your
-                    account.
+                    {t(
+                      'After your consultation, view your records, prescription and bill through your account.',
+                    )}{' '}
                   </p>
                 </div>
               </li>
@@ -230,32 +249,46 @@ export default function PublicHome() {
             aria-labelledby="hospital-title"
           >
             <div>
-              <p className="public-kicker">BEFORE YOU VISIT</p>
-              <h2 id="hospital-title">Hospital information</h2>
-              <p>
-                This is the Smart HMS university project demonstration. A real hospital’s address,
-                reception number, opening hours and service directory have not yet been published.
-              </p>
-              <p className="public-small">
-                Please use synthetic information when trying the demo. This website does not provide
-                an emergency contact service.
-              </p>
+              <p className="public-kicker">{t('BEFORE YOU VISIT')}</p>
+              <h2 id="hospital-title">{t('Hospital information')}</h2>
+              {hospital ? (
+                <HospitalInformation hospital={hospital} />
+              ) : (
+                <>
+                  <p>
+                    {informationPending
+                      ? t('Loading hospital information…')
+                      : informationError
+                        ? t(
+                            'Hospital information is temporarily unavailable. Please try again later.',
+                          )
+                        : t(
+                            'This is the Smart HMS university project demonstration. A real hospital’s address, reception number, opening hours and service directory have not yet been published.',
+                          )}
+                  </p>
+                  <p className="public-small">
+                    {t(
+                      'Please use synthetic information when trying the demo. This website does not provide an emergency contact service.',
+                    )}{' '}
+                  </p>
+                </>
+              )}
             </div>
             <div className="public-info-card glass-surface">
               <MapPin size={24} />
-              <h3>Local by design.</h3>
+              <h3>{t('Local by design.')}</h3>
               <dl>
                 <div>
-                  <dt>Appointment timezone</dt>
-                  <dd>Asia/Colombo · UTC+05:30</dd>
+                  <dt>{t('Appointment timezone')}</dt>
+                  <dd>{t('Asia/Colombo · UTC+05:30')}</dd>
                 </div>
                 <div>
-                  <dt>Billing currency</dt>
-                  <dd>Sri Lankan rupee (LKR)</dd>
+                  <dt>{t('Billing currency')}</dt>
+                  <dd>{t('Sri Lankan rupee (LKR)')}</dd>
                 </div>
                 <div>
-                  <dt>Portal language</dt>
-                  <dd>English</dd>
+                  <dt>{t('Portal language')}</dt>
+                  <dd>{{ en: 'English', si: 'සිංහල', ta: 'தமிழ்' }[getLanguage()]}</dd>
                 </div>
               </dl>
             </div>
@@ -263,11 +296,11 @@ export default function PublicHome() {
           <section className="public-cta">
             <HeartPulse size={34} strokeWidth={1.4} />
             <div>
-              <h2>Ready for a more connected visit?</h2>
-              <p>Your patient portal is a good place to start.</p>
+              <h2>{t('Ready for a more connected visit?')}</h2>
+              <p>{t('Your patient portal is a good place to start.')}</p>
             </div>
             <Link className="button primary" to={portal}>
-              {user ? 'My workspace' : 'Sign in to the portal'}
+              {user ? t('My workspace') : t('Sign in to the portal')}
               <ArrowRight size={18} />
             </Link>
           </section>
@@ -275,12 +308,12 @@ export default function PublicHome() {
         <footer className="public-footer">
           <div>
             <Brand />
-            <p>University of Moratuwa · BIT final-year project</p>
+            <p>{t('University of Moratuwa · BIT final-year project')}</p>
           </div>
           <div className="public-footer-actions">
             <DisplayPreference />
             <Link to={portal}>
-              Staff & patient sign in <ArrowUpRight size={14} />
+              {t('Staff & patient sign in')} <ArrowUpRight size={14} />
             </Link>
           </div>
         </footer>

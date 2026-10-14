@@ -1,0 +1,11 @@
+[Unit]
+Description=Check Smart HMS API and database readiness
+# Configure an operator-owned OnFailure handler before production use.
+
+[Service]
+Type=oneshot
+WorkingDirectory=/ABSOLUTE/PROJECT/PATH
+Environment=HMS_HEALTH_URL=https://hms.example.com/api/health
+ExecStart=/usr/bin/node "/ABSOLUTE/PROJECT/PATH/scripts/ops/health-check.mjs"
+UMask=0077
+TimeoutStartSec=15

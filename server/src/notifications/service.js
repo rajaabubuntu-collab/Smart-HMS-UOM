@@ -1,12 +1,58 @@
-import { Notification, Patient } from '../models.js';
+import { Notification, Patient, User, Delivery, HospitalSettings } from '../models.js';
+import { deliveryConfig, sriLankanMobile } from './delivery-config.js';
+import { appointmentEmailDetails, billingEmailDetails, snapshotEmail } from './email-content.js';
 export async function notifyPatient(patientId, event, session) {
   const patient = await Patient.findById(patientId).select('user').session(session);
   if (!patient) throw new Error('Notification recipient profile missing.');
-  await Notification.updateOne(
+  const result = await Notification.updateOne(
     { recipient: patient.user, eventKey: event.eventKey },
-    { $setOnInsert: { ...event, recipient: patient.user, readAt: null } },
+    {
+      $setOnInsert: {
+        eventKey: event.eventKey,
+        type: event.type,
+        title: event.title,
+        message: event.message,
+        path: event.path,
+        recipient: patient.user,
+        readAt: null,
+      },
+    },
     { upsert: true, session, runValidators: true },
   );
+  // The persistent outbox commits with the notification and the originating action.
+  if (!result.upsertedCount) return;
+  const user = await User.findById(patient.user).session(session);
+  const modes = deliveryConfig();
+  for (const channel of ['email', 'sms']) {
+    if (!user.isActive || !user.notificationPreferences?.[channel] || modes[channel] === 'off')
+      continue;
+    const destination = channel === 'email' ? user.email : sriLankanMobile(user.phone);
+    if (!destination) continue;
+    const brand =
+      channel === 'email'
+        ? await HospitalSettings.findById('000000000000000000000001')
+            .select('published')
+            .session(session)
+            .lean()
+        : null;
+    await Delivery.updateOne(
+      { recipient: user._id, eventKey: event.eventKey, channel },
+      {
+        $setOnInsert: {
+          recipient: user._id,
+          eventKey: event.eventKey,
+          channel,
+          destination,
+          transport: modes[channel],
+          status: 'queued',
+          ...(channel === 'email'
+            ? { emailContent: snapshotEmail(event, user.name, brand?.published) }
+            : {}),
+        },
+      },
+      { upsert: true, session, runValidators: true },
+    );
+  }
 }
 export function appointmentTime(value) {
   return new Intl.DateTimeFormat('en-GB', {
@@ -36,11 +82,24 @@ export async function appointmentNotice(appointment, action, session) {
       title,
       message: `${message}. ${appointment.reference} · ${appointmentTime(appointment.startsAt)} (Sri Lanka time).`,
       path: action === 'completed' ? '/records' : `/appointments?selected=${appointment._id}`,
+      email: appointmentEmailDetails(
+        appointment,
+        ['started', 'completed'].includes(action)
+          ? `consultation_${action}`
+          : `appointment_${action}`,
+      ),
     },
     session,
   );
 }
-export async function billingNotice(bill, eventKey, title, message, session) {
+export async function billingNotice(bill, eventKey, title, message, session, payment) {
+  const kind = eventKey.startsWith('payment:')
+    ? eventKey.endsWith(':reversed')
+      ? 'payment_reversed'
+      : 'payment_recorded'
+    : eventKey.endsWith(':created')
+      ? 'bill_created'
+      : 'bill_updated';
   await notifyPatient(
     bill.patient,
     {
@@ -49,6 +108,7 @@ export async function billingNotice(bill, eventKey, title, message, session) {
       title,
       message: `${message} Invoice ${bill.reference}. Open your bill for the current balance and details.`,
       path: `/billing/${bill._id}`,
+      email: billingEmailDetails(bill, kind, payment),
     },
     session,
   );

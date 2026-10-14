@@ -60,7 +60,7 @@ export async function fingerprints(db) {
   for (const c of (await db.listCollections().toArray()).sort((a, b) =>
     a.name.localeCompare(b.name),
   )) {
-    if (c.name === 'sessions') continue;
+    if (['sessions', 'passwordresets'].includes(c.name)) continue;
     if (c.type !== 'collection' || c.name.startsWith('system.'))
       throw new Error('Only ordinary application collections are supported.');
     const hash = createHash('sha256');
@@ -141,6 +141,7 @@ export async function createBackup({
     '--archive',
     '--gzip',
     '--excludeCollection=sessions',
+    '--excludeCollection=passwordresets',
   ]);
   child.stdin.end();
   try {
@@ -162,7 +163,7 @@ export async function createBackup({
       algorithm: 'aes-256-gcm',
       iv: iv.toString('hex'),
       tag: cipher.getAuthTag().toString('hex'),
-      excluded: ['sessions'],
+      excluded: ['sessions', 'passwordresets'],
       collections: before,
     });
     await writeFile(
@@ -227,6 +228,7 @@ export async function restoreBackup({ client, path, secret }) {
       '--stopOnError',
       `--nsInclude=${meta.source}.*`,
       `--nsExclude=${meta.source}.sessions`,
+      `--nsExclude=${meta.source}.passwordresets`,
       `--nsFrom=${meta.source}.*`,
       `--nsTo=${target}.*`,
     ]);
@@ -241,8 +243,9 @@ export async function restoreBackup({ client, path, secret }) {
     const actual = await fingerprints(client.db(target));
     if (serialized(actual) !== serialized(meta.collections))
       throw new Error('Restored document or index verification failed.');
-    if (await client.db(target).collection('sessions').countDocuments())
-      throw new Error('Sessions must not be restored.');
+    for (const name of ['sessions', 'passwordresets'])
+      if (await client.db(target).collection(name).countDocuments())
+        throw new Error('Authentication sessions and reset links must not be restored.');
     return { target, collections: actual };
   } catch (err) {
     if (started) await client.db(target).dropDatabase(); // Only this run's random, previously empty destination.

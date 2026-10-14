@@ -61,7 +61,7 @@ No claims of legal compliance, clinical safety certification or production readi
 - Inbox list/count/read operations always include the authenticated recipient ID. Staff/admin have no cross-user inbox access. Strict schemas reject attempts to provide another recipient or edit message/path content.
 - Notification paths and messages are generated server-side. Notices avoid clinical note, diagnosis, medication and allergy content. Target pages still enforce their own record permissions.
 - Workflow notices share source transactions. Unique recipient/event keys deduplicate delivery; payment retries return the existing receipt before notification generation.
-- Reminder delivery rechecks appointment status/time under the scheduling doctor lock and commits its deduplication marker with the notice. Reschedule revision keys make repeated workers/restarts safe. No unauthenticated scheduling trigger or external email/SMS service is introduced.
+- Reminder delivery rechecks appointment status/time under the scheduling doctor lock and commits its deduplication marker with the notice. Reschedule revision keys make repeated workers/restarts safe. At the week-6 baseline, no unauthenticated scheduling trigger or external email/SMS service was introduced. The later delivery implementation is documented below.
 - Mark-all is scoped to the caller and a timestamp cutoff. Read flags represent in-app acknowledgement only. Historical messages remain even if an appointment subsequently changes; users follow the link for current state.
 
 ## Department guide (week 7)
@@ -94,3 +94,23 @@ No claims of legal compliance, clinical safety certification or production readi
 - Runtime containers are non-root, read-only, capability-dropped and loopback-published; the Docker context excludes private settings/backups. Host HTTPS reverse proxy and authenticated TLS MongoDB are deployment requirements. Development still binds loopback by default; BIND_HOST can explicitly select 0.0.0.0 for containers.
 - Initial administrator creation accepts a private stdin payload, requires an empty users collection, serializes competing attempts through a unique installation marker, hashes the password and audits atomically. There is no public bootstrap API, credential logging or production demo seeding.
 - A scoped override replaces the vulnerable development-only shell-quote dependency with patched 1.11.0. Production dependency/runtime installation excludes development launchers and Vite. This change does not assert that a clean dependency audit proves the entire system secure.
+
+## Live updates, charts and delivery — 9 October 2026
+
+- Socket handshakes require the exact configured Origin and the existing database-backed session. Each invalidation rechecks session/account state; a five-second heartbeat also revokes idle connections. Membership is server-assigned, inbound application events disconnect the client, and connection counts/payload sizes are bounded. No clinical or contact record is sent over the socket; REST still enforces ownership and role permissions.
+- Change streams observe committed mutations. Reconnect refresh and periodic REST reads reconcile state without assuming exactly-once socket delivery. Live updates are a convenience, never booking authority.
+- Dashboard aggregation derives patient/doctor scope from the session. Only administrators receive money/department aggregates. Strict query validation rejects supplied identities; one snapshot transaction produces each chart response.
+- Delivery jobs commit with their originating notice, with a unique recipient/event/channel key and atomic worker claims. Channels require explicit patient opt-in. The worker rechecks account, preference and destination; a transport change cannot convert an old preview into a live message.
+- Live transport configuration requires an explicit recipient allowlist. SMTP requires TLS; Twilio uses authenticated HTTPS to a fixed provider endpoint. Since 14 October, email includes explicitly selected appointment and billing details; diagnoses, clinical notes and medication instructions remain in the portal. SMS keeps its generic link. Patient email snapshots are hidden from default queries and administrator delivery history; history masks addresses and omits provider IDs. Credentials remain server-only. Provider exceptions are reduced to generic status codes. See [email content boundaries](email-notifications.md).
+- Ambiguous sends and interrupted processing are not automatically retried. Restore with local/off transports until provider reconciliation is complete: restoring an old outbox can otherwise duplicate messages sent after that backup. Live provider delivery has not been verified. See [delivery setup and limits](connectivity.md).
+
+## Hospital publication — 9 October 2026
+
+- Only the read-only `/api/public/hospital` route is added before session authentication. It returns an explicit published projection, never draft content, editor identifiers or provider settings. Protected settings routes independently enforce the administrator role, and writes retain the API's exact-Origin check.
+- Strict bounded schemas accept plain text and normalised contact details, not HTML, URLs or secrets. React renders literal text; telephone/mail links derive only from validated fields. No arbitrary external fetch or image upload is introduced.
+- Drafts and published snapshots are separate within one fixed-ID document. Expected-version checks and MongoDB transactions prevent stale/concurrent edits from silently overwriting data. The mutation and its content-free audit event succeed or roll back together. Public data can be withdrawn without deleting the draft or audit history.
+- Published hospital hours are visitor information and confer no scheduling permissions. The settings editor does not auto-refresh in response to sockets. Locale/currency/timezone remain fixed; changes to financial or appointment semantics are not hidden in a configuration toggle.
+
+## Account recovery update
+
+See [account recovery and lifecycle](security-recovery.md) for hashed one-use links, private security-mail preview handling, reset/session race protection, lifecycle locking and login IP retention. The 30-day IP cleanup preserves the rest of each audit event. Local backup/restore now excludes both `sessions` and `passwordresets`.
