@@ -230,7 +230,9 @@ test('outbox commits atomically, deduplicates and stores only opted-in channels'
   assert.ok(history.records.every((r) => r.destination.includes('*')));
   assert.ok(
     history.records.every(
-      (r) => r.preview.includes('/notifications') && !r.preview.includes('diagnosis'),
+      (r) =>
+        (r.preview.includes('/notifications') || r.preview.includes('patient portal')) &&
+        !r.preview.includes('diagnosis'),
     ),
   );
   await send('get', '/admin/deliveries').expect(403);

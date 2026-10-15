@@ -39,7 +39,7 @@ function PreferencesForm({ data }) {
       <h2>{t('Messages outside the portal')}</h2>
       <p>
         {t(
-          'Email includes appointment times, doctor details and billing totals. Clinical notes and prescription instructions stay in the portal. SMS contains a sign-in link. Changes apply to future events.',
+          'Email and SMS include appointment times, doctor details and billing amounts. Clinical notes and prescription instructions stay in the portal. Changes apply to future events.',
         )}{' '}
       </p>
       {['email', 'sms'].map((channel) => (

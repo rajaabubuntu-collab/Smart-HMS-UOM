@@ -3,7 +3,7 @@ import { z } from 'zod';
 
 const schema = z.object({
   EMAIL_TRANSPORT: z.enum(['off', 'local', 'smtp']).default('local'),
-  SMS_TRANSPORT: z.enum(['off', 'local', 'twilio']).default('local'),
+  SMS_TRANSPORT: z.enum(['off', 'local', 'twilio', 'notifylk']).default('local'),
   ALLOW_LIVE_DELIVERY: z.enum(['true', 'false']).default('false'),
   DELIVERY_ALLOWED_RECIPIENTS: z.string().default(''),
   SMTP_HOST: z.string().default(''),
@@ -15,6 +15,9 @@ const schema = z.object({
   TWILIO_AUTH_TOKEN: z.string().default(''),
   TWILIO_FROM: z.string().default(''),
   TWILIO_MESSAGING_SERVICE_SID: z.string().default(''),
+  NOTIFYLK_USER_ID: z.string().trim().default(''),
+  NOTIFYLK_API_KEY: z.string().trim().default(''),
+  NOTIFYLK_SENDER_ID: z.string().trim().default('NotifyDEMO'),
 });
 export function deliveryConfig(environment = process.env) {
   const parsed = schema.safeParse(environment);
@@ -24,7 +27,7 @@ export function deliveryConfig(environment = process.env) {
   const allowed = e.DELIVERY_ALLOWED_RECIPIENTS.split(',')
     .map((v) => v.trim().toLowerCase())
     .filter(Boolean);
-  const live = e.EMAIL_TRANSPORT === 'smtp' || e.SMS_TRANSPORT === 'twilio';
+  const live = e.EMAIL_TRANSPORT === 'smtp' || ['twilio', 'notifylk'].includes(e.SMS_TRANSPORT);
   if (live && (e.ALLOW_LIVE_DELIVERY !== 'true' || !allowed.length))
     throw new Error(
       'Live delivery requires ALLOW_LIVE_DELIVERY=true and explicit DELIVERY_ALLOWED_RECIPIENTS.',
@@ -45,6 +48,16 @@ export function deliveryConfig(environment = process.env) {
     throw new Error(
       'Twilio requires account credentials and a registered alphanumeric sender or Messaging Service SID.',
     );
+  if (
+    e.SMS_TRANSPORT === 'notifylk' &&
+    (!/^\d+$/.test(e.NOTIFYLK_USER_ID) ||
+      !e.NOTIFYLK_API_KEY ||
+      !/^[A-Za-z0-9 ]{1,11}$/.test(e.NOTIFYLK_SENDER_ID) ||
+      !/[A-Za-z0-9]/.test(e.NOTIFYLK_SENDER_ID))
+  )
+    throw new Error(
+      'Notify.lk requires NOTIFYLK_USER_ID, NOTIFYLK_API_KEY and a valid NOTIFYLK_SENDER_ID.',
+    );
   return {
     email: e.EMAIL_TRANSPORT,
     sms: e.SMS_TRANSPORT,
@@ -61,6 +74,11 @@ export function deliveryConfig(environment = process.env) {
       token: e.TWILIO_AUTH_TOKEN,
       from: e.TWILIO_FROM,
       service: e.TWILIO_MESSAGING_SERVICE_SID,
+    },
+    notifylk: {
+      userId: e.NOTIFYLK_USER_ID,
+      apiKey: e.NOTIFYLK_API_KEY,
+      senderId: e.NOTIFYLK_SENDER_ID,
     },
   };
 }

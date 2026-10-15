@@ -21,6 +21,7 @@ import { randomUUID } from 'node:crypto';
 import { renderEmail } from '../src/notifications/email-content.js';
 import { runDeliveryBatch } from '../src/notifications/delivery-worker.js';
 import { deliveryConfig } from '../src/notifications/delivery-config.js';
+import { isSingleSegmentSms } from '../src/notifications/sms-content.js';
 let app, fixtures, doctor, patient, slots;
 const tokens = {};
 const send = (method, path, role = 'patient') =>
@@ -42,7 +43,13 @@ before(async () => {
   fixtures = await seedTestAccounts();
   await User.updateOne(
     { _id: fixtures.users.patient._id },
-    { $set: { 'notificationPreferences.email': true } },
+    {
+      $set: {
+        'notificationPreferences.email': true,
+        'notificationPreferences.sms': true,
+        phone: '0770000000',
+      },
+    },
   );
   doctor = await Doctor.findOne({ user: fixtures.users.doctor._id });
   patient = await Patient.findOne({ user: fixtures.users.patient._id });
@@ -121,7 +128,21 @@ test('booking, rescheduling and cancellation commit patient notifications only o
     '+emailContent',
   );
   assert.equal(cancelled.emailContent.kind, 'appointment_cancelled');
-  assert.equal(await Delivery.countDocuments({ eventKey: { $regex: a.id } }), 3);
+  assert.equal(await Delivery.countDocuments({ eventKey: { $regex: a.id }, channel: 'email' }), 3);
+  assert.equal(await Delivery.countDocuments({ eventKey: { $regex: a.id }, channel: 'sms' }), 3);
+  const sms = await Delivery.find({ eventKey: { $regex: a.id }, channel: 'sms' }).select(
+    '+smsContent',
+  );
+  assert.deepEqual(sms.map((job) => job.smsContent.kind).sort(), [
+    'appointment_booked',
+    'appointment_cancelled',
+    'appointment_rescheduled',
+  ]);
+  assert.ok(
+    sms.every(
+      (job) => job.smsContent.text.includes(a.reference) && isSingleSegmentSms(job.smsContent.text),
+    ),
+  );
   const unchanged = await Delivery.findById(confirmation._id).select('+emailContent');
   assert.deepEqual(unchanged.emailContent.toObject(), confirmation.emailContent.toObject());
   await send('post', `/appointments/${a.id}/cancel`).send({ reason: 'Repeated' }).expect(409);
@@ -317,9 +338,10 @@ test('consultation and billing updates notify the patient without clinical text 
   assert.ok(!JSON.stringify(all).includes('PRIVATE-SYNTHETIC'));
   assert.ok(all.some((n) => n.title === 'Prescription updated'));
   assert.ok(all.some((n) => n.title === 'Consultation record available'));
-  const jobs = await Delivery.find({ recipient: fixtures.users.patient._id }).select(
-    '+emailContent',
-  );
+  const jobs = await Delivery.find({
+    recipient: fixtures.users.patient._id,
+    channel: 'email',
+  }).select('+emailContent');
   for (const kind of [
     'appointment_checked_in',
     'consultation_started',
@@ -353,6 +375,37 @@ test('consultation and billing updates notify the patient without clinical text 
     ),
   );
   assert.ok(jobs.every((job) => job.emailContent.kind !== 'portal_update'));
+  const smsJobs = await Delivery.find({
+    recipient: fixtures.users.patient._id,
+    channel: 'sms',
+  }).select('+smsContent');
+  for (const kind of [
+    'appointment_reminder',
+    'appointment_checked_in',
+    'consultation_started',
+    'consultation_completed',
+    'prescription_updated',
+    'bill_created',
+    'bill_updated',
+    'payment_recorded',
+    'payment_reversed',
+  ]) {
+    assert.ok(
+      smsJobs.some((job) => job.smsContent.kind === kind),
+      kind,
+    );
+  }
+  assert.ok(
+    smsJobs.every(
+      (job) =>
+        isSingleSegmentSms(job.smsContent.text) &&
+        !job.smsContent.text.includes('PRIVATE-SYNTHETIC'),
+    ),
+  );
+  const paidSms = smsJobs.find((job) => job.smsContent.kind === 'payment_recorded');
+  const reversedSms = smsJobs.find((job) => job.smsContent.kind === 'payment_reversed');
+  assert.match(paidSms.smsContent.text, /Balance LKR 0.00/);
+  assert.match(reversedSms.smsContent.text, /Balance LKR 100.00/);
 });
 test('worker renders stored snapshots, patient history is private and admin history excludes email bodies', async () => {
   const config = { ...testConfig, delivery: deliveryConfig({}) };
@@ -369,19 +422,37 @@ test('worker renders stored snapshots, patient history is private and admin hist
   });
   assert.ok(sent.length > 5);
   assert.ok(
-    sent.every(
-      ({ content }) =>
-        content?.html && content?.text && !content.text.includes('PRIVATE-SYNTHETIC'),
+    sent.every(({ job, content }) =>
+      job.channel === 'email'
+        ? content?.html && content?.text && !content.text.includes('PRIVATE-SYNTHETIC')
+        : isSingleSegmentSms(job.smsContent?.text),
     ),
   );
   assert.equal((await Delivery.findOne()).emailContent, undefined);
+  assert.equal((await Delivery.findOne({ channel: 'sms' })).smsContent, undefined);
   const own = (await send('get', '/notifications/deliveries?limit=50').expect(200)).body;
   assert.ok(own.records.some((row) => row.preview.includes('Receipt reference:')));
-  assert.ok(own.records.every((row) => row.emailSubject && !row.emailContent && !row.html));
+  assert.ok(
+    own.records.every(
+      (row) =>
+        (row.channel !== 'email' || row.emailSubject) &&
+        !row.emailContent &&
+        !row.html &&
+        !row.smsContent,
+    ),
+  );
+  assert.ok(
+    own.records.some((row) => row.channel === 'sms' && row.preview.includes('Payment received')),
+  );
   const admin = (await send('get', '/admin/deliveries', 'admin').expect(200)).body;
   assert.ok(
     admin.records.every(
-      (row) => !row.emailSubject && !row.emailContent && !row.preview.includes('Doctor:'),
+      (row) =>
+        !row.emailSubject &&
+        !row.emailContent &&
+        !row.smsContent &&
+        !row.preview.includes('Doctor:') &&
+        !row.preview.includes('LKR'),
     ),
   );
   const other = (await send('get', '/notifications/deliveries', 'other').expect(200)).body;

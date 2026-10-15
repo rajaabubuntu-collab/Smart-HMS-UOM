@@ -106,8 +106,10 @@ test('booking produces real-time notification and local email/SMS previews witho
     await expect(email).toContainText('Sri Lanka time');
     const sms = patient.locator('.delivery-row').filter({ hasText: 'SMS ·' });
     await sms.getByText('View local message preview', { exact: true }).click();
-    await expect(sms).toContainText('Smart HMS: You have a new update');
-    await expect(sms).not.toContainText(appointment.reference);
+    await expect(sms).toContainText('Smart HMS: Appointment confirmed');
+    await expect(sms).toContainText(appointment.reference);
+    await expect(sms).toContainText('Sri Lanka');
+    await expect(sms).toContainText('Doctor: Test doctor');
     await patient.screenshot({
       path: '.local/screenshots/delivery-previews.png',
       fullPage: true,

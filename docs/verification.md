@@ -76,7 +76,7 @@ The report draft (five pages), user manual (three pages) and use-case diagram pa
 
 ## Remaining acceptance
 
-Actual SMS receipt, a hosted HTTPS domain, off-site copy/restore, external alert delivery, long-running uptime, representative human tasks and clinician/native-language approval are pending. The user confirmed receiving a Gmail notification on 14 October; live rendering of the subsequent detailed templates remains to be checked. No participants or clinical accuracy values have been invented. Use [acceptance-plan.md](acceptance-plan.md) to record those results when performed.
+Live receipt of the latest detailed SMS format, a hosted HTTPS domain, off-site copy/restore, external alert delivery, long-running uptime, representative human tasks and clinician/native-language approval are pending. The user confirmed receiving a Gmail notification on 14 October and an app SMS on 15 October; live receipt/rendering of the subsequent detailed templates remains to be checked. No participants or clinical accuracy values have been invented. Use [acceptance-plan.md](acceptance-plan.md) to record those results when performed.
 
 ## Follow-up runtime verification - 14 October 2026
 
@@ -91,3 +91,15 @@ The [email content update](email-notifications.md) passed **125 server tests** a
 Fourteen synthetic HTML/plain-text examples were generated without reading credentials or sending mail. All fourteen fit desktop (960px), mobile (390px) and narrow mobile (320px) browser viewports. Appointment confirmation, rescheduling, payment and reset screenshots were visually inspected. This does not establish equivalent rendering in all email clients. No live message was sent during this template update; the earlier Gmail receipt is user-confirmed evidence only.
 
 Lint, production build, translation placeholder/coverage checks and Git whitespace checks passed. The pre-existing bundle-size advisory remains. The development service is active, API/database health returned `ok`, and the frontend returned HTTP 200. The original 13 October PDF documentation pack predates this email update; current details are in the Markdown documentation and generated email examples.
+
+## Notify.lk SMS integration - 15 October 2026
+
+The Notify.lk adapter, configuration and outbox transport passed **33 targeted server tests**, including seven new Notify.lk cases plus existing delivery, email and notification regression coverage. Provider requests were mocked with dummy credentials; no real SMS was sent and no trial credits were consumed by these checks. Tests cover HTTPS POST form fields, Sri Lankan destination formatting, acceptance versus handset delivery, safe error handling, bounded retries, transaction rollback, deduplication, allowlists, changed phone/provider and opt-out.
+
+Lint, changed-file formatting and Git whitespace checks passed; the local API/database health check returned `ok`. The provider-dashboard SMS is user-confirmed evidence. Credentials and actual app-to-phone delivery remain to be configured and verified using the [setup guide](notifylk-setup.md). No frontend code changed in this pass.
+
+## Detailed SMS templates - 15 October 2026
+
+After the user confirmed receiving an app SMS, the generic body was replaced for new events with concise appointment, clinical-status and payment templates. **40 targeted server tests** and **2 Chromium browser scenarios** passed. Coverage includes actual workflow event wiring, stored SMS snapshots, GSM-7 extension counting, 160-unit bounds, very long names and amounts, exact LKR cents, rescheduling dates, payment-reversal wording, private history, Notify.lk/Twilio payloads, blocked oversized content, transaction rollback, deduplication and legacy fallbacks. Browser tests confirm detailed local SMS alongside email previews and real-time delivery history.
+
+Lint, production build, all 935 Sinhala/Tamil catalogue entries, formatting and Git whitespace checks passed. The existing bundle-size advisory remains. API/database health returned `ok`. No live SMS was sent for testing and no credentials were modified in this template pass. The new message format is pending the user's next live event. Examples and privacy/length rules are documented in [SMS notifications](sms-notifications.md).

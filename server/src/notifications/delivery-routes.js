@@ -57,7 +57,9 @@ export function deliveryRouter(config) {
       .sort({ createdAt: -1, _id: -1 })
       .skip((page - 1) * limit)
       .limit(limit)
-      .select(req.user.role === 'patient' ? '+destination +emailContent' : '+destination')
+      .select(
+        req.user.role === 'patient' ? '+destination +emailContent +smsContent' : '+destination',
+      )
       .lean();
     res.json({
       modes: { email: modes.email, sms: modes.sms },
@@ -79,7 +81,9 @@ export function deliveryRouter(config) {
           job.transport === 'local'
             ? job.channel === 'email' && job.emailContent
               ? renderEmail(job.emailContent, config.origin).text
-              : deliveryMessage(config.origin)
+              : job.channel === 'sms' && job.smsContent
+                ? job.smsContent.text
+                : deliveryMessage(config.origin)
             : undefined,
       })),
     });

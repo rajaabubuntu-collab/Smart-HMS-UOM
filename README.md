@@ -8,7 +8,7 @@ Added password recovery, audited patient activation/deactivation, department lif
 
 Current evidence and remaining boundaries are in [verification](docs/verification.md). Read the [implementation report draft](docs/implementation-report.md), [user manual](docs/user-manual.md), [100-requirement traceability matrix](docs/requirements-traceability.csv), [rendered use cases](docs/use-cases.md) and [human acceptance checklist](docs/acceptance-plan.md). The original interim PDF remains unchanged. Earlier dated notes below record historical milestones.
 
-**Still pending:** real SMTP/SMS credentials and receipt verification, an approved production host/domain, off-site storage and alert destination, representative human acceptance and clinical/native-language reviews. Local previews, local HTTPS smoke tests and automated browser checks do not establish those results.
+**Still pending:** live receipt of the latest detailed SMS format, an approved production host/domain, off-site storage and alert destination, representative human acceptance and clinical/native-language reviews. Local previews, local HTTPS smoke tests and automated browser checks do not establish those results.
 
 University of Moratuwa BIT final-year project. Weeks 1–10 implementation: a MERN application with patient/staff management, doctor schedules, appointment booking, rescheduling, cancellation, receptionist check-in, consultations, prescriptions, medical history, billing, in-app notifications, a rule-based department guide, patient feedback, ten operational reports, an audit viewer, dashboard charts, Socket.IO updates and email/SMS delivery adapters.
 
@@ -22,7 +22,7 @@ Verified on 8 October 2026: lint, production build, formatting and whitespace ch
 
 ## Connectivity revision — 9 October 2026
 
-Charts now appear on **Overview** for all four roles, with additional LKR receipts and department charts for administrators. The top bar shows **Live updates** when Socket.IO is connected. Patients can opt in under **Email & SMS** and inspect local previews; administrators can monitor history. SMTP/Twilio adapters are implemented, but external sending requires private provider configuration and approved recipients. No live messages have been sent or verified. See [setup and behaviour](docs/connectivity.md).
+Charts now appear on **Overview** for all four roles, with additional LKR receipts and department charts for administrators. The top bar shows **Live updates** when Socket.IO is connected. Patients can opt in under **Email & SMS** and inspect local previews; administrators can monitor history. SMTP, Notify.lk and Twilio adapters are implemented; external sending requires private provider configuration and approved recipients. The user confirmed Gmail receipt on 14 October and a provider-dashboard SMS on 15 October. The user subsequently confirmed receiving an app notification through Notify.lk. New [detailed SMS templates](docs/sms-notifications.md) were tested locally with mocked HTTP, without spending credits; receipt of the new format remains to be checked. See [Notify.lk setup](docs/notifylk-setup.md) and [delivery behaviour](docs/connectivity.md).
 
 Verification: **102/102 server tests and 24/24 browser tests passed**, including both public-session recovery scenarios. Lint, production build, formatting and whitespace checks passed; the production dependency audit reported zero vulnerabilities. Desktop and mobile chart/delivery screenshots were inspected. API health and frontend HTTP responses were checked after restarting the local app. These results do not establish production load or live-provider delivery readiness.
 
@@ -86,11 +86,11 @@ To stop: press Ctrl+C in the development terminal and run `npm run db:stop`. Do 
 - Non-root production container, HTTPS proxy template and one-time initial administrator provisioning.
 - Role-scoped appointment charts on all four dashboards, plus administrator net-receipt and department charts with table alternatives.
 - Authenticated Socket.IO invalidations with a visible connection indicator and periodic REST fallback.
-- Patient email/SMS preferences, transactional delivery queue, local previews, SMTP/Twilio adapters and masked patient/admin delivery history.
+- Patient email/SMS preferences, transactional delivery queue, local previews, SMTP/Notify.lk/Twilio adapters and masked patient/admin delivery history.
 - Administrator hospital settings with private drafts, preview, audited publication/withdrawal, concurrent-edit protection, Sri Lankan reception contacts and explicit 24/7 hours.
 - Responsive layouts, form feedback, loading/error states and mobile navigation.
 
-Password recovery, patient account activation/deactivation and full-period CSV/print-PDF report exports are now implemented. Live email/SMS provider configuration and validation, and production deployment, remain pending. See [week 10 walkthrough](docs/week-10.md).
+Password recovery, patient account activation/deactivation and full-period CSV/print-PDF report exports are now implemented. Gmail receipt is user-confirmed; Notify.lk app receipt is also user-confirmed; the latest SMS template receipt check and production deployment remain pending. See [week 10 walkthrough](docs/week-10.md).
 
 To try booking: sign in as admin, publish a future session in **Doctor schedules**, then sign in as a patient and use **Book appointment**. Reception can use **Patients & walk-ins** and **Appointments** for registration, proxy booking and check-in. All appointment dates/times use Sri Lanka time.
 

@@ -16,7 +16,7 @@ All amounts use LKR and all appointment/event timestamps use Asia/Colombo. Email
 
 ## Privacy and event accuracy
 
-Email can contain the patient's name, attending doctor/department and billing totals. It does **not** copy booking/cancellation reasons, consultation notes, diagnoses, allergies, medication instructions, invoice item descriptions or bank reference text. Those remain behind the patient's authenticated portal. SMS retains the short generic portal link. Unknown internal event kinds fall back to a generic message instead of copying arbitrary notification text.
+Email can contain the patient's name, attending doctor/department and billing totals. It does **not** copy booking/cancellation reasons, consultation notes, diagnoses, allergies, medication instructions, invoice item descriptions or bank reference text. Those remain behind the patient's authenticated portal. Since 15 October, SMS uses [concise event-specific templates](sms-notifications.md), with operational details and no clinical notes. Unknown internal event kinds fall back to a generic message instead of copying arbitrary notification text.
 
 The whitelisted email snapshot is stored in the same transaction as the originating event and notification. Later booking, bill, name or settings changes do not rewrite a queued email. Each email identifies when the update occurred and directs the patient to the portal for the latest state. Legacy queued records without snapshots retain their original generic format. Already-sent messages are not resent and opting in does not backfill old events.
 

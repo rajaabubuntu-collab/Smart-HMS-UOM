@@ -19,7 +19,7 @@ export async function runDeliveryBatch(
       { status: 'queued', nextAttemptAt: { $lte: now } },
       { $set: { status: 'processing', startedAt: now }, $inc: { attempts: 1 } },
       { sort: { createdAt: 1 }, returnDocument: 'after' },
-    ).select('+destination +emailContent');
+    ).select('+destination +emailContent +smsContent');
     if (!job) break;
     processed++;
     const user = await User.findById(job.recipient);

@@ -12,7 +12,7 @@ Start MongoDB and the app using the README instructions, then open `http://local
 4. Make a new booking or another action that creates a patient notification. Open **Email & SMS** to see queued jobs processed, normally within five seconds when the worker is free. In `local` mode, jobs become **simulated** and can be expanded for preview; they never leave the application. In SMTP mode, accepted messages are sent to the approved recipient.
 5. Administrators can open **Email & SMS** to monitor delivery history. Patients can see only their own history; doctor/receptionist access is denied.
 
-Opting in does not backfill historical notices. Existing booking, rescheduling, cancellation, check-in, consultation, billing and reminder notices enqueue the selected channels in the same database transaction. A duplicate notification event does not enqueue another copy. New emails contain the patient name, event explanation, selected appointment or billing details, and a link to the relevant portal page. Clinical notes, diagnoses, prescription instructions and free-text reasons remain behind sign-in. SMS keeps the generic portal-update link. Emails use an event snapshot so later edits cannot change a queued message; see [template details and privacy](email-notifications.md).
+Opting in does not backfill historical notices. Existing booking, rescheduling, cancellation, check-in, consultation, billing and reminder notices enqueue the selected channels in the same database transaction. A duplicate notification event does not enqueue another copy. New emails contain the patient name, event explanation, selected appointment or billing details, and a link to the relevant portal page. Clinical notes, diagnoses, prescription instructions and free-text reasons remain behind sign-in. Since 15 October, new SMS messages contain concise event-specific appointment/payment details within a 160-unit GSM-7 budget; see [SMS templates](sms-notifications.md). Both channels save event snapshots so later edits cannot change queued content; see [template details and privacy](email-notifications.md).
 
 ## What the charts mean
 
@@ -38,7 +38,7 @@ Keep secrets in the private root `.env` (production: `.env.production`), never f
 | Setting                                    | Value / purpose                                                                                            |
 | ------------------------------------------ | ---------------------------------------------------------------------------------------------------------- |
 | `EMAIL_TRANSPORT`                          | `local` (preview), `off`, or `smtp`                                                                        |
-| `SMS_TRANSPORT`                            | `local` (preview), `off`, or `twilio`                                                                      |
+| `SMS_TRANSPORT`                            | `local` (preview), `off`, `notifylk`, or `twilio`                                                          |
 | `ALLOW_LIVE_DELIVERY`                      | Must be `true` for either live transport                                                                   |
 | `DELIVERY_ALLOWED_RECIPIENTS`              | Explicit comma-separated approved email addresses and `+947XXXXXXXX` numbers; no wildcard                  |
 | `SMTP_HOST`, `SMTP_PORT`                   | Provider host; port 587 by default, or 465 for implicit TLS                                                |
@@ -46,6 +46,10 @@ Keep secrets in the private root `.env` (production: `.env.production`), never f
 | `TWILIO_ACCOUNT_SID`, `TWILIO_AUTH_TOKEN`  | Twilio account credentials                                                                                 |
 | `TWILIO_FROM`                              | Registered alphanumeric sender, 1–11 letters/digits/spaces with at least one letter                        |
 | `TWILIO_MESSAGING_SERVICE_SID`             | Alternatively, a Messaging Service SID containing the approved sender; takes precedence over `TWILIO_FROM` |
+| `NOTIFYLK_USER_ID`, `NOTIFYLK_API_KEY`     | Notify.lk credentials from Settings → API Keys                                                             |
+| `NOTIFYLK_SENDER_ID`                       | Case-sensitive sender ID; `NotifyDEMO` for testing, or your approved sender                                |
+
+Notify.lk support was added 15 October. Follow the [Notify.lk setup guide](notifylk-setup.md) to enable it while retaining Gmail settings and preserving trial credits. It uses HTTPS POST and the same patient opt-in/allowlist controls. Notify.lk success is recorded as `accepted`; its documented API does not supply a delivery receipt, so actual receipt must be checked on the phone/provider dashboard.
 
 Sri Lankan mobile inputs such as `0771234567` normalise to `+94771234567`; landlines are not SMS destinations. Twilio's Sri Lanka guidance requires registered alphanumeric senders on several networks and restricts traffic on Mobitel. Confirm sender registration, permitted message type and Sri Lanka destination permissions in the provider account before testing. The app validates sender syntax, not regulatory approval. See [Twilio Sri Lanka guidance](https://www.twilio.com/en-us/guidelines/lk/sms) and [alphanumeric registration](https://www.twilio.com/docs/trust-hub/registrations/alphanumeric-sender-id).
 

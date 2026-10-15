@@ -1,5 +1,6 @@
 import nodemailer from 'nodemailer';
-import { deliveryMessage } from './delivery-config.js';
+import { deliveryMessage, sriLankanMobile } from './delivery-config.js';
+import { isSingleSegmentSms } from './sms-content.js';
 
 export function deliveryFailure(code, retryable = false) {
   const error = new Error(code);
@@ -50,8 +51,14 @@ export function createTransports(
   }
   return {
     async send(job, content) {
+      if (job.channel === 'sms' && job.smsContent && !isSingleSegmentSms(job.smsContent.text))
+        throw deliveryFailure('invalid_sms_content');
       const text =
-        job.channel === 'email' && content ? content.text : deliveryMessage(config.origin);
+        job.channel === 'email' && content
+          ? content.text
+          : job.channel === 'sms' && job.smsContent
+            ? job.smsContent.text
+            : deliveryMessage(config.origin);
       const subject = content?.subject ?? 'Smart HMS portal update';
       const emailFields = {
         subject,
@@ -94,6 +101,38 @@ export function createTransports(
           throw error;
         }
       }
+      if (job.transport === 'notifylk') {
+        const mobile = sriLankanMobile(job.destination);
+        if (!mobile) throw deliveryFailure('invalid_sms_destination');
+        // Credentials belong in the HTTPS request body, never URL/query logs.
+        const response = await fetchImpl('https://app.notify.lk/api/v1/send', {
+          method: 'POST',
+          redirect: 'error',
+          signal: AbortSignal.timeout(15000),
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+          body: new URLSearchParams({
+            user_id: d.notifylk.userId,
+            api_key: d.notifylk.apiKey,
+            sender_id: d.notifylk.senderId,
+            to: mobile.slice(1),
+            message: text,
+          }),
+        });
+        if (!response.ok) {
+          if (response.status === 429) throw deliveryFailure('provider_rate_limit', true);
+          if (response.status >= 400 && response.status < 500 && response.status !== 408)
+            throw deliveryFailure('provider_rejected');
+          throw new Error('Provider result uncertain');
+        }
+        const result = await response.json();
+        // The documented response has no delivery receipt or message identifier.
+        if (result?.status === 'success')
+          return { status: 'accepted', providerStatus: 'notifylk_accepted' };
+        if (['error', 'fail', 'failed'].includes(result?.status))
+          throw deliveryFailure('provider_rejected');
+        throw new Error('Provider result uncertain');
+      }
+      if (job.transport !== 'twilio') throw deliveryFailure('unsupported_transport');
       const result = await twilio('.json', {
         method: 'POST',
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },

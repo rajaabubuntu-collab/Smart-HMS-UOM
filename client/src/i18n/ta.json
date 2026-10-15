@@ -150,7 +150,7 @@
   "Choose an available time": "கிடைக்கும் நேரத்தைத் தேர்ந்தெடுக்கவும்",
   "Choose another date or doctor. Reception can help you find a suitable appointment.": "வேறு தேதி அல்லது மருத்துவரைத் தேர்ந்தெடுக்கவும். பொருத்தமான சந்திப்பைக் கண்டுபிடிக்க வரவேற்புப் பிரிவு உதவும்.",
   "Choose another date or report to view saved activity.": "சேமிக்கப்பட்ட செயல்பாடுகளைக் காண வேறு தேதி அல்லது அறிக்கையைத் தேர்ந்தெடுக்கவும்.",
-  "Email includes appointment times, doctor details and billing totals. Clinical notes and prescription instructions stay in the portal. SMS contains a sign-in link. Changes apply to future events.": "மின்னஞ்சலில் சந்திப்பு நேரங்கள், மருத்துவர் விவரங்கள் மற்றும் கட்டணத் தொகைகள் இடம்பெறும். மருத்துவக் குறிப்புகளும் மருந்துச் சீட்டு வழிமுறைகளும் தளத்தில் மட்டுமே இருக்கும். SMS செய்தியில் உள்நுழைவு இணைப்பு இருக்கும். மாற்றங்கள் எதிர்கால நிகழ்வுகளுக்குப் பொருந்தும்.",
+  "Email and SMS include appointment times, doctor details and billing amounts. Clinical notes and prescription instructions stay in the portal. Changes apply to future events.": "மின்னஞ்சல் மற்றும் SMS செய்திகளில் சந்திப்பு நேரங்கள், மருத்துவர் விவரங்கள் மற்றும் கட்டணத் தொகைகள் இடம்பெறும். மருத்துவக் குறிப்புகளும் மருந்துச் சீட்டு வழிமுறைகளும் தளத்தில் மட்டுமே இருக்கும். மாற்றங்கள் எதிர்கால நிகழ்வுகளுக்குப் பொருந்தும்.",
   "Choose your appointment": "உங்கள் சந்திப்பைத் தேர்ந்தெடுக்கவும்",
   "Choose “Save as PDF” in the print dialog. This export includes all rows in the selected period, up to 5,000.": "அச்சிடும் சாளரத்தில் “Save as PDF” என்பதைத் தேர்ந்தெடுக்கவும். தேர்ந்தெடுத்த காலப்பகுதியின் அனைத்துப் பதிவுகளும் 5,000 வரிசைகள் வரை இதில் அடங்கும்.",
   "Clear": "அழிக்கவும்",

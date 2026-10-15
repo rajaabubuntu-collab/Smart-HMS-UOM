@@ -390,9 +390,20 @@ const deliverySchema = new Schema(
     recipient: reference('User'),
     eventKey: { type: String, required: true },
     channel: { type: String, enum: ['email', 'sms'], required: true },
-    transport: { type: String, enum: ['local', 'smtp', 'twilio'], required: true },
+    transport: { type: String, enum: ['local', 'smtp', 'twilio', 'notifylk'], required: true },
     destination: { type: String, required: true, select: false },
     emailContent: { type: emailContentSchema, select: false },
+    smsContent: {
+      type: new Schema(
+        {
+          version: { type: Number, enum: [1], required: true },
+          kind: { type: String, required: true, maxlength: 60 },
+          text: { type: String, required: true, maxlength: 160 },
+        },
+        { _id: false },
+      ),
+      select: false,
+    },
     status: {
       type: String,
       enum: [

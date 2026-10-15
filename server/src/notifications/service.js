@@ -1,6 +1,7 @@
 import { Notification, Patient, User, Delivery, HospitalSettings } from '../models.js';
 import { deliveryConfig, sriLankanMobile } from './delivery-config.js';
 import { appointmentEmailDetails, billingEmailDetails, snapshotEmail } from './email-content.js';
+import { snapshotSms } from './sms-content.js';
 export async function notifyPatient(patientId, event, session) {
   const patient = await Patient.findById(patientId).select('user').session(session);
   if (!patient) throw new Error('Notification recipient profile missing.');
@@ -23,18 +24,21 @@ export async function notifyPatient(patientId, event, session) {
   if (!result.upsertedCount) return;
   const user = await User.findById(patient.user).session(session);
   const modes = deliveryConfig();
+  const brand =
+    user.isActive &&
+    ['email', 'sms'].some(
+      (channel) => user.notificationPreferences?.[channel] && modes[channel] !== 'off',
+    )
+      ? await HospitalSettings.findById('000000000000000000000001')
+          .select('published')
+          .session(session)
+          .lean()
+      : null;
   for (const channel of ['email', 'sms']) {
     if (!user.isActive || !user.notificationPreferences?.[channel] || modes[channel] === 'off')
       continue;
     const destination = channel === 'email' ? user.email : sriLankanMobile(user.phone);
     if (!destination) continue;
-    const brand =
-      channel === 'email'
-        ? await HospitalSettings.findById('000000000000000000000001')
-            .select('published')
-            .session(session)
-            .lean()
-        : null;
     await Delivery.updateOne(
       { recipient: user._id, eventKey: event.eventKey, channel },
       {
@@ -47,7 +51,7 @@ export async function notifyPatient(patientId, event, session) {
           status: 'queued',
           ...(channel === 'email'
             ? { emailContent: snapshotEmail(event, user.name, brand?.published) }
-            : {}),
+            : { smsContent: snapshotSms(event, brand?.published) }),
         },
       },
       { upsert: true, session, runValidators: true },
