@@ -18,7 +18,7 @@ export default function AuthPage({ register = false }) {
   const safeReturn =
     auth.user?.role === 'patient' &&
     typeof returnTo === 'string' &&
-    /^\/(?:notifications|messages|records|appointments(?:\?selected=[a-f\d]{24})?|billing\/[a-f\d]{24})$/i.test(
+    /^\/(?:book(?:\?(?:doctor|department)=[a-f\d]{24})?|billing|notifications|messages|records|appointments(?:\?selected=[a-f\d]{24})?|billing\/[a-f\d]{24})$/i.test(
       returnTo,
     );
   if (auth.user) return <Navigate to={safeReturn ? returnTo : '/dashboard'} replace />;
@@ -101,7 +101,7 @@ export default function AuthPage({ register = false }) {
             {t('New here?')}{' '}
             {register ? t('Already have an account?') : t('Join your care community.')}
           </span>
-          <Link to={register ? '/login' : '/register'}>
+          <Link to={register ? '/login' : '/register'} state={{ returnTo }}>
             {register ? t('Sign in') : t('Create account')} <ArrowUpRight size={16} />
           </Link>
         </div>

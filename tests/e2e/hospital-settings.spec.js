@@ -42,11 +42,11 @@ test('admin saves private drafts, publishes 24/7 details and handles conflicting
     await expect(
       publicPage.getByRole('heading', { name: 'Synthetic Hospital', exact: true }),
     ).toBeVisible();
-    await expect(publicPage.getByText('Open 24 hours', { exact: true })).toHaveCount(7);
-    await expect(publicPage.getByRole('link', { name: '+94112345678' })).toHaveAttribute(
-      'href',
-      'tel:+94112345678',
-    );
+    await expect(publicPage.getByText('Reception open 24/7', { exact: true })).toHaveCount(1);
+    await expect(publicPage.locator('.hospital-hours')).toHaveCount(0);
+    await expect(
+      publicPage.locator('.hospital-details').getByRole('link', { name: '+94112345678' }),
+    ).toHaveAttribute('href', 'tel:+94112345678');
     await expect(publicPage.getByRole('link', { name: 'reception@test.local' })).toHaveAttribute(
       'href',
       'mailto:reception@test.local',

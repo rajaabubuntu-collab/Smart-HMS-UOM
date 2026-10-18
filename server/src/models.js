@@ -485,6 +485,34 @@ export const HospitalSettings = model(
   ),
 );
 
+export const Enquiry = model(
+  'Enquiry',
+  new Schema(
+    {
+      requestId: { type: String, required: true, unique: true, select: false },
+      reference: { type: String, required: true, unique: true },
+      name: { type: String, required: true, maxlength: 120 },
+      email: { type: String, required: true, maxlength: 254 },
+      phone: { type: String, default: '', maxlength: 30 },
+      subject: {
+        type: String,
+        enum: ['appointments', 'services', 'visiting', 'billing', 'other'],
+        required: true,
+      },
+      message: { type: String, required: true, maxlength: 2000 },
+      status: {
+        type: String,
+        enum: ['new', 'in_progress', 'resolved'],
+        default: 'new',
+        index: true,
+      },
+      updatedBy: reference('User', false),
+    },
+    { timestamps: true },
+  ),
+);
+Enquiry.schema.index({ createdAt: -1, _id: -1 });
+
 export async function connectDatabase(uri) {
   await mongoose.connect(uri, { serverSelectionTimeoutMS: 10000 });
   await Promise.all(
@@ -506,6 +534,7 @@ export async function connectDatabase(uri) {
       Delivery,
       HospitalSettings,
       Feedback,
+      Enquiry,
     ].map((m) => m.init()),
   );
 }

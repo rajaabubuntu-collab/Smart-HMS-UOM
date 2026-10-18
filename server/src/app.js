@@ -1,3 +1,4 @@
+import { publicEnquiryRouter, staffEnquiryRouter } from './public/enquiries.js';
 import {
   administrationRouter,
   publicDirectoryRouter,
@@ -143,9 +144,11 @@ export function createApp(config, { rateLimitEnabled = true } = {}) {
   app.use('/api', recoveryRouter(config));
   app.use('/api', publicHospitalRouter());
   app.use('/api', publicDirectoryRouter());
+  app.use('/api', publicEnquiryRouter({ rateLimitEnabled }));
   app.use('/api', authenticate(config));
   app.use('/api', hospitalSettingsRouter());
   app.use('/api', administrationRouter());
+  app.use('/api', staffEnquiryRouter());
   app.get('/api/auth/me', (req, res) => res.json({ user: publicUser(req.user) }));
   app.post('/api/auth/logout', async (req, res) => {
     await mongoose.connection.transaction(async (session) => {

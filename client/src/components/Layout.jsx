@@ -36,6 +36,8 @@ export default function Layout() {
   if (['patient', 'admin'].includes(user.role))
     links.push({ to: '/messages', label: 'Email & SMS', icon: MessageSquare });
   links.push({ to: '/appointments', label: 'Appointments', icon: CalendarDays });
+  if (['admin', 'receptionist'].includes(user.role))
+    links.push({ to: '/enquiries', label: 'Website enquiries', icon: MessageSquare });
   if (['patient', 'admin'].includes(user.role))
     links.push({
       to: user.role === 'patient' ? '/feedback' : '/admin/feedback',

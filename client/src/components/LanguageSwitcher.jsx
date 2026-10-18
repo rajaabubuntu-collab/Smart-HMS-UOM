@@ -6,7 +6,7 @@ export default function LanguageSwitcher() {
     document.documentElement.lang = language;
   }, [language]);
   return (
-    <div className="language-control">
+    <div className="language-control" role="region" aria-label="Language / භාෂාව / மொழி">
       <label htmlFor="hms-language">Language / භාෂාව / மொழி</label>
       <select
         id="hms-language"

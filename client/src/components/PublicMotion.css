@@ -1,0 +1,105 @@
+/* Finite, lightweight motion for public pages. No content is hidden before it enters view. */
+@keyframes hospital-arrive {
+  from {
+    opacity: 0.72;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+@keyframes hospital-answer {
+  from {
+    opacity: 0.65;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.hospital-care-image {
+  overflow: hidden;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .hospital-landing .hospital-reveal-in {
+    animation: hospital-arrive 480ms cubic-bezier(0.2, 0.7, 0.2, 1) both;
+  }
+  /* Stop retaining the animation transform so hover feedback works after arrival. */
+  .hospital-landing .hospital-reveal-in {
+    animation-fill-mode: backwards;
+  }
+  .hospital-landing .hospital-hero-visual.hospital-reveal-in {
+    animation-duration: 620ms;
+  }
+  .hospital-landing .hospital-faq details[open] > p {
+    animation: hospital-answer 200ms ease-out;
+  }
+  .hospital-landing
+    :is(
+      .button,
+      .hospital-patient-shortcuts > a,
+      .public-service-card,
+      .hospital-care-card,
+      .hospital-profile-card
+    ) {
+    transition:
+      transform 180ms ease-out,
+      box-shadow 220ms ease-out,
+      border-color 180ms ease-out,
+      background-color 180ms ease-out;
+  }
+  .hospital-landing :is(.text-link, .button, .hospital-patient-shortcuts > a) > svg:last-child {
+    transition: transform 180ms ease-out;
+  }
+  .hospital-landing .hospital-care-image img {
+    transition: transform 450ms cubic-bezier(0.2, 0.7, 0.2, 1);
+  }
+  .hospital-landing .hospital-site-header nav a {
+    transition:
+      color 160ms ease-out,
+      text-underline-offset 160ms ease-out;
+  }
+  .hospital-landing .hospital-site-header nav a:hover {
+    text-underline-offset: 7px;
+  }
+}
+@media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
+  .hospital-landing :is(.hospital-care-card, .hospital-profile-card, .public-service-card):hover {
+    transform: translateY(-3px);
+    box-shadow: 0 14px 30px #174f5512;
+    border-color: #a8cdc5;
+  }
+  .hospital-landing .hospital-care-card:hover .hospital-care-image img {
+    transform: scale(1.025);
+  }
+  .hospital-landing :is(.button, .hospital-patient-shortcuts > a):hover:not(:disabled) {
+    transform: translateY(-2px);
+  }
+  .hospital-landing
+    :is(.text-link, .button, .hospital-patient-shortcuts > a):hover
+    > svg:last-child {
+    transform: translateX(3px);
+  }
+  .hospital-landing .button:active:not(:disabled) {
+    transform: translateY(0);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .hospital-landing .hospital-reveal-in {
+    animation: none;
+    transform: none;
+    opacity: 1;
+  }
+  .hospital-landing .hospital-care-image img {
+    transform: none;
+  }
+}
+@media print {
+  .hospital-landing .hospital-reveal-in {
+    animation: none !important;
+    transform: none !important;
+    opacity: 1 !important;
+  }
+}

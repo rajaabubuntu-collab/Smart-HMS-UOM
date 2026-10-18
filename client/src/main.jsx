@@ -1,3 +1,6 @@
+import { PublicDepartments, PublicDepartment, PublicDoctorProfile } from './pages/PublicProfiles';
+import { PublicAbout, PublicContact } from './pages/PublicInformation';
+import Enquiries from './pages/Enquiries';
 import LanguageSwitcher from './components/LanguageSwitcher';
 import { useLanguage } from './i18n/locale';
 import { t } from './i18n/locale';
@@ -68,7 +71,20 @@ function App() {
   const { pathname } = useLocation();
   // Public information remains usable while session lookup is loading or unavailable.
   if (pathname === '/') return <PublicHome />;
-  if (pathname === '/doctors') return <PublicDirectory />;
+  if (
+    /^\/(?:doctors|departments)(?:\/[^/]+)?$/.test(pathname) ||
+    ['/about', '/contact'].includes(pathname)
+  )
+    return (
+      <Routes>
+        <Route path="/doctors" element={<PublicDirectory />} />
+        <Route path="/doctors/:id" element={<PublicDoctorProfile key={pathname} />} />
+        <Route path="/departments" element={<PublicDepartments />} />
+        <Route path="/departments/:id" element={<PublicDepartment key={pathname} />} />
+        <Route path="/about" element={<PublicAbout />} />
+        <Route path="/contact" element={<PublicContact />} />
+      </Routes>
+    );
   if (pathname === '/forgot-password') return <Recovery key="forgot" />;
   if (pathname === '/reset-password') return <Recovery key="reset" reset />;
   if (loading)
@@ -104,6 +120,9 @@ function App() {
             <Route path="/messages" element={<Delivery />} />
           </Route>
           <Route path="/appointments" element={<Appointments />} />
+          <Route element={<Protected roles={['admin', 'receptionist']} />}>
+            <Route path="/enquiries" element={<Enquiries />} />
+          </Route>
           <Route element={<Protected roles={['doctor']} />}>
             <Route path="/queue" element={<DoctorQueue />} />
             <Route path="/clinical/:id" element={<ConsultationPage />} />

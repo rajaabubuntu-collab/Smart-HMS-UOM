@@ -188,6 +188,58 @@ export function administrationRouter() {
   });
   return router;
 }
+// A shared publication filter protects both search results and individual public profiles.
+function publishedDoctors({ department, id, q } = {}) {
+  return [
+    {
+      $match: {
+        isPublic: true,
+        ...(id ? { _id: new mongoose.Types.ObjectId(id) } : {}),
+        ...(department ? { department: new mongoose.Types.ObjectId(department) } : {}),
+      },
+    },
+    {
+      $lookup: {
+        from: 'users',
+        localField: 'user',
+        foreignField: '_id',
+        pipeline: [{ $match: { isActive: true } }, { $project: { name: 1 } }],
+        as: 'account',
+      },
+    },
+    { $unwind: '$account' },
+    {
+      $lookup: {
+        from: 'departments',
+        localField: 'department',
+        foreignField: '_id',
+        pipeline: [{ $match: { isActive: true, isPublic: true } }, { $project: { name: 1 } }],
+        as: 'service',
+      },
+    },
+    { $unwind: '$service' },
+    ...(q
+      ? [
+          {
+            $match: {
+              $or: ['account.name', 'specialization'].map((field) => ({
+                [field]: { $regex: escapeRegex(q), $options: 'i' },
+              })),
+            },
+          },
+        ]
+      : []),
+  ];
+}
+const publicDoctorFields = {
+  _id: 1,
+  name: '$account.name',
+  department: '$service.name',
+  departmentId: '$service._id',
+  specialization: 1,
+  qualification: 1,
+  consultationFeeMinor: 1,
+};
 export function publicDirectoryRouter() {
   const router = Router();
   router.get('/public/departments', async (req, res) => {
@@ -204,60 +256,46 @@ export function publicDirectoryRouter() {
     ]);
     res.json({ items, total, page, limit });
   });
+  router.get('/public/departments/:id', async (req, res) => {
+    const id = parse(objectId, req.params.id);
+    const department = await Department.findOne({ _id: id, isActive: true, isPublic: true })
+      .select('name description')
+      .lean();
+    if (!department) throw httpError(404, 'Department information is unavailable.');
+    res.json({ department });
+  });
   router.get('/public/doctors', async (req, res) => {
-    const { page, limit, department } = parse(
-      pageSchema.extend({ department: objectId.optional() }).strict(),
+    const query = parse(
+      pageSchema
+        .extend({ department: objectId.optional(), q: z.string().trim().max(100).default('') })
+        .strict(),
       req.query,
     );
+    const { page, limit } = query;
     const [result] = await Doctor.aggregate([
-      {
-        $match: {
-          isPublic: true,
-          ...(department ? { department: new mongoose.Types.ObjectId(department) } : {}),
-        },
-      },
-      {
-        $lookup: {
-          from: 'users',
-          localField: 'user',
-          foreignField: '_id',
-          pipeline: [{ $match: { isActive: true } }, { $project: { name: 1 } }],
-          as: 'account',
-        },
-      },
-      { $unwind: '$account' },
-      {
-        $lookup: {
-          from: 'departments',
-          localField: 'department',
-          foreignField: '_id',
-          pipeline: [{ $match: { isActive: true, isPublic: true } }, { $project: { name: 1 } }],
-          as: 'service',
-        },
-      },
-      { $unwind: '$service' },
+      ...publishedDoctors(query),
       { $sort: { 'account.name': 1, _id: 1 } },
       {
         $facet: {
           items: [
             { $skip: (page - 1) * limit },
             { $limit: limit },
-            {
-              $project: {
-                _id: 1,
-                name: '$account.name',
-                department: '$service.name',
-                specialization: 1,
-                qualification: 1,
-                consultationFeeMinor: 1,
-              },
-            },
+            { $project: publicDoctorFields },
           ],
           total: [{ $count: 'value' }],
         },
       },
     ]).option({ maxTimeMS: 10000 });
     res.json({ items: result.items, total: result.total[0]?.value || 0, page, limit });
+  });
+  router.get('/public/doctors/:id', async (req, res) => {
+    const id = parse(objectId, req.params.id);
+    const [doctor] = await Doctor.aggregate([
+      ...publishedDoctors({ id }),
+      { $project: publicDoctorFields },
+    ]).option({ maxTimeMS: 10000 });
+    if (!doctor) throw httpError(404, 'Doctor information is unavailable.');
+    res.json({ doctor });
   });
   return router;
 }

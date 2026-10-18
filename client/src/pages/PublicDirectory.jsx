@@ -1,107 +1,172 @@
-import { t } from '../i18n/locale';
-import { useState } from 'react';
-import { Link } from 'react-router-dom';
-import { Brand, Loading, Notice, Pager, useResource } from '../components/ui';
+import { useEffect, useState } from 'react';
+import { api } from '../api';
+import { Link, useSearchParams } from 'react-router-dom';
+import { ArrowRight, Stethoscope } from 'lucide-react';
+import { Field, Loading, Notice, Pager, useResource } from '../components/ui';
+import { PublicPage } from '../components/PublicSite';
+import { useAuth } from '../auth';
 import { money } from '../scheduling';
-export default function PublicDirectory() {
-  const [page, setPage] = useState(1),
-    [servicePage, setServicePage] = useState(1),
-    [department, setDepartment] = useState('');
-  const services = useResource(`/public/departments?page=${servicePage}`);
-  const doctors = useResource(
-    `/public/doctors?${new URLSearchParams({ page, ...(department ? { department } : {}) })}`,
-  );
+import { t } from '../i18n/locale';
+
+export function PublicDoctorCard({ doctor }) {
+  const { user } = useAuth();
   return (
-    <div className="public-home">
-      <div className="public-container">
-        <header className="public-header glass-surface">
-          <Link to="/">
-            <Brand />
-          </Link>
-          <Link className="button primary" to="/login">
-            {t('Patient portal')}{' '}
-          </Link>
-        </header>
-        <main className="directory-main">
-          <Link to="/">{t('← Hospital website')}</Link>
-          <h1>{t('Doctors & services')}</h1>
-          <p>{t('Hospital-approved profiles. Sign in to check appointment availability.')}</p>
-          <Notice>{services.error || doctors.error}</Notice>
-          <section className="card padded">
-            <h2>{t('Our departments')}</h2>
-            <button
-              className={`button ${!department ? 'primary' : 'subtle'}`}
-              onClick={() => {
-                setDepartment('');
-                setPage(1);
-              }}
-            >
-              {t('All departments')}{' '}
-            </button>
-            {services.pending && <Loading />}
-            {services.data?.items.map((item) => (
-              <article key={item._id} className="directory-service">
-                <h3>{item.name}</h3>
-                <p>{item.description}</p>
-                <button
-                  className={`button ${department === item._id ? 'primary' : 'subtle'}`}
-                  onClick={() => {
-                    setDepartment(item._id);
-                    setPage(1);
-                  }}
-                >
-                  {t('View doctors:')} {item.name}
-                </button>
-              </article>
-            ))}
-            {services.data && (
-              <>
-                <Pager {...services.data} onChange={setServicePage} />
-                {!services.data.total && (
-                  <p>
-                    {t(
-                      'Department information is awaiting publication. Contact reception for details.',
-                    )}{' '}
-                  </p>
-                )}
-              </>
-            )}
-          </section>
-          <section>
-            <h2>{t('Our doctors')}</h2>
-            {doctors.pending && <Loading />}
-            <div className="directory-grid">
-              {doctors.data?.items.map((doctor) => (
-                <article className="card padded" key={doctor._id}>
-                  <h3>{doctor.name}</h3>
-                  <p>
-                    {doctor.department} · {doctor.specialization}
-                  </p>
-                  <p>{doctor.qualification}</p>
-                  <p>
-                    {t('Consultation fee:')} {money(doctor.consultationFeeMinor)}
-                  </p>
-                  <Link className="button primary" to="/book">
-                    {t('Check availability')}{' '}
-                  </Link>
-                </article>
-              ))}
-            </div>
-            {doctors.data && (
-              <>
-                {!doctors.data.total && (
-                  <p>
-                    {t(
-                      'No published doctor profiles in this selection. Contact reception for available services.',
-                    )}{' '}
-                  </p>
-                )}
-                <Pager {...doctors.data} onChange={setPage} />
-              </>
-            )}
-          </section>
-        </main>
+    <article className="hospital-profile-card">
+      <span className="hospital-doctor-symbol">
+        <Stethoscope size={28} aria-hidden="true" />
+      </span>
+      <p className="public-kicker">{doctor.department}</p>
+      <h3>{doctor.name}</h3>
+      <p>{doctor.specialization}</p>
+      {doctor.qualification && <p>{doctor.qualification}</p>}
+      <p>
+        {t('Consultation fee:')} <strong>{money(doctor.consultationFeeMinor)}</strong>
+      </p>
+      <div className="hospital-card-actions">
+        <Link to={`/doctors/${doctor._id}`} className="text-link">
+          {t('View doctor profile')}
+          <ArrowRight size={16} />
+        </Link>
+        <Link
+          className="button primary"
+          to={user?.role === 'doctor' ? '/dashboard' : `/book?doctor=${doctor._id}`}
+        >
+          {t('Check availability')}
+        </Link>
       </div>
-    </div>
+    </article>
   );
+}
+export default function PublicDirectory() {
+  const [params, setParams] = useSearchParams();
+  const page = Math.max(1, Number(params.get('page')) || 1);
+  const department = params.get('department') || '';
+  const q = params.get('q') || '';
+  const doctors = useResource(
+    `/public/doctors?${new URLSearchParams({ page, q, ...(department ? { department } : {}) })}`,
+  );
+  const services = usePublicDepartments();
+  function change(values) {
+    setParams({ ...Object.fromEntries(params), ...values, page: '1' });
+  }
+  return (
+    <PublicPage
+      title={t('Doctors & services')}
+      description={t(
+        'Search by doctor name or speciality, then choose a profile to check appointment availability.',
+      )}
+    >
+      <form
+        key={q}
+        className="hospital-search-form"
+        onSubmit={(e) => {
+          e.preventDefault();
+          change({ q: new FormData(e.currentTarget).get('doctor-search').trim() });
+        }}
+      >
+        <Field
+          label={t('Doctor name or speciality')}
+          name="doctor-search"
+          type="search"
+          maxLength={100}
+          defaultValue={q}
+        />
+        <Field
+          label={t('Department')}
+          name="public-department"
+          as="select"
+          value={department}
+          onChange={(e) => change({ department: e.target.value })}
+        >
+          <option value="">{t('All departments')}</option>
+          {services.data?.items.map((item) => (
+            <option key={item._id} value={item._id}>
+              {item.name}
+            </option>
+          ))}
+          {department && !services.data?.items.some((item) => item._id === department) && (
+            <option value={department}>{t('Selected department')}</option>
+          )}
+        </Field>
+        <button className="button primary" type="submit">
+          {t('Search')}
+        </button>
+        <button
+          className="button subtle"
+          type="button"
+          onClick={() => {
+            setParams({});
+          }}
+        >
+          {t('Clear filters')}
+        </button>
+      </form>
+      <Notice>{doctors.error || services.error}</Notice>
+      {doctors.pending && <Loading text="Loading doctors and departments…" />}
+      {doctors.data && (
+        <>
+          <h2>{t('Our doctors')}</h2>
+          <p role="status" className="muted">
+            {t('{count} doctors found', { count: doctors.data.total })}
+          </p>
+          <div className="hospital-profile-grid">
+            {doctors.data.items.map((doctor) => (
+              <PublicDoctorCard key={doctor._id} doctor={doctor} />
+            ))}
+          </div>
+          {!doctors.data.items.length && (
+            <div className="hospital-empty-card">
+              <h2>{t('No matching doctors')}</h2>
+              <p>
+                {t(
+                  'Try another name or speciality, clear the filters, or contact reception for assistance.',
+                )}
+              </p>
+              <Link className="text-link" to="/contact">
+                {t('Contact reception')}
+                <ArrowRight size={16} />
+              </Link>
+            </div>
+          )}
+          <Pager
+            {...doctors.data}
+            onChange={(value) => setParams({ ...Object.fromEntries(params), page: String(value) })}
+          />
+        </>
+      )}
+      <div className="hospital-page-callout">
+        <h2>{t('Explore our departments')}</h2>
+        <p>{t('Read department information and find the doctors associated with each service.')}</p>
+        <Link className="button subtle" to="/departments">
+          {t('View departments')}
+          <ArrowRight size={17} />
+        </Link>
+      </div>
+    </PublicPage>
+  );
+}
+
+// Keep every published department selectable, including those beyond the first API page.
+function usePublicDepartments() {
+  const [resource, setResource] = useState({ data: null, error: '' });
+  useEffect(() => {
+    const controller = new AbortController();
+    async function load() {
+      const items = [];
+      let page = 1;
+      while (true) {
+        const result = await api(`/public/departments?limit=50&page=${page++}`, {
+          signal: controller.signal,
+        });
+        items.push(...result.items);
+        if (!result.items.length || items.length >= result.total) break;
+      }
+      if (!controller.signal.aborted) setResource({ data: { items }, error: '' });
+    }
+    load().catch((error) => {
+      if (error.name !== 'AbortError') setResource({ data: null, error: error.message });
+    });
+    return () => controller.abort();
+  }, []);
+  return resource;
 }

@@ -1,9 +1,13 @@
 import { t } from '../i18n/locale';
-export default function HospitalInformation({ hospital }) {
+export default function HospitalInformation({ hospital, headingLevel = 3 }) {
   if (!hospital) return null;
+  const Heading = headingLevel === 2 ? 'h2' : 'h3';
+  const HoursHeading = headingLevel === 2 ? 'h3' : 'h4';
+  const openEveryDay =
+    hospital.hours.length === 7 && hospital.hours.every((day) => day.allDay && !day.closed);
   return (
     <div className="hospital-details">
-      <h3>{hospital.name || t('Hospital name')}</h3>
+      <Heading>{hospital.name || t('Hospital name')}</Heading>
       {hospital.isDemo && <span className="demo-label">{t('Demonstration information')}</span>}
       {hospital.description && <p className="hospital-multiline">{hospital.description}</p>}
       <dl className="hospital-contacts">
@@ -30,26 +34,28 @@ export default function HospitalInformation({ hospital }) {
           </div>
         )}
       </dl>
-      <h4>{t('Reception opening hours')}</h4>
+      <HoursHeading>{t('Reception opening hours')}</HoursHeading>
+      {openEveryDay ? (
+        <p className="hospital-hours-summary">{t('Reception open 24/7')}</p>
+      ) : (
+        <dl className="hospital-hours">
+          {hospital.hours.map((h) => (
+            <div key={h.day}>
+              <dt>{t(h.day)}</dt>
+              <dd>
+                {h.closed
+                  ? t('Closed')
+                  : h.allDay
+                    ? t('Open 24 hours')
+                    : `${h.opens || '—'}–${h.closes || '—'}`}
+              </dd>
+            </div>
+          ))}
+        </dl>
+      )}
       <p className="muted small-text">
-        {t(
-          'Sri Lanka time (UTC+05:30). Doctor appointments follow their published schedules.',
-        )}{' '}
+        {t('Doctor appointments follow their published schedules.')}
       </p>
-      <dl className="hospital-hours">
-        {hospital.hours.map((h) => (
-          <div key={h.day}>
-            <dt>{t(h.day)}</dt>
-            <dd>
-              {h.closed
-                ? t('Closed')
-                : h.allDay
-                  ? t('Open 24 hours')
-                  : `${h.opens || '—'}–${h.closes || '—'}`}
-            </dd>
-          </div>
-        ))}
-      </dl>
       {hospital.visitNotes && <p className="hospital-multiline">{hospital.visitNotes}</p>}
     </div>
   );

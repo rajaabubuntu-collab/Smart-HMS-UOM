@@ -1,22 +1,31 @@
-import { t, getLanguage } from '../i18n/locale';
-import { Link } from 'react-router-dom';
+import { usePublicMotion } from '../hooks/usePublicMotion';
+import { HospitalCareGallery } from './HospitalCareSections';
+import { PublicHeader, PublicFooter, PatientShortcuts } from '../components/PublicSite';
+import { t } from '../i18n/locale';
+import { useEffect } from 'react';
+import { Link, useLocation } from 'react-router-dom';
 import {
   ArrowRight,
   ArrowUpRight,
   CalendarDays,
   Check,
-  Clock3,
   FileHeart,
   HeartPulse,
   MapPin,
   ReceiptText,
   ShieldCheck,
-  Stethoscope,
 } from 'lucide-react';
-import { Brand, useResource } from '../components/ui';
+import { useResource } from '../components/ui';
 import HospitalInformation from '../components/HospitalInformation';
-import { DisplayPreference } from '../components/DisplayPreference';
 import { useAuth } from '../auth';
+import './PublicHome.css';
+import {
+  HospitalDirectoryPreview,
+  SriLankaVisitorGuide,
+  HospitalLocation,
+  EmergencyInformation,
+  PhotoCredit,
+} from './PublicHospitalSections';
 
 const services = [
   {
@@ -46,34 +55,27 @@ const services = [
 ];
 
 export default function PublicHome() {
+  const motionRef = usePublicMotion();
   const { user } = useAuth();
   const {
     data: information,
     error: informationError,
     pending: informationPending,
   } = useResource('/public/hospital');
+  const { hash } = useLocation();
+  useEffect(() => {
+    if (!informationPending && hash)
+      document.getElementById(hash.slice(1))?.scrollIntoView({ behavior: 'instant' });
+  }, [hash, informationPending]);
   const hospital = information?.hospital;
   const portal = user ? '/dashboard' : '/login';
   return (
-    <div className="public-home">
+    <div ref={motionRef} className="public-home hospital-landing">
       <a className="skip-link" href="#public-main">
         {t('Skip to content')}{' '}
       </a>
       <div className="public-container">
-        <header className="public-header glass-surface">
-          <Link to="/" aria-label={t('Smart HMS home')}>
-            <Brand />
-          </Link>
-          <nav aria-label={t('Hospital navigation')}>
-            <Link to="/doctors">{t('Doctors & services')}</Link>
-            <a href="#services">{t('Patient services')}</a>
-            <a href="#your-visit">{t('Your visit')}</a>
-            <a href="#hospital-info">{t('Hospital information')}</a>
-          </nav>
-          <Link className="button primary" to={portal}>
-            {user ? t('My workspace') : t('Patient portal')} <ArrowUpRight size={16} />
-          </Link>
-        </header>
+        <PublicHeader hospital={hospital} />
 
         <main id="public-main">
           <section className="public-hero" aria-labelledby="home-title">
@@ -82,12 +84,12 @@ export default function PublicHome() {
                 <span /> {hospital?.name || t('CARE, CONNECTED. IN SRI LANKA.')}
               </p>
               <h1 id="home-title">
-                {t('A little simpler.')} <br />
-                {t('A lot more')} <em>{t('care.')}</em>
+                {t('Your health.')} <br />
+                <em>{t('Your next step.')}</em>
               </h1>
               <p className="public-lead">
                 {t(
-                  'From your first appointment to your next step. One thoughtful space to manage your hospital visits.',
+                  'Plan your hospital visit with confidence. Explore doctor information, arrange an appointment and stay connected to your care in Sri Lanka.',
                 )}{' '}
               </p>
               <div className="public-actions">
@@ -99,6 +101,9 @@ export default function PublicHome() {
                   {t('See how it works')}{' '}
                 </a>
               </div>
+              <Link className="hospital-hero-directory-link" to="/doctors">
+                {t('Find a doctor')} <ArrowUpRight size={17} />
+              </Link>
               <p className="public-assurance">
                 <ShieldCheck size={16} /> {t('Personal records. Account-protected access.')}{' '}
               </p>
@@ -108,53 +113,64 @@ export default function PublicHome() {
                 </span>
               )}
             </div>
-            <div
-              className="care-composition"
-              aria-label={t('Illustration of a connected patient journey')}
-              role="img"
-            >
-              <div className="care-halo halo-outer" />
-              <div className="care-halo halo-inner" />
-              <div className="glass-heart">
-                <HeartPulse size={112} strokeWidth={1.1} />
-              </div>
-              <div className="journey-card glass-surface">
-                <div className="journey-card-icon">
-                  <CalendarDays size={23} />
-                </div>
+            <figure className="hospital-hero-visual">
+              <img
+                src="/images/care-stock.webp"
+                width="1600"
+                height="604"
+                fetchPriority="high"
+                alt={t('Stock photograph of a clinician holding a stethoscope')}
+              />
+              <div className="hospital-image-note glass-surface">
+                <HeartPulse size={28} aria-hidden="true" />
                 <div>
-                  <small>{t('ONE CONNECTED JOURNEY')}</small>
                   <strong>{t('Your next visit')}</strong>
                   <span>{t('Plan. Arrive. Follow up.')}</span>
                 </div>
-                <span className="journey-check">
-                  <Check size={17} />
-                </span>
               </div>
-              <div className="care-float glass-surface">
-                <Stethoscope size={20} />
-                <span>
-                  {t('Patients & care teams')} <br />
-                  <strong>{t('Better connected.')}</strong>
-                </span>
-              </div>
-              <span className="composition-caption">
-                {t('Designed around the patient journey')}
-              </span>
+              <PhotoCredit index={0}>{t('Healthcare stock photograph')}</PhotoCredit>
+            </figure>
+          </section>
+
+          <PatientShortcuts />
+
+          <section
+            id="about-hospital"
+            className="public-section hospital-about"
+            aria-labelledby="about-title"
+          >
+            <figure className="hospital-reception-visual">
+              <img
+                src="/images/waiting-stock.webp"
+                width="1600"
+                height="1200"
+                loading="lazy"
+                alt={t('Stock photograph of a hospital corridor and waiting seats')}
+              />
+              <PhotoCredit index={1}>{t('Healthcare stock photograph')}</PhotoCredit>
+            </figure>
+            <div>
+              <p className="public-kicker">{t('WELCOME TO SMART HMS')}</p>
+              <h2 id="about-title">{t('Care starts with a simpler visit.')}</h2>
+              <p>
+                {t(
+                  'Get to know your options before you arrive. Explore published doctor profiles, choose an available appointment and keep the details of your visit together.',
+                )}
+              </p>
+              <p>
+                {t(
+                  'Our reception contact details and opening hours are below. For questions about a particular service or support during your visit, contact reception before travelling.',
+                )}
+              </p>
+              <Link className="button primary" to="/doctors">
+                {t('Explore doctors & services')}
+                <ArrowRight size={18} />
+              </Link>
             </div>
           </section>
 
-          <div className="local-strip" aria-label={t('Local information')}>
-            <span>
-              <MapPin size={18} /> {t('Built for Sri Lanka')}{' '}
-            </span>
-            <span>
-              <Clock3 size={18} /> {t('Appointments in Sri Lanka time')}{' '}
-            </span>
-            <span>
-              <ReceiptText size={18} /> {t('Billing in LKR')}{' '}
-            </span>
-          </div>
+          <HospitalDirectoryPreview />
+          <HospitalCareGallery />
 
           <section id="services" className="public-section" aria-labelledby="services-title">
             <div className="public-section-heading">
@@ -243,6 +259,102 @@ export default function PublicHome() {
             </ol>
           </section>
 
+          <SriLankaVisitorGuide />
+
+          <section className="public-section hospital-preparation" aria-labelledby="prepare-title">
+            <div>
+              <p className="public-kicker">{t('A LITTLE PREPARATION')}</p>
+              <h2 id="prepare-title">{t('Arrive with confidence.')}</h2>
+              <p>
+                {t(
+                  'Keep these essentials ready for a smoother check-in and conversation with your care team.',
+                )}
+              </p>
+            </div>
+            <ul className="hospital-checklist">
+              <li>
+                <Check size={20} aria-hidden="true" />
+                <div>
+                  <h3>{t('Your appointment details')}</h3>
+                  <p>
+                    {t(
+                      'Bring your booking reference and check your appointment date and time in the portal.',
+                    )}
+                  </p>
+                </div>
+              </li>
+              <li>
+                <Check size={20} aria-hidden="true" />
+                <div>
+                  <h3>{t('Relevant records and medicines')}</h3>
+                  <p>
+                    {t(
+                      'Bring any previous reports, prescriptions and a list of medicines you currently take to discuss with your doctor.',
+                    )}
+                  </p>
+                </div>
+              </li>
+              <li>
+                <Check size={20} aria-hidden="true" />
+                <div>
+                  <h3>{t('Any support you need')}</h3>
+                  <p>
+                    {t(
+                      'Contact reception ahead of your visit to ask about access, directions or assistance for you and your companion.',
+                    )}
+                  </p>
+                </div>
+              </li>
+            </ul>
+          </section>
+
+          <section
+            id="patient-questions"
+            className="public-section hospital-faq"
+            aria-labelledby="questions-title"
+          >
+            <div className="public-section-heading">
+              <div>
+                <p className="public-kicker">{t('HERE TO HELP')}</p>
+                <h2 id="questions-title">{t('Questions before your visit?')}</h2>
+              </div>
+              <a className="text-link" href="#hospital-info">
+                {t('Contact reception')}
+                <ArrowRight size={17} />
+              </a>
+            </div>
+            {[
+              [
+                'How do I book an appointment?',
+                'Create a patient account or sign in, choose a doctor and select an available time slot. Your booking details will appear in your patient portal.',
+              ],
+              [
+                'Does reception being open mean every doctor is available?',
+                'Reception hours and doctor schedules are different. Check the available appointment slots or contact reception to confirm a specific service.',
+              ],
+              [
+                'Can I change or cancel my appointment?',
+                'Open your appointments in the patient portal to see the reschedule or cancellation options available for your booking.',
+              ],
+              [
+                'Where can I see my prescriptions and bills?',
+                'Sign in to view your completed consultation records, prescriptions and itemised bills. Payment records show payments recorded by the hospital.',
+              ],
+              [
+                'Will I receive email or SMS updates?',
+                'You can manage email and SMS preferences in your notification settings. Delivery depends on your contact details, preferences and the hospital’s messaging service.',
+              ],
+            ].map(([question, answer]) => (
+              <details key={question}>
+                <summary>{t(question)}</summary>
+                <p>{t(answer)}</p>
+              </details>
+            ))}
+          </section>
+
+          <HospitalLocation hospital={hospital} />
+          <EmergencyInformation />
+
           <section
             id="hospital-info"
             className="public-section hospital-information"
@@ -275,22 +387,18 @@ export default function PublicHome() {
               )}
             </div>
             <div className="public-info-card glass-surface">
+              <p className="public-kicker">{t('PLAN YOUR VISIT')}</p>
               <MapPin size={24} />
-              <h3>{t('Local by design.')}</h3>
-              <dl>
-                <div>
-                  <dt>{t('Appointment timezone')}</dt>
-                  <dd>{t('Asia/Colombo · UTC+05:30')}</dd>
-                </div>
-                <div>
-                  <dt>{t('Billing currency')}</dt>
-                  <dd>{t('Sri Lankan rupee (LKR)')}</dd>
-                </div>
-                <div>
-                  <dt>{t('Portal language')}</dt>
-                  <dd>{{ en: 'English', si: 'සිංහල', ta: 'தமிழ்' }[getLanguage()]}</dd>
-                </div>
-              </dl>
+              <h3>{t('Stay connected to your care.')}</h3>
+              <p>
+                {t(
+                  'Find your next appointment, review your visit history and manage your notification preferences in your patient account.',
+                )}
+              </p>
+              <Link className="button primary" to={portal}>
+                {t('Open your portal')}
+                <ArrowRight size={17} />
+              </Link>
             </div>
           </section>
           <section className="public-cta">
@@ -305,18 +413,7 @@ export default function PublicHome() {
             </Link>
           </section>
         </main>
-        <footer className="public-footer">
-          <div>
-            <Brand />
-            <p>{t('University of Moratuwa · BIT final-year project')}</p>
-          </div>
-          <div className="public-footer-actions">
-            <DisplayPreference />
-            <Link to={portal}>
-              {t('Staff & patient sign in')} <ArrowUpRight size={14} />
-            </Link>
-          </div>
-        </footer>
+        <PublicFooter hospital={hospital} />
       </div>
     </div>
   );

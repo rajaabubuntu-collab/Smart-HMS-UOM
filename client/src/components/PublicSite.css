@@ -1,0 +1,328 @@
+.hospital-landing .hospital-site-header {
+  flex-wrap: wrap;
+  gap: 18px;
+}
+.hospital-landing .hospital-site-header nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 18px;
+  font-size: 13px;
+}
+.hospital-site-header nav a {
+  padding-block: 10px;
+}
+.hospital-site-header nav a.active {
+  color: #09665e;
+  text-decoration: underline;
+  text-underline-offset: 7px;
+}
+.hospital-header-actions,
+.hospital-footer-nav {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+}
+.hospital-header-actions {
+  margin-left: auto;
+}
+.hospital-footer-nav {
+  max-width: 400px;
+  font-size: 13px;
+}
+.hospital-landing .public-footer {
+  flex-wrap: wrap;
+  gap: 26px;
+}
+.hospital-inner-page {
+  padding: 44px 0 64px;
+  min-height: 65vh;
+}
+.hospital-page-heading {
+  max-width: 780px;
+  margin: 24px 0 36px;
+}
+.hospital-page-heading h1 {
+  font-size: clamp(32px, 5vw, 54px);
+  line-height: 1.18;
+  letter-spacing: -1.5px;
+  margin-bottom: 18px;
+  color: #173f4b;
+}
+.hospital-page-heading > p {
+  font-size: 17px;
+  line-height: 1.8;
+  color: #4d6476;
+}
+.hospital-profile-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 22px;
+  margin: 24px 0;
+}
+.hospital-profile-card,
+.hospital-empty-card {
+  background: #fff;
+  border: 1px solid #d6e4e7;
+  border-radius: 22px;
+  padding: 28px;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.hospital-profile-card {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+.hospital-profile-card > svg {
+  color: #11756c;
+  margin-bottom: 20px;
+}
+.hospital-profile-card h2,
+.hospital-profile-card h3 {
+  color: #173f4b;
+  font-size: 22px;
+  line-height: 1.4;
+}
+.hospital-profile-card p,
+.hospital-page-callout p,
+.hospital-empty-card p {
+  color: #4d6476;
+  line-height: 1.8;
+}
+.hospital-profile-card .public-kicker {
+  margin: 22px 0 10px;
+  color: #09665e;
+}
+.hospital-card-actions {
+  margin-top: auto;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 20px;
+  padding-top: 12px;
+}
+.hospital-page-callout {
+  padding: 30px;
+  border: 1px solid #cde4df;
+  background: #eaf5f0;
+  border-radius: 22px;
+  margin: 30px 0;
+  overflow-wrap: anywhere;
+}
+.hospital-page-callout h2 {
+  color: #173f4b;
+  font-size: 25px;
+}
+.hospital-page-callout .button {
+  margin: 6px 10px 0 0;
+}
+.hospital-search-form {
+  display: grid;
+  grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr) auto auto;
+  align-items: end;
+  gap: 16px;
+  background: #fff;
+  border: 1px solid #d6e4e7;
+  border-radius: 22px;
+  padding: 24px;
+  margin-bottom: 26px;
+}
+.hospital-search-form .field {
+  margin: 0;
+  min-width: 0;
+}
+.hospital-patient-shortcuts {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 14px;
+  margin: 26px 0;
+}
+.hospital-patient-shortcuts > a {
+  display: flex;
+  align-items: center;
+  gap: 13px;
+  padding: 24px 18px;
+  border: 1px solid #cde4df;
+  border-radius: 18px;
+  background: #eaf5f0;
+  color: #124e48;
+  font-size: 14px;
+  font-weight: 600;
+}
+.hospital-patient-shortcuts > a:nth-child(2) {
+  background: #eaf1fc;
+  border-color: #d1dff4;
+  color: #214b82;
+}
+.hospital-patient-shortcuts > a:nth-child(3) {
+  background: #f2edfa;
+  border-color: #e0d5ef;
+  color: #674582;
+}
+.hospital-patient-shortcuts > a:nth-child(4) {
+  background: #fff3df;
+  border-color: #f2dfbc;
+  color: #79521f;
+}
+.hospital-patient-shortcuts svg {
+  flex-shrink: 0;
+}
+.hospital-patient-shortcuts svg:last-child {
+  margin-left: auto;
+}
+.hospital-patient-shortcuts > a:hover {
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+.hospital-about-page {
+  padding-block: 0 36px;
+}
+.hospital-about-support {
+  margin-block: 30px;
+}
+.hospital-contact-layout,
+.hospital-doctor-detail {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr);
+  gap: 30px;
+  align-items: start;
+  margin-bottom: 40px;
+}
+.hospital-contact-details,
+.hospital-enquiry-form {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.hospital-enquiry-form {
+  background: #fff;
+  border: 1px solid #d6e4e7;
+  padding: 30px;
+  border-radius: 24px;
+}
+.hospital-enquiry-form h2 {
+  font-size: 25px;
+  color: #173f4b;
+}
+.hospital-enquiry-form p {
+  color: #4d6476;
+  line-height: 1.8;
+}
+.hospital-enquiry-form fieldset {
+  border: 0;
+  padding: 0;
+  margin: 24px 0 0;
+  min-width: 0;
+}
+.hospital-enquiry-consent {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  line-height: 1.7;
+  font-size: 13px;
+  margin: 22px 0;
+  color: #354d5d;
+}
+.hospital-enquiry-consent input {
+  flex: 0 0 18px;
+  width: 18px;
+  height: 18px;
+  margin-top: 3px;
+}
+.hospital-enquiry-reference {
+  font-size: 23px;
+  font-weight: 700;
+}
+.hospital-doctor-detail .hospital-page-callout {
+  margin: 0;
+}
+.hospital-multiline {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+.hospital-inbox {
+  display: grid;
+  gap: 20px;
+  margin-block: 24px;
+}
+.hospital-inbox article {
+  overflow-wrap: anywhere;
+}
+.hospital-inbox-actions {
+  display: flex;
+  align-items: end;
+  flex-wrap: wrap;
+  gap: 18px;
+}
+.hospital-inbox-actions .field {
+  margin: 0;
+}
+.hospital-enquiry-form .sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+@media (max-width: 1100px) {
+  .hospital-landing .hospital-site-header nav {
+    order: 3;
+    width: 100%;
+    justify-content: center;
+    border-top: 1px solid #d6e4e7;
+    padding-top: 8px;
+  }
+  .hospital-patient-shortcuts {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .hospital-profile-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media (max-width: 700px) {
+  .hospital-contact-layout,
+  .hospital-doctor-detail,
+  .hospital-profile-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .hospital-search-form {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    padding: 20px;
+  }
+  .hospital-search-form .field {
+    grid-column: 1 / -1;
+  }
+  .hospital-profile-card,
+  .hospital-page-callout,
+  .hospital-enquiry-form {
+    padding: 22px;
+  }
+  .hospital-landing .hospital-site-header nav {
+    gap: 4px 16px;
+    font-size: 12px;
+  }
+  .hospital-header-actions {
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+}
+@media (max-width: 450px) {
+  .hospital-landing .hospital-site-header {
+    justify-content: center;
+  }
+  .hospital-header-actions {
+    margin-left: 0;
+    justify-content: center;
+  }
+  .hospital-patient-shortcuts {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .hospital-page-heading h1 {
+    letter-spacing: -0.6px;
+  }
+}
+
+.hospital-landing .detail-list dt {
+  color: #4d6476;
+}
