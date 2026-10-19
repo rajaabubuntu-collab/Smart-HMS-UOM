@@ -1,5 +1,7 @@
 # Week 7 — department and doctor guide
 
+**Later extension:** optional local pretrained AI is now implemented alongside this original rule baseline. See [Local AI department guide](local-ai.md) for current setup, response validation, fallbacks, privacy and evaluation limits. The historical v1 behaviour below remains available with `RECOMMENDATION_PROVIDER=rules`.
+
 This is a deterministic, versioned department-navigation prototype for adult patients' non-emergency concerns. It does not diagnose, assess clinical urgency, prescribe treatment, use a trained model or claim clinically validated accuracy. The SRS allows a brief explanation instead of a confidence score (AI-004); this implementation shows matched terms and a service explanation, without invented percentages.
 
 ## Walkthrough

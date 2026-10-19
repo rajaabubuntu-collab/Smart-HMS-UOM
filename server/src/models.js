@@ -21,6 +21,7 @@ const userSchema = new Schema(
     recoveryRequestedAt: { type: Date, select: false },
     role: { type: String, enum: roles, required: true },
     isActive: { type: Boolean, default: true },
+    isDemo: { type: Boolean, default: false },
     notificationPreferences: {
       email: { type: Boolean, default: false },
       sms: { type: Boolean, default: false },
@@ -64,6 +65,7 @@ const departmentSchema = new Schema(
     description: { type: String, default: '', maxlength: 500 },
     isActive: { type: Boolean, default: true },
     isPublic: { type: Boolean, default: false },
+    isDemo: { type: Boolean, default: false },
     revision: { type: Number, default: 0 },
   },
   { timestamps: true },
@@ -76,6 +78,7 @@ const doctorSchema = new Schema(
     specialization: { type: String, required: true, maxlength: 100 },
     qualification: { type: String, default: '', maxlength: 200 },
     isPublic: { type: Boolean, default: false },
+    isDemo: { type: Boolean, default: false },
     // Store LKR in minor units to avoid floating-point billing errors.
     consultationFeeMinor: { type: Number, min: 0, required: true, validate: Number.isSafeInteger },
     bookingRevision: { type: Number, default: 0, select: false },

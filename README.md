@@ -102,6 +102,12 @@ To try notifications: book or change an appointment, then sign in as its patient
 
 To try the guide: sign in as a patient and open **Department guide**. Use synthetic adult/non-emergency examples such as `cough` to match the seeded General Medicine service. Specialist suggestions require an active matching department and doctor; otherwise the guide directs patients to reception. This is a limited academic prototype, not clinically validated triage.
 
+Optional local AI now interprets natural English descriptions with Ollama. Set `RECOMMENDATION_PROVIDER=ollama` after downloading the instruction model; see [local AI setup and verification](docs/local-ai.md). Results distinguish AI guidance, safety/scope checks and rule-based fallbacks. No external AI service or API key is required.
+
+Groq is also supported for hosted AI using `openai/gpt-oss-120b`. Configure a server-only key, run `npm run test:groq` with fictional examples, then select `RECOMMENDATION_PROVIDER=groq`. Patients must consent before sending a description to Groq. See [Groq setup, privacy controls and verification](docs/groq-ai.md).
+
+To populate the local AI demo, run `npm run seed:ai-demo`. This adds fictional, labelled doctor profiles across 20 departments and future appointment sessions while preserving existing data. See [demo directory and testing examples](docs/ai-demo-directory.md).
+
 To try feedback: sign in as a patient and open **My feedback**, or choose **Feedback** on a completed appointment in **History**. Submit a 1–5 star rating and optional comment once per visit. Administrators can open **Patient feedback** to search submissions and filter by rating. Feedback is private to its patient and hospital administrators; it cannot be edited or deleted through the app.
 
 To try reports: sign in as admin and choose **Reports & analytics**. Select a report and date range, then **Generate report**. Each report explains its date basis; totals cover all matching rows, not just the displayed page. **Audit log** searches recorded actions by user, action, module and date. Date filters use Sri Lanka time; audit event timestamps are shown in UTC.

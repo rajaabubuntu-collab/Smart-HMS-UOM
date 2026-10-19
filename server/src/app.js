@@ -47,7 +47,7 @@ import {
 // Use a fixed-cost comparison even for unknown accounts to reduce login timing differences.
 const dummyHash = bcrypt.hashSync('not-a-real-account-password', 12);
 
-export function createApp(config, { rateLimitEnabled = true } = {}) {
+export function createApp(config, { rateLimitEnabled = true, recommendationFetch } = {}) {
   const app = express();
   app.disable('x-powered-by');
   if (config.trustProxy) app.set('trust proxy', 1);
@@ -297,7 +297,13 @@ export function createApp(config, { rateLimitEnabled = true } = {}) {
   app.use('/api', billingRouter());
   app.use('/api', deliveryRouter(config));
   app.use('/api', notificationRouter());
-  app.use('/api', recommendationRouter());
+  app.use(
+    '/api',
+    recommendationRouter(config.recommendations, {
+      rateLimitEnabled,
+      fetchImpl: recommendationFetch,
+    }),
+  );
   app.use('/api', feedbackRouter());
   app.use('/api', reportingRouter());
   app.use('/api', dashboardRouter());

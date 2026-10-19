@@ -1,6 +1,6 @@
 // Versioned navigation rules, not a validated diagnostic or triage algorithm.
 // Source rationale and limitations: docs/week-7.md. No treatment rules.
-export const ruleVersion = 'department-guide-1.0';
+export const ruleVersion = 'department-guide-1.1';
 export const disclaimer =
   'This guide suggests a department only. It is not a diagnosis, medical advice or an urgency assessment. It cannot rule out an emergency. If symptoms are severe, sudden or worsening, seek medical help rather than waiting for an appointment.';
 export const emergencyMessage =
@@ -110,7 +110,7 @@ export const normalize = (value) =>
     .trim();
 const escape = (value) => value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 const contains = (input, term) => new RegExp(`(?:^|[^a-z])${escape(term)}(?:$|[^a-z])`).test(input);
-export function evaluateGuide(input, { age } = {}) {
+export function evaluateSafety(input, { age } = {}) {
   const text = normalize(`${input.symptoms} ${input.comments}`);
   const base = { ruleVersion, disclaimer, emergencyMessage };
   if (input.emergencySigns === 'yes' || urgentTerms.some((term) => contains(text, term)))
@@ -154,6 +154,18 @@ export function evaluateGuide(input, { age } = {}) {
       matches: [],
     };
   if (
+    /\b(uterus|uterine|womb|pelvic|vagina|vaginal|ovary|ovaries|menstrual|gynaecolog\w*|gynecolog\w*)\b/.test(
+      text,
+    )
+  )
+    return {
+      ...base,
+      outcome: 'staff',
+      explanation:
+        'Pelvic and reproductive-health concerns are outside this guide. A description cannot establish which organ is causing pain. Please contact a clinician for assessment; reception can help arrange appropriate care.',
+      matches: [],
+    };
+  if (
     Array.from(text).some((character) => character.codePointAt(0) > 127) ||
     /\b(no|not|without|denies|denied|never|unsure|maybe|pregnant|pregnancy|postpartum|baby|infant|toddler|child|daughter|son)\b|\b(?:don't|do not|isn't|is not)\b/.test(
       text,
@@ -166,9 +178,19 @@ export function evaluateGuide(input, { age } = {}) {
         'This guide cannot reliably interpret the language, context or uncertainty in this description. Please contact reception or a clinician instead of relying on a department match.',
       matches: [],
     };
-  const matched = rules
+  return null;
+}
+export function matchRules(input) {
+  const text = normalize(`${input.symptoms} ${input.comments}`);
+  return rules
     .map((rule) => ({ ...rule, matchedTerms: rule.terms.filter((term) => contains(text, term)) }))
     .filter((rule) => rule.matchedTerms.length);
+}
+export function evaluateGuide(input, context = {}) {
+  const safety = evaluateSafety(input, context);
+  if (safety) return safety;
+  const base = { ruleVersion, disclaimer, emergencyMessage };
+  const matched = matchRules(input);
   if (matched.length !== 1)
     return {
       ...base,

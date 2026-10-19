@@ -26,7 +26,7 @@ export default defineConfig({
       command: 'node server/test/e2e-server.js',
       url: 'http://127.0.0.1:4100/api/health',
       reuseExistingServer: false,
-      timeout: 30000,
+      timeout: 60000,
     },
     {
       command: 'npm run dev -w client',

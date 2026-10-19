@@ -18,6 +18,7 @@
     "db:up": "docker compose up -d --wait",
     "db:stop": "docker compose stop",
     "seed": "npm run seed -w server",
+    "seed:ai-demo": "node server/scripts/seed-ai-demo.js",
     "test": "npm run test -w server",
     "test:e2e": "playwright test",
     "lint": "eslint .",
@@ -31,7 +32,8 @@
     "test:load": "node scripts/verification/load.mjs",
     "test:translations": "node scripts/verification/translations.mjs",
     "health:check": "node scripts/ops/health-check.mjs",
-    "db:offsite": "node scripts/ops/offsite-copy.mjs"
+    "db:offsite": "node scripts/ops/offsite-copy.mjs",
+    "test:groq": "node server/scripts/check-groq.js"
   },
   "devDependencies": {
     "@axe-core/playwright": "^4.13.0",

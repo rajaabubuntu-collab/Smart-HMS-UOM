@@ -6,7 +6,7 @@ import { useAuth } from '../auth';
 import { api } from '../api';
 import { Field, Loading, Notice, PageHeading, Submit, useResource } from '../components/ui';
 import { DoctorPicker, PatientPicker, SlotPicker } from '../components/BookingControls';
-import { today, dateLabel, timeLabel, money } from '../scheduling';
+import { today, dateAfter, dateLabel, timeLabel, money } from '../scheduling';
 
 export default function BookAppointment() {
   const { user } = useAuth();
@@ -14,6 +14,13 @@ export default function BookAppointment() {
   const preset = user.role !== 'patient' ? params.get('patient') : null;
   const loaded = useResource(preset ? `/reception/patients/${preset}` : null);
   const doctorId = params.get('doctor');
+  const requestedDate = params.get('date') || '';
+  const presetDate =
+    /^\d{4}-\d{2}-\d{2}$/.test(requestedDate) &&
+    requestedDate >= today() &&
+    requestedDate <= dateAfter(180)
+      ? requestedDate
+      : today();
   const selectedDoctor = useResource(
     doctorId ? `/directory/doctors/${encodeURIComponent(doctorId)}` : null,
   );
@@ -31,7 +38,8 @@ export default function BookAppointment() {
   if (loaded.error) return <Notice>{loaded.error}</Notice>;
   return (
     <BookingForm
-      key={`${preset || 'self'}:${doctorId || ''}:${params.get('department') || ''}`}
+      key={`${preset || 'self'}:${doctorId || ''}:${params.get('department') || ''}:${presetDate}`}
+      presetDate={presetDate}
       presetDoctor={selectedDoctor.data?.doctor || null}
       presetDepartment={
         params.get('department') || selectedDoctor.data?.doctor.department._id || ''
@@ -48,12 +56,12 @@ export default function BookAppointment() {
     />
   );
 }
-function BookingForm({ preset, presetDoctor, presetDepartment }) {
+function BookingForm({ preset, presetDoctor, presetDepartment, presetDate }) {
   const { user } = useAuth();
   const [patient, setPatient] = useState(preset),
     [doctor, setDoctor] = useState(presetDoctor),
     [slot, setSlot] = useState(null),
-    [date, setDate] = useState(today());
+    [date, setDate] = useState(presetDate);
   const [busy, setBusy] = useState(false),
     [error, setError] = useState(''),
     [created, setCreated] = useState(null),

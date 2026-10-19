@@ -17,9 +17,13 @@ import { createServer } from 'node:http';
 import { startRealtime } from '../src/realtime.js';
 import { startDeliveryWorker } from '../src/notifications/delivery-worker.js';
 import { deliveryConfig } from '../src/notifications/delivery-config.js';
+import { recommendationConfig } from '../src/recommendations/ai.js';
+import { seedDemoDirectory } from '../src/demo/directory.js';
 
 await connectDatabase(isolatedUri('browser'));
 const fixtures = await seedTestAccounts();
+if (process.env.E2E_AI_DEMO === 'true')
+  await seedDemoDirectory({ environment: 'development', days: 1 });
 // A pre-existing visit today lets the arrival UI be tested at any time of day.
 const doctor = await Doctor.findOne({ user: fixtures.users.doctor._id });
 const patient = await Patient.findOne({ user: fixtures.users.patient._id });
@@ -129,6 +133,10 @@ await runReminderBatch();
 // Browser tests intentionally run many distinct users behind one loopback IP.
 // Rate limiting is exercised separately in api.test.js with the real limiter.
 testConfig.delivery = deliveryConfig({});
+// Explicit opt-in only: normal browser tests never depend on a local model or private .env.
+testConfig.recommendations = recommendationConfig({
+  RECOMMENDATION_PROVIDER: process.env.E2E_LOCAL_AI === 'true' ? 'ollama' : 'rules',
+});
 const server = createServer(createApp(testConfig, { rateLimitEnabled: false }));
 const realtime = await startRealtime(server, testConfig);
 const stopDelivery = startDeliveryWorker(testConfig);
