@@ -132,6 +132,7 @@
   "Category": "வகை",
   "Change": "மாற்றவும்",
   "Change password": "கடவுச்சொல்லை மாற்றவும்",
+  "Change profile picture": "சுயவிவரப் படத்தை மாற்றவும்",
   "Channel currently disabled": "இந்த வழி தற்போது முடக்கப்பட்டுள்ளது",
   "Charges and payment records for this appointment.": "இந்தச் சந்திப்பிற்கான கட்டணங்கள் மற்றும் செலுத்தல் பதிவுகள்.",
   "Chart period": "வரைபடக் காலப்பகுதி",
@@ -146,8 +147,10 @@
   "Choose a patient": "நோயாளியைத் தேர்ந்தெடுக்கவும்",
   "Choose a rating from 1 to 5 stars and add an optional comment. One submission per completed visit; submitted feedback cannot be edited. Avoid sharing medical details. For care or urgent help, contact the hospital directly.": "1 முதல் 5 நட்சத்திரங்கள் வரை மதிப்பிட்டு விரும்பினால் கருத்தைச் சேர்க்கவும். முடிந்த ஒவ்வொரு சந்திப்பிற்கும் ஒருமுறை மட்டுமே சமர்ப்பிக்கலாம்; பின்னர் திருத்த முடியாது. மருத்துவ விவரங்களைப் பகிர வேண்டாம். பராமரிப்பு அல்லது அவசர உதவிக்கு மருத்துவமனையை நேரடியாகத் தொடர்புகொள்ளவும்.",
   "Choose a time": "நேரத்தைத் தேர்ந்தெடுக்கவும்",
+  "Choose an image smaller than 5 MB.": "5 MB-க்கு குறைவான படத்தைத் தேர்ந்தெடுக்கவும்.",
   "Choose an answer": "பதிலைத் தேர்ந்தெடுக்கவும்",
   "Choose an available time": "கிடைக்கும் நேரத்தைத் தேர்ந்தெடுக்கவும்",
+  "Choose profile picture": "சுயவிவரப் படத்தைத் தேர்ந்தெடுக்கவும்",
   "Choose another date or doctor. Reception can help you find a suitable appointment.": "வேறு தேதி அல்லது மருத்துவரைத் தேர்ந்தெடுக்கவும். பொருத்தமான சந்திப்பைக் கண்டுபிடிக்க வரவேற்புப் பிரிவு உதவும்.",
   "Choose another date or report to view saved activity.": "சேமிக்கப்பட்ட செயல்பாடுகளைக் காண வேறு தேதி அல்லது அறிக்கையைத் தேர்ந்தெடுக்கவும்.",
   "Email and SMS include appointment times, doctor details and billing amounts. Clinical notes and prescription instructions stay in the portal. Changes apply to future events.": "மின்னஞ்சல் மற்றும் SMS செய்திகளில் சந்திப்பு நேரங்கள், மருத்துவர் விவரங்கள் மற்றும் கட்டணத் தொகைகள் இடம்பெறும். மருத்துவக் குறிப்புகளும் மருந்துச் சீட்டு வழிமுறைகளும் தளத்தில் மட்டுமே இருக்கும். மாற்றங்கள் எதிர்கால நிகழ்வுகளுக்குப் பொருந்தும்.",
@@ -1194,5 +1197,13 @@
   "Tell us how long": "எவ்வளவு காலமாக உள்ளது என்று தெரிவியுங்கள்",
   "Add more details (optional)": "மேலும் விவரங்களைச் சேருங்கள் (விருப்பத்தேர்வு)",
   "Tick the required boxes above to continue.": "தொடர மேலுள்ள தேவையான பெட்டிகளைத் தேர்ந்தெடுங்கள்.",
-  "Your guidance": "உங்களுக்கான வழிகாட்டல்"
+  "Your guidance": "உங்களுக்கான வழிகாட்டல்",
+  "Welcome to": "வரவேற்கிறோம்",
+  "Get to know the hospital, explore our departments and find practical information for your visit.": "மருத்துவமனையைப் பற்றி அறிந்து, எங்கள் துறைகளை ஆராய்ந்து, உங்கள் வருகைக்குத் தேவையான தகவல்களைப் பெறுங்கள்.",
+  "About our hospital": "எங்கள் மருத்துவமனை பற்றி",
+  "Photo gallery": "புகைப்படத் தொகுப்பு",
+  "Corridor": "நடைபாதை",
+  "Waiting area": "காத்திருக்கும் பகுதி",
+  "Patient room": "நோயாளர் அறை",
+  "Illustrative stock photos, not photographs of this hospital.": "இவை விளக்கத்திற்கான பொதுப் புகைப்படங்கள்; இந்த மருத்துவமனையின் புகைப்படங்கள் அல்ல."
 }

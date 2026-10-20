@@ -1,0 +1,593 @@
+:root {
+  --liquid-blur: blur(28px) saturate(185%);
+  --liquid-shadow:
+    0 20px 55px rgb(48 55 105 / 11%), 0 3px 10px rgb(55 68 116 / 6%),
+    inset 0 1px 0 rgb(255 255 255 / 96%), inset 0 -1px 0 rgb(86 95 145 / 8%);
+}
+
+body {
+  background:
+    radial-gradient(ellipse at 4% 4%, rgb(173 164 255 / 34%), transparent 35%),
+    radial-gradient(ellipse at 96% 16%, rgb(125 225 204 / 30%), transparent 33%),
+    radial-gradient(ellipse at 70% 88%, rgb(255 196 178 / 24%), transparent 35%), #f1f2fb;
+  background-attachment: fixed;
+}
+
+.glass-surface,
+.language-control,
+.surface-toggle,
+.hospital-contact-strip,
+.hospital-site-header,
+.hospital-profile-card,
+.hospital-empty-card,
+.hospital-page-callout,
+.hospital-search-form,
+.hospital-enquiry-form,
+.hospital-overview-contact,
+.hospital-care-card,
+.hospital-patient-shortcuts > a,
+.hospital-hero-gallery,
+.public-info-card {
+  -webkit-backdrop-filter: var(--liquid-blur);
+  backdrop-filter: var(--liquid-blur);
+  box-shadow: var(--liquid-shadow);
+}
+
+.language-control {
+  position: sticky;
+  top: 0;
+  z-index: 30;
+  background: rgb(241 243 255 / 70%);
+  border-color: rgb(255 255 255 / 74%);
+  -webkit-backdrop-filter: blur(22px) saturate(170%);
+  backdrop-filter: blur(22px) saturate(170%);
+}
+
+.language-control select {
+  background: rgb(255 255 255 / 76%);
+  border-color: rgb(255 255 255 / 84%);
+}
+
+.hospital-landing {
+  background:
+    radial-gradient(ellipse at 95% 7%, rgb(124 223 206 / 25%), transparent 32%),
+    radial-gradient(ellipse at 3% 35%, rgb(178 171 255 / 24%), transparent 35%),
+    radial-gradient(ellipse at 80% 85%, rgb(255 198 178 / 18%), transparent 30%), #f5f5fb;
+}
+
+.hospital-contact-strip {
+  border: 1px solid rgb(255 255 255 / 70%);
+  border-radius: 18px;
+  background: rgb(255 255 255 / 48%);
+}
+
+.hospital-site-header {
+  background:
+    linear-gradient(
+      115deg,
+      rgb(255 255 255 / 78%),
+      rgb(255 255 255 / 48%) 56%,
+      rgb(231 236 255 / 48%)
+    ),
+    radial-gradient(ellipse at 12% 0%, rgb(195 187 255 / 35%), transparent 60%);
+  border: 1px solid rgb(255 255 255 / 92%);
+  box-shadow:
+    0 20px 48px rgb(63 59 121 / 13%),
+    inset 0 1.5px 0 rgb(255 255 255 / 98%),
+    inset 0 -1px 0 rgb(110 120 170 / 8%);
+}
+
+.hospital-site-header nav a {
+  border: 1px solid transparent;
+  border-radius: 999px;
+  padding-inline: 12px;
+  transition:
+    background-color 160ms ease,
+    border-color 160ms ease,
+    box-shadow 160ms ease;
+}
+
+.hospital-site-header nav a:hover {
+  background: rgb(255 255 255 / 62%);
+  border-color: rgb(255 255 255 / 80%);
+  box-shadow:
+    inset 0 1px 0 #fff,
+    0 4px 12px rgb(54 68 120 / 8%);
+  text-decoration: none;
+}
+
+.hospital-site-header nav a.active {
+  background: linear-gradient(135deg, rgb(255 255 255 / 82%), rgb(228 231 255 / 72%));
+  border-color: rgb(255 255 255 / 90%);
+  box-shadow:
+    inset 0 1px 0 #fff,
+    0 5px 14px rgb(57 64 126 / 10%);
+  text-decoration: none;
+}
+
+.hospital-profile-card,
+.hospital-empty-card,
+.hospital-search-form,
+.hospital-enquiry-form,
+.hospital-care-card {
+  border-color: rgb(255 255 255 / 88%);
+  background:
+    linear-gradient(145deg, rgb(255 255 255 / 72%), rgb(246 247 255 / 53%)),
+    radial-gradient(ellipse at 0% 0%, rgb(216 209 255 / 22%), transparent 62%);
+  box-shadow:
+    0 18px 46px rgb(48 55 105 / 9%),
+    inset 0 1.5px 0 rgb(255 255 255 / 96%),
+    inset 0 -1px 0 rgb(90 104 150 / 7%);
+}
+
+.hospital-page-callout,
+.hospital-overview-contact {
+  border-color: rgb(255 255 255 / 90%);
+  background:
+    linear-gradient(135deg, rgb(231 226 255 / 68%), rgb(222 248 238 / 58%)), rgb(255 255 255 / 42%);
+  box-shadow:
+    0 18px 45px rgb(48 55 105 / 8%),
+    inset 0 1.5px 0 rgb(255 255 255 / 96%),
+    inset 0 -1px 0 rgb(90 104 150 / 7%);
+}
+
+.hospital-patient-shortcuts > a {
+  border-color: rgb(255 255 255 / 90%);
+  background-color: rgb(255 255 255 / 48%);
+  box-shadow:
+    0 10px 28px rgb(52 69 111 / 8%),
+    inset 0 1px 0 rgb(255 255 255 / 90%);
+}
+
+.hospital-landing .hospital-information .public-info-card {
+  background:
+    linear-gradient(140deg, rgb(229 221 255 / 68%), rgb(220 247 236 / 61%)), rgb(255 255 255 / 40%);
+  border: 1px solid rgb(255 255 255 / 90%);
+}
+
+.hospital-landing .public-hero {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  border: 1px solid rgb(255 255 255 / 55%);
+  background:
+    radial-gradient(ellipse at 18% 0%, rgb(91 173 176 / 32%), transparent 58%),
+    radial-gradient(ellipse at 100% 100%, rgb(108 89 177 / 24%), transparent 48%),
+    linear-gradient(130deg, rgb(24 47 64 / 94%), rgb(13 46 58 / 91%));
+  box-shadow:
+    0 28px 75px rgb(30 48 78 / 19%),
+    inset 0 1.5px 0 rgb(255 255 255 / 64%),
+    inset 0 -1px 0 rgb(255 255 255 / 14%);
+  -webkit-backdrop-filter: blur(24px) saturate(155%);
+  backdrop-filter: blur(24px) saturate(155%);
+}
+
+.hospital-landing .public-hero::before {
+  position: absolute;
+  inset: 0 0 auto;
+  height: 46%;
+  border-radius: inherit;
+  background: linear-gradient(180deg, rgb(255 255 255 / 10%), transparent);
+  content: '';
+  pointer-events: none;
+  z-index: -1;
+}
+
+.hospital-landing .public-hero > * {
+  position: relative;
+  z-index: 0;
+}
+
+.hospital-landing .hospital-hero-gallery {
+  min-width: 0;
+  padding: 16px;
+  border: 1px solid rgb(255 255 255 / 38%);
+  border-radius: 26px;
+  background:
+    linear-gradient(145deg, rgb(255 255 255 / 14%), rgb(255 255 255 / 6%)),
+    radial-gradient(ellipse at 0% 0%, rgb(186 224 229 / 15%), transparent 70%);
+  box-shadow:
+    0 18px 50px rgb(4 25 39 / 18%),
+    inset 0 1.5px 0 rgb(255 255 255 / 48%),
+    inset 0 -1px 0 rgb(255 255 255 / 12%);
+}
+
+.hospital-landing .hospital-gallery-photo > img {
+  border: 1px solid rgb(255 255 255 / 65%);
+  box-shadow:
+    0 12px 28px rgb(4 25 39 / 23%),
+    inset 0 1px 0 rgb(255 255 255 / 55%);
+}
+
+.hospital-landing .hospital-hero-gallery figcaption {
+  color: #e0eff0;
+  text-shadow: 0 1px 5px rgb(4 25 39 / 38%);
+}
+
+.hospital-landing .hospital-hero-gallery figcaption a {
+  color: #fff;
+}
+
+.hospital-landing .public-hero .hospital-hero-address {
+  color: #eef8f7;
+}
+
+.hospital-landing .public-hero .hospital-hero-directory-link {
+  color: #e5f7f2;
+  text-decoration-color: rgb(229 247 242 / 54%);
+  text-underline-offset: 4px;
+}
+
+.hospital-landing .public-hero .hospital-hero-directory-link:hover {
+  color: #fff;
+}
+
+.hospital-landing .public-hero .demo-label {
+  color: #eff8f6;
+  border-color: rgb(255 255 255 / 42%);
+  background: rgb(255 255 255 / 10%);
+  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: blur(14px);
+}
+
+.hospital-landing .public-hero .button.subtle {
+  color: #203c50;
+  border-color: rgb(255 255 255 / 84%);
+  background: linear-gradient(135deg, rgb(255 255 255 / 96%), rgb(236 242 255 / 91%));
+  box-shadow:
+    0 8px 22px rgb(4 25 39 / 14%),
+    inset 0 1px 0 #fff;
+  min-width: 0;
+}
+
+.hospital-landing .public-cta .button.primary {
+  background: #08756f;
+  border-color: #08756f;
+  color: #fff;
+}
+
+.hospital-landing .public-cta .button.primary:hover,
+.hospital-landing .public-cta .button.primary:active,
+.hospital-landing .public-cta .button.primary:focus-visible {
+  background: #065f5b;
+  border-color: #065f5b;
+  color: #fff;
+}
+
+.hospital-landing .public-cta .button.primary:focus-visible {
+  outline: 3px solid #a7ead5;
+  outline-offset: 3px;
+}
+
+.app-shell {
+  background:
+    radial-gradient(ellipse at 92% 3%, rgb(128 224 204 / 19%), transparent 34%),
+    radial-gradient(ellipse at 8% 40%, rgb(181 173 255 / 20%), transparent 34%),
+    radial-gradient(ellipse at 75% 95%, rgb(255 199 181 / 16%), transparent 32%), #f1f3fb;
+  background-attachment: fixed;
+}
+
+.app-shell .sidebar {
+  background: linear-gradient(
+    165deg,
+    rgb(255 255 255 / 80%),
+    rgb(245 244 255 / 69%) 62%,
+    rgb(233 250 244 / 72%)
+  );
+  border: 1px solid rgb(255 255 255 / 84%);
+  box-shadow:
+    10px 0 40px rgb(45 54 108 / 7%),
+    inset 0 1px 0 #fff;
+  -webkit-backdrop-filter: blur(30px) saturate(180%);
+  backdrop-filter: blur(30px) saturate(180%);
+}
+
+.app-shell .topbar {
+  background: rgb(255 255 255 / 71%);
+  border: 1px solid rgb(255 255 255 / 84%);
+  box-shadow:
+    0 12px 38px rgb(47 56 105 / 8%),
+    inset 0 1px 0 #fff;
+  -webkit-backdrop-filter: blur(26px) saturate(175%);
+  backdrop-filter: blur(26px) saturate(175%);
+}
+
+.app-shell .card,
+.app-shell .date-pill,
+.app-shell .workspace-quick-actions > a,
+.app-shell .appointment-stats > a {
+  background:
+    linear-gradient(145deg, rgb(255 255 255 / 83%), rgb(255 255 255 / 63%)),
+    radial-gradient(ellipse at 8% 0%, rgb(208 201 255 / 13%), transparent 55%);
+  border-color: rgb(255 255 255 / 88%);
+  box-shadow: var(--liquid-shadow);
+  -webkit-backdrop-filter: blur(20px) saturate(165%);
+  backdrop-filter: blur(20px) saturate(165%);
+}
+
+.app-shell .clinical-record {
+  background: #fff;
+  border-color: #dce7e4;
+  box-shadow: 0 3px 12px rgb(24 61 48 / 4%);
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+}
+
+.app-shell .workspace-quick-actions > a:hover,
+.app-shell .appointment-stats > a:hover {
+  border-color: rgb(131 184 167 / 76%);
+  box-shadow:
+    0 18px 38px rgb(52 72 115 / 13%),
+    inset 0 1px 0 #fff;
+}
+
+.app-shell .sidebar-care {
+  background: linear-gradient(140deg, rgb(224 218 255 / 77%), rgb(215 246 231 / 78%));
+  border-color: rgb(255 255 255 / 88%);
+  box-shadow: inset 0 1px 0 #fff;
+}
+
+.app-shell .nav-item.active {
+  background: linear-gradient(120deg, #5948cb, #427db5);
+  box-shadow:
+    0 8px 22px rgb(73 74 173 / 23%),
+    inset 0 1px 0 rgb(255 255 255 / 32%);
+}
+
+.app-shell .surface-toggle,
+.app-shell .subtle {
+  background: rgb(255 255 255 / 70%);
+  border-color: rgb(255 255 255 / 86%);
+  box-shadow:
+    0 4px 16px rgb(48 55 105 / 6%),
+    inset 0 1px 0 #fff;
+  -webkit-backdrop-filter: blur(16px) saturate(160%);
+  backdrop-filter: blur(16px) saturate(160%);
+}
+
+.app-shell :is(input, select, textarea) {
+  background-color: rgb(255 255 255 / 91%);
+  border-color: rgb(165 184 190 / 72%);
+}
+
+.app-shell .live-status,
+.app-shell .tag,
+.app-shell .role-badge {
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 70%);
+}
+
+.workspace-mobile-nav {
+  background: rgb(250 251 255 / 77%);
+  border-color: rgb(255 255 255 / 86%);
+  box-shadow:
+    0 -12px 34px rgb(45 54 108 / 10%),
+    inset 0 1px 0 #fff;
+  -webkit-backdrop-filter: blur(26px) saturate(180%);
+  backdrop-filter: blur(26px) saturate(180%);
+}
+
+.workspace-mobile-nav a.active {
+  background: linear-gradient(135deg, rgb(224 219 255 / 91%), rgb(218 243 233 / 85%));
+}
+
+.modal {
+  border: 1px solid rgb(255 255 255 / 88%);
+  background: linear-gradient(145deg, rgb(255 255 255 / 94%), rgb(248 249 255 / 91%));
+  box-shadow:
+    0 28px 90px rgb(24 32 70 / 28%),
+    inset 0 1px 0 #fff;
+}
+
+.modal::backdrop {
+  background: rgb(31 39 72 / 31%);
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+}
+
+.notice {
+  box-shadow:
+    0 8px 26px rgb(52 56 91 / 7%),
+    inset 0 1px 0 rgb(255 255 255 / 80%);
+  -webkit-backdrop-filter: blur(14px) saturate(150%);
+  backdrop-filter: blur(14px) saturate(150%);
+}
+
+.report-table-wrap {
+  border: 1px solid rgb(255 255 255 / 86%);
+  border-radius: 16px;
+  box-shadow: var(--liquid-shadow);
+  overflow: auto;
+  -webkit-backdrop-filter: blur(18px) saturate(155%);
+  backdrop-filter: blur(18px) saturate(155%);
+}
+
+.report-table th {
+  background: rgb(232 233 250 / 88%);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+}
+
+.auth-panel {
+  background: linear-gradient(145deg, rgb(255 255 255 / 85%), rgb(248 249 255 / 77%));
+  border: 1px solid rgb(255 255 255 / 90%);
+  box-shadow:
+    0 22px 70px rgb(43 48 91 / 14%),
+    inset 0 1px 0 #fff;
+  -webkit-backdrop-filter: blur(30px) saturate(175%);
+  backdrop-filter: blur(30px) saturate(175%);
+}
+
+.auth-form :is(input, select, textarea) {
+  background: rgb(255 255 255 / 88%);
+}
+
+.surface-toggle {
+  background: rgb(255 255 255 / 70%);
+  border-color: rgb(255 255 255 / 88%);
+  box-shadow:
+    0 6px 20px rgb(45 54 108 / 8%),
+    inset 0 1px 0 #fff;
+  -webkit-backdrop-filter: blur(18px) saturate(165%);
+  backdrop-filter: blur(18px) saturate(165%);
+}
+
+.surface-toggle[aria-pressed='true'] {
+  background: rgb(222 231 255 / 88%);
+  border-color: rgb(116 139 208 / 55%);
+}
+
+@media (hover: hover) and (prefers-reduced-motion: no-preference) {
+  .hospital-profile-card,
+  .hospital-care-card,
+  .hospital-patient-shortcuts > a,
+  .app-shell .card,
+  .app-shell .workspace-quick-actions > a {
+    transition:
+      transform 180ms ease,
+      box-shadow 180ms ease,
+      border-color 180ms ease;
+  }
+
+  .hospital-profile-card:hover,
+  .hospital-care-card:hover {
+    transform: translateY(-3px);
+    box-shadow:
+      0 22px 52px rgb(48 55 105 / 14%),
+      inset 0 1px 0 #fff;
+  }
+}
+
+@supports not ((backdrop-filter: blur(1px))) {
+  .app-shell .sidebar,
+  .app-shell .topbar,
+  .app-shell .card,
+  .hospital-site-header,
+  .hospital-profile-card,
+  .hospital-search-form,
+  .hospital-enquiry-form,
+  .auth-panel,
+  .workspace-mobile-nav {
+    background: #f8f9ff;
+  }
+}
+
+:root[data-surfaces='solid'] {
+  --liquid-blur: none;
+}
+
+:root[data-surfaces='solid']
+  :is(
+    .language-control,
+    .hospital-contact-strip,
+    .hospital-site-header,
+    .hospital-profile-card,
+    .hospital-empty-card,
+    .hospital-page-callout,
+    .hospital-search-form,
+    .hospital-enquiry-form,
+    .hospital-overview-contact,
+    .hospital-care-card,
+    .hospital-patient-shortcuts > a,
+    .app-shell .sidebar,
+    .app-shell .topbar,
+    .app-shell .card:not(.clinical-record),
+    .app-shell .date-pill,
+    .app-shell .workspace-quick-actions > a,
+    .app-shell .appointment-stats > a,
+    .app-shell .subtle,
+    .app-shell .surface-toggle,
+    .workspace-mobile-nav,
+    .auth-panel,
+    .surface-toggle
+  ) {
+  background: #fff;
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+  box-shadow: 0 4px 18px rgb(40 50 85 / 7%);
+}
+
+:root[data-surfaces='solid'] .hospital-landing .public-hero {
+  background: linear-gradient(135deg, #173f4b, #123341);
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+}
+
+:root[data-surfaces='solid'] .hospital-landing .hospital-hero-gallery {
+  background: #244956;
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+}
+
+:root[data-surfaces='solid'] .hospital-page-callout,
+:root[data-surfaces='solid'] .hospital-overview-contact,
+:root[data-surfaces='solid'] .app-shell .sidebar-care {
+  background: #f0f3fa;
+}
+
+:root[data-surfaces='solid'] .app-shell .clinical-record {
+  background: #fff;
+}
+
+@media (prefers-reduced-transparency: reduce), (prefers-contrast: more) {
+  .language-control,
+  .hospital-contact-strip,
+  .hospital-site-header,
+  .hospital-profile-card,
+  .hospital-empty-card,
+  .hospital-page-callout,
+  .hospital-search-form,
+  .hospital-enquiry-form,
+  .hospital-overview-contact,
+  .hospital-care-card,
+  .hospital-patient-shortcuts > a,
+  .app-shell .sidebar,
+  .app-shell .topbar,
+  .app-shell .card:not(.clinical-record),
+  .app-shell .date-pill,
+  .app-shell .workspace-quick-actions > a,
+  .app-shell .appointment-stats > a,
+  .app-shell .subtle,
+  .app-shell .surface-toggle,
+  .workspace-mobile-nav,
+  .auth-panel,
+  .surface-toggle {
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+    background: #f8f9ff;
+  }
+
+  .hospital-landing .public-hero,
+  .hospital-landing .hospital-hero-gallery {
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+
+  .hospital-landing .hospital-hero-gallery {
+    background: #244956;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hospital-profile-card,
+  .hospital-care-card,
+  .hospital-patient-shortcuts > a,
+  .app-shell .card,
+  .app-shell .workspace-quick-actions > a {
+    transition: none;
+  }
+}
+
+@media print {
+  body,
+  .hospital-landing,
+  .app-shell,
+  .app-shell .sidebar,
+  .app-shell .topbar,
+  .app-shell .card,
+  .auth-panel {
+    background: #fff;
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+    box-shadow: none;
+  }
+}

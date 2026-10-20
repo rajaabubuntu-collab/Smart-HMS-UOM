@@ -3,6 +3,10 @@ import assert from 'node:assert/strict';
 import mongoose from 'mongoose';
 import jwt from 'jsonwebtoken';
 import request from 'supertest';
+import sharp from 'sharp';
+import { mkdtemp, readFile, rm } from 'node:fs/promises';
+import { tmpdir } from 'node:os';
+import path from 'node:path';
 import { createApp } from '../src/app.js';
 import {
   User,
@@ -15,7 +19,7 @@ import {
 } from '../src/models.js';
 import { testPassword, testConfig, isolatedUri, seedTestAccounts } from './helpers.js';
 
-let app, fixtures;
+let app, fixtures, avatarStorageDir;
 const cookie = (response) => response.headers['set-cookie'][0].split(';')[0];
 const send = (method, path, token) => {
   const req = request(app)[method](path).set('Origin', testConfig.origin);
@@ -29,11 +33,13 @@ async function login(role) {
 before(async () => {
   await connectDatabase(isolatedUri('api'));
   fixtures = await seedTestAccounts();
-  app = createApp(testConfig, { rateLimitEnabled: false });
+  avatarStorageDir = await mkdtemp(path.join(tmpdir(), 'smart-hms-avatars-'));
+  app = createApp({ ...testConfig, avatarStorageDir }, { rateLimitEnabled: false });
 });
 after(async () => {
   if (mongoose.connection.readyState === 1) await mongoose.connection.dropDatabase();
   await mongoose.disconnect();
+  if (avatarStorageDir) await rm(avatarStorageDir, { recursive: true, force: true });
 });
 
 test('health endpoint reports connected database and security headers', async () => {
@@ -41,6 +47,24 @@ test('health endpoint reports connected database and security headers', async ()
   assert.equal(response.body.database, 'connected');
   assert.equal(response.headers['x-content-type-options'], 'nosniff');
   assert.equal(response.headers['cache-control'], 'no-store');
+});
+test('development CSRF check accepts equivalent localhost and loopback origins only', async () => {
+  const developmentApp = createApp(
+    { ...testConfig, env: 'development' },
+    { rateLimitEnabled: false },
+  );
+  const loginResponse = await request(developmentApp)
+    .post('/api/auth/login')
+    .set('Origin', 'http://127.0.0.1:5174')
+    .send({ email: 'patient@test.local', password: testPassword })
+    .expect(200);
+  assert.equal(loginResponse.body.user.role, 'patient');
+
+  for (const origin of ['http://evil.example:5174', 'http://localhost:5173', undefined]) {
+    const req = request(developmentApp).post('/api/auth/login');
+    if (origin) req.set('Origin', origin);
+    await req.send({ email: 'patient@test.local', password: testPassword }).expect(403);
+  }
 });
 test('protected endpoints reject unauthenticated and tampered sessions', async () => {
   for (const path of [
@@ -52,6 +76,70 @@ test('protected endpoints reject unauthenticated and tampered sessions', async (
   ])
     await request(app).get(path).expect(401);
   await request(app).get('/api/auth/me').set('Cookie', 'hms_session=tampered').expect(401);
+});
+test('profile avatars are authenticated, resized, replaceable, and removable', async () => {
+  await request(app)
+    .put('/api/profile/avatar')
+    .set('Origin', testConfig.origin)
+    .set('Content-Type', 'image/png')
+    .send(Buffer.from('not an image'))
+    .expect(401);
+
+  const loginResponse = await login('doctor');
+  const doctorCookie = cookie(loginResponse);
+  const input = await sharp({
+    create: { width: 900, height: 600, channels: 3, background: '#2b8f79' },
+  })
+    .png()
+    .toBuffer();
+  const uploaded = await send('put', '/api/profile/avatar', doctorCookie)
+    .set('Content-Type', 'image/png')
+    .send(input)
+    .expect(200);
+  const avatarUrl = uploaded.body.user.avatarUrl;
+  assert.ok(avatarUrl.startsWith(`/api/users/${fixtures.users.doctor._id}/avatar?v=`));
+  assert.equal(uploaded.body.user.passwordHash, undefined);
+  const storedId = (await User.findById(fixtures.users.doctor._id)).avatarId;
+  const storedPath = path.join(avatarStorageDir, `${storedId}.webp`);
+  const storedImage = await sharp(await readFile(storedPath)).metadata();
+  assert.equal(storedImage.format, 'webp');
+  assert.equal(storedImage.width, 512);
+  assert.equal(storedImage.height, 512);
+  assert.ok((await readFile(storedPath)).byteLength <= 300 * 1024);
+
+  const fetched = await send('get', avatarUrl, doctorCookie).expect(200);
+  assert.equal(fetched.headers['content-type'], 'image/webp');
+  assert.equal(fetched.headers['x-content-type-options'], 'nosniff');
+  assert.equal(fetched.headers['cache-control'], 'private, no-store');
+
+  await send('get', avatarUrl, cookie(await login('patient'))).expect(200);
+  const replacement = await send('put', '/api/profile/avatar', doctorCookie)
+    .set('Content-Type', 'image/png')
+    .send(input)
+    .expect(200);
+  const replacementId = (await User.findById(fixtures.users.doctor._id)).avatarId;
+  assert.notEqual(replacementId, storedId);
+  await assert.rejects(readFile(storedPath), { code: 'ENOENT' });
+  assert.ok(replacement.body.user.avatarUrl.includes(replacementId));
+
+  await send('delete', '/api/profile/avatar', doctorCookie).expect(200);
+  assert.equal((await User.findById(fixtures.users.doctor._id)).avatarId, '');
+  await assert.rejects(readFile(path.join(avatarStorageDir, `${replacementId}.webp`)), {
+    code: 'ENOENT',
+  });
+  await send('get', avatarUrl, doctorCookie).expect(404);
+});
+
+test('profile avatar endpoint rejects unsupported and malformed image uploads', async () => {
+  const doctorCookie = cookie(await login('doctor'));
+  await send('put', '/api/profile/avatar', doctorCookie)
+    .set('Content-Type', 'image/svg+xml')
+    .send('<svg/>')
+    .expect(415);
+  await send('put', '/api/profile/avatar', doctorCookie)
+    .set('Content-Type', 'image/jpeg')
+    .send(Buffer.from('not an image'))
+    .expect(400);
 });
 test('registration creates patient and session atomically; normalises email and hides password', async () => {
   const response = await send('post', '/api/auth/register')

@@ -1,5 +1,6 @@
 import { t, getLocale } from '../i18n/locale';
 import { Link } from 'react-router-dom';
+import { UserAvatar } from '../components/UserAvatar';
 import { lazy, Suspense } from 'react';
 import {
   ArrowUpRight,
@@ -13,6 +14,7 @@ import {
   HeartPulse,
   Clock3,
   CalendarCheck2,
+  ReceiptText,
 } from 'lucide-react';
 import { useAuth } from '../auth';
 import { Loading, Notice, PageHeading, useResource } from '../components/ui';
@@ -108,6 +110,23 @@ export default function Dashboard() {
           <HeartPulse size={100} strokeWidth={1} />
         </div>
       </section>
+      {user.role === 'patient' && (
+        <div className="workspace-quick-actions">
+          {[
+            { to: '/recommendations', label: 'Department guide', icon: HeartPulse },
+            { to: '/records', label: 'Medical records', icon: ClipboardList },
+            { to: '/billing', label: 'Bills & payments', icon: ReceiptText },
+          ].map(({ to, label, icon: Icon }) => (
+            <Link key={to} to={to}>
+              <span className="quick-action-icon">
+                <Icon size={22} aria-hidden="true" />
+              </span>
+              <strong>{t(label)}</strong>
+              <ArrowUpRight size={17} aria-hidden="true" />
+            </Link>
+          ))}
+        </div>
+      )}
       <AppointmentOverview />
       <Suspense fallback={<Loading text="Loading charts…" />}>
         <DashboardCharts />
@@ -299,7 +318,7 @@ function AccountCard({ user }) {
         <h2>{t('Your account')}</h2>
         <ShieldCheck size={21} />
       </div>
-      <div className="account-avatar">{user.name.charAt(0)}</div>
+      <UserAvatar user={user} className="account-avatar" />
       <h3>{user.name}</h3>
       <p className="muted email-wrap">{user.email}</p>
       <span className="role-badge">{user.role === 'admin' ? t('Administrator') : user.role}</span>

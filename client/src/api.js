@@ -1,12 +1,22 @@
-export async function api(path, { method = 'GET', body, signal, ignoreAuth = false } = {}) {
+export async function api(
+  path,
+  { method = 'GET', body, signal, ignoreAuth = false, contentType } = {},
+) {
   let response;
+  const binaryBody = body instanceof Blob || body instanceof ArrayBuffer;
   try {
     response = await fetch(`/api${path}`, {
       method,
       credentials: 'same-origin',
       signal,
-      headers: body ? { 'Content-Type': 'application/json' } : undefined,
-      body: body ? JSON.stringify(body) : undefined,
+      headers: body
+        ? {
+            'Content-Type':
+              contentType ||
+              (binaryBody ? body.type || 'application/octet-stream' : 'application/json'),
+          }
+        : undefined,
+      body: body ? (binaryBody ? body : JSON.stringify(body)) : undefined,
     });
   } catch (error) {
     if (error.name === 'AbortError') throw error;

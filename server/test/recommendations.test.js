@@ -17,7 +17,6 @@ import {
 import { testPassword, testConfig, isolatedUri, seedTestAccounts } from './helpers.js';
 const input = (extra = {}) => ({
   symptoms: 'cough',
-  duration: { value: 2, unit: 'days' },
   comments: '',
   emergencySigns: 'no',
   acknowledged: true,
@@ -243,12 +242,7 @@ const sendAI = (application, body) =>
     .send(body);
 test('real route uses validated AI for natural descriptions and only returns current database doctors', async () => {
   const application = aiApp(({ departments, patientDescription }) => {
-    assert.deepEqual(Object.keys(patientDescription).sort(), [
-      'comments',
-      'duration',
-      'painLevel',
-      'symptoms',
-    ]);
+    assert.deepEqual(Object.keys(patientDescription).sort(), ['comments', 'symptoms']);
     return {
       decision: 'matched',
       departmentId: departments.find((d) => d.name === 'Dermatology').id,

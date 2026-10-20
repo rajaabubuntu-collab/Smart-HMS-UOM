@@ -1,5 +1,6 @@
 import { usePublicMotion } from '../hooks/usePublicMotion';
 import { HospitalCareGallery } from './HospitalCareSections';
+import HospitalHeroGallery from './HospitalHeroGallery';
 import { PublicHeader, PublicFooter, PatientShortcuts } from '../components/PublicSite';
 import { t } from '../i18n/locale';
 import { useEffect } from 'react';
@@ -13,7 +14,7 @@ import {
   HeartPulse,
   MapPin,
   ReceiptText,
-  ShieldCheck,
+  Phone,
 } from 'lucide-react';
 import { useResource } from '../components/ui';
 import HospitalInformation from '../components/HospitalInformation';
@@ -81,55 +82,53 @@ export default function PublicHome() {
           <section className="public-hero" aria-labelledby="home-title">
             <div className="public-hero-copy">
               <p className="public-kicker">
-                <span /> {hospital?.name || t('CARE, CONNECTED. IN SRI LANKA.')}
+                <span /> {t('GET TO KNOW US')}
               </p>
               <h1 id="home-title">
-                {t('Your health.')} <br />
-                <em>{t('Your next step.')}</em>
+                {t('Welcome to')} <br />
+                <em>{hospital?.name || 'Smart HMS'}</em>
               </h1>
               <p className="public-lead">
-                {t(
-                  'Plan your hospital visit with confidence. Explore doctor information, arrange an appointment and stay connected to your care in Sri Lanka.',
-                )}{' '}
+                {hospital?.description ||
+                  t(
+                    'Get to know the hospital, explore our departments and find practical information for your visit.',
+                  )}
               </p>
+              {hospital?.address && (
+                <p className="hospital-hero-address">
+                  <MapPin size={18} aria-hidden="true" /> {hospital.address}
+                </p>
+              )}
               <div className="public-actions">
-                <Link className="button primary" to={user ? '/dashboard' : '/register'}>
-                  {user ? t('Go to my workspace') : t('Create patient account')}{' '}
+                <Link className="button primary" to="/about">
+                  {t('About our hospital')}
                   <ArrowRight size={18} />
                 </Link>
-                <a className="button subtle" href="#your-visit">
-                  {t('See how it works')}{' '}
+                <a className="button subtle" href="#hospital-info">
+                  {t('Hospital information')}
                 </a>
               </div>
-              <Link className="hospital-hero-directory-link" to="/doctors">
-                {t('Find a doctor')} <ArrowUpRight size={17} />
-              </Link>
-              <p className="public-assurance">
-                <ShieldCheck size={16} /> {t('Personal records. Account-protected access.')}{' '}
-              </p>
+              <div className="hospital-hero-links">
+                {hospital?.phone && (
+                  <a className="hospital-hero-directory-link" href={`tel:${hospital.phone}`}>
+                    <Phone size={16} aria-hidden="true" /> {t('Reception')}: {hospital.phone}
+                  </a>
+                )}
+                <Link
+                  className="hospital-hero-directory-link"
+                  to={user ? '/dashboard' : '/register'}
+                >
+                  {user ? t('Go to my workspace') : t('Create patient account')}
+                  <ArrowUpRight size={17} />
+                </Link>
+              </div>
               {(!hospital || hospital.isDemo) && (
                 <span className="demo-label">
                   {t('University project · Demonstration website')}
                 </span>
               )}
             </div>
-            <figure className="hospital-hero-visual">
-              <img
-                src="/images/care-stock.webp"
-                width="1600"
-                height="604"
-                fetchPriority="high"
-                alt={t('Stock photograph of a clinician holding a stethoscope')}
-              />
-              <div className="hospital-image-note glass-surface">
-                <HeartPulse size={28} aria-hidden="true" />
-                <div>
-                  <strong>{t('Your next visit')}</strong>
-                  <span>{t('Plan. Arrive. Follow up.')}</span>
-                </div>
-              </div>
-              <PhotoCredit index={0}>{t('Healthcare stock photograph')}</PhotoCredit>
-            </figure>
+            <HospitalHeroGallery />
           </section>
 
           <PatientShortcuts />
@@ -141,13 +140,13 @@ export default function PublicHome() {
           >
             <figure className="hospital-reception-visual">
               <img
-                src="/images/waiting-stock.webp"
+                src="/images/colombo-hospital.webp"
                 width="1600"
                 height="1200"
                 loading="lazy"
-                alt={t('Stock photograph of a hospital corridor and waiting seats')}
+                alt={t('Mulleriyawa Hospital in Colombo, Sri Lanka')}
               />
-              <PhotoCredit index={1}>{t('Healthcare stock photograph')}</PhotoCredit>
+              <PhotoCredit index={6}>{t('Healthcare stock photograph')}</PhotoCredit>
             </figure>
             <div>
               <p className="public-kicker">{t('WELCOME TO SMART HMS')}</p>

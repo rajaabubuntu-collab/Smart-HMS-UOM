@@ -21,6 +21,7 @@ const schema = z.object({
     ),
   SESSION_HOURS: z.coerce.number().min(0.25).max(24).default(8),
   TRUST_PROXY: z.enum(['true', 'false']).default('false'),
+  AVATAR_STORAGE_DIR: z.string().min(1).default('.local/avatars'),
 });
 
 export function loadConfig(environment = process.env) {
@@ -46,6 +47,7 @@ export function loadConfig(environment = process.env) {
     jwtSecret: env.JWT_SECRET,
     sessionHours: env.SESSION_HOURS,
     trustProxy: env.TRUST_PROXY === 'true',
+    avatarStorageDir: env.AVATAR_STORAGE_DIR,
     delivery: deliveryConfig(environment),
     recommendations: recommendationConfig(environment),
   };

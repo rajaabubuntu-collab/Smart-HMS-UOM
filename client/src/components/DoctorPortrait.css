@@ -1,0 +1,50 @@
+.doctor-portrait {
+  display: block;
+  position: relative;
+  width: 100%;
+  max-width: 320px;
+  margin-bottom: 18px;
+  overflow: hidden;
+  border-radius: 14px;
+  background: #e7f1ed;
+}
+.doctor-portrait img {
+  display: block;
+  width: 100%;
+  height: 230px;
+  object-fit: cover;
+  object-position: center 26%;
+}
+.doctor-portrait-label {
+  display: block;
+  background: #edf5f1;
+  color: #38584d;
+  font-size: 11px;
+  padding: 5px 9px;
+  text-align: center;
+}
+.doctor-portrait-compact {
+  width: 76px;
+  min-width: 76px;
+  margin: 0;
+}
+.doctor-portrait-compact img {
+  height: 76px;
+}
+.doctor-portrait-compact .doctor-portrait-label {
+  font-size: 9px;
+  padding: 4px 2px;
+  line-height: 1.3;
+}
+.hospital-doctor-grid > article {
+  align-items: start;
+}
+@media (max-width: 380px) {
+  .doctor-portrait-compact {
+    width: 62px;
+    min-width: 62px;
+  }
+  .doctor-portrait-compact img {
+    height: 62px;
+  }
+}

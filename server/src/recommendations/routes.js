@@ -17,7 +17,8 @@ const schema = z
         value: z.number().int().min(1).max(3650),
         unit: z.enum(['hours', 'days', 'weeks', 'months']),
       })
-      .strict(),
+      .strict()
+      .optional(),
     painLevel: z.number().int().min(1).max(10).optional(),
     comments: z.string().trim().max(1000).default(''),
     emergencySigns: z.enum(['yes', 'no', 'unsure']),

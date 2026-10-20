@@ -1,3 +1,5 @@
+import HospitalMap from '../components/HospitalMap';
+import DoctorPortrait from '../components/DoctorPortrait';
 import { Link } from 'react-router-dom';
 import {
   ArrowRight,
@@ -47,14 +49,47 @@ const photoCredits = [
     url: 'https://unsplash.com/photos/a-hospital-room-with-a-bed-and-medical-equipment-RfanFy_lHp8',
     file: 'room-stock.webp',
   },
+  {
+    name: 'Anupa Uthsara',
+    url: 'https://unsplash.com/photos/a-large-white-building-sitting-on-the-side-of-a-road-K2T2KxoK_xE',
+    file: 'colombo-hospital.webp',
+    caption: 'Mulleriyawa Hospital, Colombo · Illustrative location',
+  },
+  {
+    name: 'Zoshua Colah',
+    url: 'https://unsplash.com/photos/cityscape-with-a-tall-building-under-a-clear-sky-JhFKCUGAUQk',
+    file: 'colombo-view.webp',
+    caption: 'Colombo city view · Illustrative location',
+  },
+  {
+    name: 'Usman Yousaf',
+    url: 'https://www.pexels.com/photo/portrait-of-a-doctor-wearing-a-white-coat-6762869/',
+    file: 'doctor-usman.webp',
+    provider: 'Pexels',
+    caption: 'Clinician stock photograph · Not hospital staff',
+  },
+  {
+    name: 'dr aparna jaswal',
+    url: 'https://www.pexels.com/photo/photo-of-a-doctor-standing-with-her-arms-crossed-5738735/',
+    file: 'doctor-female-south-asia.webp',
+    provider: 'Pexels',
+    caption: 'Clinician stock photograph · Not hospital staff',
+  },
+  {
+    name: 'Dr. Haror’s Wellness',
+    url: 'https://www.pexels.com/photo/professional-female-doctor-portrait-in-clinic-32428850/',
+    file: 'doctor-female-clinic.webp',
+    provider: 'Pexels',
+    caption: 'Clinician stock photograph · Not hospital staff',
+  },
 ];
 export function PhotoCredit({ index, children }) {
   const photo = photoCredits[index];
   return (
     <figcaption>
-      {children} ·{' '}
+      {photo.caption ? t(photo.caption) : children} ·{' '}
       <a href={photo.url} target="_blank" rel="noopener noreferrer">
-        {photo.name} / Unsplash <ArrowUpRight size={11} aria-hidden="true" />
+        {photo.name} / {photo.provider || 'Unsplash'} <ArrowUpRight size={11} aria-hidden="true" />
       </a>
     </figcaption>
   );
@@ -111,9 +146,7 @@ export function HospitalDirectoryPreview() {
         <div className="hospital-doctor-grid">
           {doctors.data.items.map((doctor) => (
             <article key={doctor._id}>
-              <span className="hospital-doctor-symbol">
-                <Stethoscope size={26} aria-hidden="true" />
-              </span>
+              <DoctorPortrait doctor={doctor} compact />
               <div>
                 <p className="hospital-doctor-department">{doctor.department}</p>
                 <h3>
@@ -225,27 +258,13 @@ export function SriLankaVisitorGuide() {
 }
 
 export function HospitalLocation({ hospital }) {
-  const mapUrl = hospital?.address
-    ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(hospital.address + ', Sri Lanka')}`
-    : null;
   return (
     <section
       id="getting-here"
       className="public-section hospital-location"
       aria-labelledby="location-title"
     >
-      <figure>
-        <img
-          src="/images/colombo-stock.webp"
-          width="1600"
-          height="1000"
-          loading="lazy"
-          alt={t('Street scene and skyline in Colombo, Sri Lanka')}
-        />
-        <PhotoCredit index={2}>
-          {t('Colombo city photograph · Not the hospital location')}
-        </PhotoCredit>
-      </figure>
+      <HospitalMap />
       <div>
         <p className="public-kicker">{t('GETTING HERE')}</p>
         <h2 id="location-title">{t('Plan your journey. We’ll help with the details.')}</h2>
@@ -276,20 +295,7 @@ export function HospitalLocation({ hospital }) {
               {t('Contact reception')}
             </a>
           )}
-          {mapUrl && (
-            <a className="button subtle" href={mapUrl} target="_blank" rel="noopener noreferrer">
-              {t('Explore the area on Google Maps')}
-              <ArrowUpRight size={17} />
-            </a>
-          )}
         </div>
-        {mapUrl && (
-          <p className="hospital-map-note">
-            {t(
-              'The map searches the published address. Confirm the exact hospital entrance with reception.',
-            )}
-          </p>
-        )}
       </div>
     </section>
   );
@@ -343,22 +349,22 @@ export function PhotoCredits() {
   return (
     <details className="hospital-photo-credits">
       <summary>{t('Photography & credits')}</summary>
-      <p>
-        {t(
-          'Healthcare photographs are stock images for illustration; they do not show this hospital’s staff or facilities. The Colombo photograph shows the city, not our premises.',
-        )}
-      </p>
+      <p>{t('Illustrative photographs, not Smart HMS premises or staff.')}</p>
       <ul>
         {photoCredits.map((photo) => (
           <li key={photo.file}>
             <a href={photo.url} target="_blank" rel="noopener noreferrer">
-              {photo.name} / Unsplash
+              {photo.name} / {photo.provider || 'Unsplash'}
             </a>
           </li>
         ))}
       </ul>
       <a href="https://unsplash.com/license" target="_blank" rel="noopener noreferrer">
         {t('Free to use under the Unsplash License')}
+      </a>
+      {' · '}
+      <a href="https://www.pexels.com/license/" target="_blank" rel="noopener noreferrer">
+        Pexels License
       </a>
     </details>
   );

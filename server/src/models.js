@@ -16,6 +16,7 @@ const userSchema = new Schema(
       maxlength: 254,
     },
     phone: { type: String, default: '', maxlength: 25 },
+    avatarId: { type: String, default: '', select: true },
     passwordHash: { type: String, required: true, select: false },
     securityRevision: { type: Number, default: 0, select: false },
     recoveryRequestedAt: { type: Date, select: false },
@@ -543,13 +544,15 @@ export async function connectDatabase(uri) {
 }
 
 export function publicUser(user) {
+  const id = user._id.toString();
   return {
-    id: user._id.toString(),
+    id,
     name: user.name,
     email: user.email,
     phone: user.phone,
     role: user.role,
     isActive: user.isActive,
+    avatarUrl: user.avatarId ? `/api/users/${id}/avatar?v=${user.avatarId}` : '',
   };
 }
 

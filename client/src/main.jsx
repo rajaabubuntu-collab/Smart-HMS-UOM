@@ -45,6 +45,8 @@ import { DoctorQueue, ConsultationPage, MedicalHistory } from './pages/Clinical'
 import { Billing, BillDetail } from './pages/Billing';
 import './styles.css';
 import './glass.css';
+import './workspace.css';
+import './liquid-glass.css';
 
 function Protected({ roles }) {
   const { user } = useAuth();

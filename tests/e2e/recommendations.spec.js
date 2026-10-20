@@ -12,7 +12,6 @@ async function describe(page, symptoms) {
   await page.goto('/recommendations');
   await page.getByLabel(/^Do any warning signs/).selectOption('no');
   await page.getByLabel(/^Primary symptoms/).fill(symptoms);
-  await page.getByLabel(/^How long/).fill('2');
   await page
     .getByLabel('I understand this is a department guide, not a diagnosis or emergency service.')
     .check();
@@ -175,7 +174,7 @@ test('demo directory supports new specialties, real slots, profiles and form sho
   test.setTimeout(120000);
   await login(page, 'patient');
   await page.goto('/recommendations');
-  await expect(page.getByRole('heading', { name: 'Try a demo scenario' })).toBeVisible();
+  await expect(page.locator('.guide-demo-panel summary')).toBeVisible();
   await expect(page.getByLabel('Hospital directory')).toContainText('20');
   await expect(page.getByLabel('Hospital directory')).toContainText('61');
   await page.evaluate(() => window.scrollTo(0, 0));
@@ -187,9 +186,6 @@ test('demo directory supports new specialties, real slots, profiles and form sho
     'I would like a routine review for diabetes',
   );
   await page.getByLabel(/^Do any warning signs/).selectOption('no');
-  await page.getByRole('button', { name: '2 weeks', exact: true }).click();
-  await expect(page.getByLabel(/^How long/)).toHaveValue('2');
-  await expect(page.getByLabel('Duration unit')).toHaveValue('weeks');
   await page
     .getByLabel('I understand this is a department guide, not a diagnosis or emergency service.')
     .check();
@@ -362,19 +358,18 @@ test('Groq disclosure and consent control submission, with provider-aware loadin
   });
   await page.goto('/recommendations');
   await expect(page.getByRole('heading', { name: 'Find your next step in care' })).toBeVisible();
-  await expect(page.getByLabel('Pain level (optional)')).not.toBeVisible();
+  await expect(page.getByLabel('Pain level (optional)')).toHaveCount(0);
+  await expect(page.getByLabel(/^How long/)).toHaveCount(0);
   await page.screenshot({
     path: '.local/screenshots/groq-redesign-desktop.png',
     fullPage: true,
     animations: 'disabled',
   });
   await page.getByText('Add more details (optional)', { exact: true }).click();
-  await page.getByLabel('Pain level (optional)').selectOption('3');
   await page.getByLabel('Additional comments (optional)').fill('Fictional test description');
   await page.getByText('Add more details (optional)', { exact: true }).click();
   await page.getByLabel(/^Do any warning signs/).selectOption('no');
   await page.getByLabel(/^Primary symptoms/).fill('my nose hurt and itchy.');
-  await page.getByLabel(/^How long/).fill('2');
   await page
     .getByLabel('I understand this is a department guide, not a diagnosis or emergency service.')
     .check();
@@ -388,7 +383,8 @@ test('Groq disclosure and consent control submission, with provider-aware loadin
   await expect(page.getByRole('progressbar', { name: 'Checking your description' })).toBeVisible();
   await expect(page.getByText(/^The local model is reviewing/)).toHaveCount(0);
   await expect.poll(() => sent?.cloudConsent).toBe(true);
-  expect(sent.painLevel).toBe(3);
+  expect(sent).not.toHaveProperty('painLevel');
+  expect(sent).not.toHaveProperty('duration');
   expect(sent.comments).toBe('Fictional test description');
   release();
   await expect(page.getByText('Groq AI guidance', { exact: true })).toBeVisible();
@@ -401,9 +397,9 @@ test('Groq disclosure and consent control submission, with provider-aware loadin
   });
   await page.getByRole('button', { name: 'Clear', exact: true }).click();
   await expect(consent).not.toBeChecked();
-  await expect(page.getByLabel('Pain level (optional)')).not.toBeVisible();
+  await expect(page.getByLabel('Pain level (optional)')).toHaveCount(0);
+  await expect(page.getByLabel(/^How long/)).toHaveCount(0);
   await page.getByText('Add more details (optional)', { exact: true }).click();
-  await expect(page.getByLabel('Pain level (optional)')).toHaveValue('');
   await expect(page.getByLabel('Additional comments (optional)')).toHaveValue('');
   await expect(submit).toBeDisabled();
   await page.locator('#symptoms').fill('Fictional description');

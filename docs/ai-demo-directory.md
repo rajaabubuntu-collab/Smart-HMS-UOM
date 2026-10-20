@@ -1,6 +1,6 @@
 # AI guide design and demo directory
 
-The recommendation page now follows the supplied Stitch reference's teal/white visual style: emergency strip, compact intake form, duration shortcuts, explanation cards, clinician cards and appointment-time links. The existing app navigation, authentication, language selector and emergency/scope gates remain functional.
+The recommendation page uses the shared Smart HMS theme: emergency strip, simplified symptom form, explanation cards, clinician cards and appointment-time links. Duration and pain-score fields are no longer shown. The existing app navigation, authentication, language selector and emergency/scope gates remain functional.
 
 Only real application state is displayed. Directory counts come from active records; appointment previews come from active future sessions with unreserved slots. Doctor profile details expand inline. Clicking a preview opens that doctor's booking page on the correct Colombo calendar date; it does not reserve a slot. The normal booking transaction checks availability again. The reference's example confidence percentage, triage level, waiting time, certifications, insurance coverage, laboratory advice, patient history and compliance claims were not evidence about this project and are not shown.
 
@@ -22,7 +22,7 @@ Doctor login credentials are written only for newly created users to `.local/ai-
 
 ## Testing the expanded AI
 
-Sign in as a patient and open **Department guide**. The **Try a demo scenario** selector appears when active demo profiles exist. Selecting a department copies a synthetic description into the form. The patient must still answer the warning-sign question, enter a duration and acknowledge the limitations. No request is automatically submitted.
+Sign in as a patient and open **Department guide**. The **Try a demo scenario** selector appears when active demo profiles exist. Selecting a department copies a synthetic description into the form. The patient must still answer the warning-sign question and acknowledge the limitations, plus consent to cloud processing when Groq is enabled. No request is automatically submitted.
 
 | Department                     | Synthetic test description                                                                    |
 | ------------------------------ | --------------------------------------------------------------------------------------------- |

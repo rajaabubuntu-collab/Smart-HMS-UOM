@@ -213,30 +213,6 @@
   align-items: center;
   gap: 5px;
 }
-.guide-duration-chips {
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 8px;
-  margin-bottom: 16px;
-}
-.guide-duration-chips button {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 4px;
-  padding: 8px 5px;
-  min-height: 44px;
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  background: white;
-  color: var(--green);
-  font-size: 12px;
-}
-.guide-duration-chips button[aria-pressed='true'] {
-  background: var(--green);
-  color: white;
-  border-color: var(--green);
-}
 .guide-optional {
   border: 1px solid var(--border);
   border-radius: 14px;

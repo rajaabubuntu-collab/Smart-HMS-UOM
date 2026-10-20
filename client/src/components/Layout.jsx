@@ -20,10 +20,12 @@ import {
   ChartNoAxesCombined,
   ScrollText,
   Settings,
+  ReceiptText,
 } from 'lucide-react';
 import { useAuth } from '../auth';
 import { Brand, Notice } from './ui';
 import { DisplayPreference } from './DisplayPreference';
+import ProfileAvatarControl from './ProfileAvatarControl';
 import { RealtimeConnection, RealtimeStatus } from './Realtime';
 
 export default function Layout() {
@@ -84,7 +86,7 @@ export default function Layout() {
     }
   }
   return (
-    <div className="app-shell">
+    <div className={`app-shell ${user.role === 'patient' ? 'patient-workspace' : ''}`}>
       <RealtimeConnection />
       <a className="skip-link" href="#main">
         {t('Skip to content')}{' '}
@@ -158,14 +160,7 @@ export default function Layout() {
           <div className="topbar-user">
             <DisplayPreference />
             <NotificationBell />
-            <div className="avatar">
-              {user.name
-                .split(' ')
-                .map((n) => n[0])
-                .slice(0, 2)
-                .join('')
-                .toUpperCase()}
-            </div>
+            <ProfileAvatarControl user={user} />
             <div className="user-label">
               <strong>{user.name}</strong>
               <span>{user.role === 'admin' ? t('Administrator') : user.role}</span>
@@ -192,6 +187,21 @@ export default function Layout() {
           <span>{t('University of Moratuwa · BIT Project')}</span>
         </footer>
       </div>
+      {user.role === 'patient' && (
+        <nav className="workspace-mobile-nav" aria-label={t('WORKSPACE')}>
+          {[
+            { to: '/dashboard', label: 'Overview', icon: LayoutDashboard },
+            { to: '/appointments', label: 'Appointments', icon: CalendarDays },
+            { to: '/recommendations', label: 'Department guide', icon: HeartPulse },
+            { to: '/billing', label: 'Bills & payments', icon: ReceiptText },
+          ].map(({ to, label, icon: Icon }) => (
+            <NavLink key={to} to={to} onClick={() => setMenu(false)}>
+              <Icon size={21} aria-hidden="true" />
+              <span>{t(label)}</span>
+            </NavLink>
+          ))}
+        </nav>
+      )}
     </div>
   );
 }

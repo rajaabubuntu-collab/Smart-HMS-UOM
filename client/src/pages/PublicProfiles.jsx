@@ -1,3 +1,4 @@
+import DoctorPortrait from '../components/DoctorPortrait';
 import { useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { ArrowRight, Stethoscope } from 'lucide-react';
@@ -112,9 +113,7 @@ export function PublicDoctorProfile() {
       {doctor && (
         <div className="hospital-doctor-detail">
           <div className="hospital-profile-card">
-            <span className="hospital-doctor-symbol">
-              <Stethoscope size={30} aria-hidden="true" />
-            </span>
+            <DoctorPortrait doctor={doctor} />
             <h2>{t('Professional information')}</h2>
             <dl className="detail-list">
               <div>

@@ -48,9 +48,7 @@ test('public homepage stays usable without session API and links to real entry p
   page.on('pageerror', (error) => errors.push(error.message));
   await page.route('**/api/auth/me', (route) => route.abort());
   await page.goto('/');
-  await expect(page.getByRole('heading', { level: 1 })).toContainText(
-    'Your health. Your next step.',
-  );
+  await expect(page.getByRole('heading', { level: 1 })).toContainText('Welcome to Smart HMS');
   await expect(page.getByText('University project · Demonstration website')).toBeVisible();
   await expect(page.getByRole('link', { name: 'Create patient account' })).toHaveAttribute(
     'href',
@@ -60,10 +58,10 @@ test('public homepage stays usable without session API and links to real entry p
     'href',
     '/login',
   );
-  await page.getByRole('link', { name: 'See how it works' }).click();
-  await expect(page).toHaveURL(/#your-visit$/);
+  await page.locator('.public-hero').getByRole('link', { name: 'Hospital information' }).click();
+  await expect(page).toHaveURL(/#hospital-info$/);
   await expect(
-    page.getByRole('heading', { name: 'Your visit. One step at a time.' }),
+    page.getByRole('heading', { name: 'Hospital information', exact: true }),
   ).toBeInViewport();
   await page.evaluate(() => window.scrollTo(0, 0));
   await page.screenshot({

@@ -157,8 +157,8 @@ export function createDepartmentAI(config = recommendationConfig(), { fetchImpl 
             patientDescription: {
               symptoms: input.symptoms,
               comments: input.comments,
-              duration: input.duration,
-              painLevel: input.painLevel ?? null,
+              ...(input.duration ? { duration: input.duration } : {}),
+              ...(input.painLevel !== undefined ? { painLevel: input.painLevel } : {}),
             },
           }),
         },

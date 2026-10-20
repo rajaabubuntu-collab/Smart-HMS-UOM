@@ -22,10 +22,7 @@ try {
   ];
   for (const [index, scenario] of scenarios.entries()) {
     const started = Date.now();
-    const result = await ai.recommend(
-      { symptoms: scenario.symptoms, comments: '', duration: { value: 2, unit: 'days' } },
-      choices,
-    );
+    const result = await ai.recommend({ symptoms: scenario.symptoms, comments: '' }, choices);
     const passed =
       result.status === 'ok' &&
       result.decision === 'matched' &&

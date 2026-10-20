@@ -1,3 +1,4 @@
+import HospitalMap from '../components/HospitalMap';
 import {
   HospitalCareGallery,
   HospitalOverview,
@@ -25,12 +26,12 @@ export function PublicAbout() {
           <section className="hospital-about hospital-about-page">
             <figure className="hospital-reception-visual">
               <img
-                src="/images/waiting-stock.webp"
+                src="/images/colombo-hospital.webp"
                 width="1600"
                 height="1200"
-                alt={t('Stock photograph of a hospital corridor and waiting seats')}
+                alt={t('Mulleriyawa Hospital in Colombo, Sri Lanka')}
               />
-              <PhotoCredit index={1}>{t('Healthcare stock photograph')}</PhotoCredit>
+              <PhotoCredit index={6}>{t('Healthcare stock photograph')}</PhotoCredit>
             </figure>
             <div>
               <p className="public-kicker">{hospital?.name || 'Smart HMS'}</p>
@@ -130,24 +131,7 @@ export function PublicContact() {
                       : t('Reception contact details have not yet been published.')}
                 </p>
               )}
-              {hospital?.address && (
-                <a
-                  className="text-link"
-                  href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(hospital.address + ', Sri Lanka')}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  {t('Explore the area on Google Maps')}
-                  <ArrowRight size={17} />
-                </a>
-              )}
-              {hospital?.address && (
-                <p className="small-text muted">
-                  {t(
-                    'The map searches the published address. Confirm the exact hospital entrance with reception.',
-                  )}
-                </p>
-              )}
+              <HospitalMap />
             </section>
             <ContactForm />
           </div>

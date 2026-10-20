@@ -132,6 +132,7 @@
   "Category": "Category",
   "Change": "Change",
   "Change password": "Change password",
+  "Change profile picture": "Change profile picture",
   "Channel currently disabled": "Channel currently disabled",
   "Charges and payment records for this appointment.": "Charges and payment records for this appointment.",
   "Chart period": "Chart period",
@@ -146,8 +147,10 @@
   "Choose a patient": "Choose a patient",
   "Choose a rating from 1 to 5 stars and add an optional comment. One submission per completed visit; submitted feedback cannot be edited. Avoid sharing medical details. For care or urgent help, contact the hospital directly.": "Choose a rating from 1 to 5 stars and add an optional comment. One submission per completed visit; submitted feedback cannot be edited. Avoid sharing medical details. For care or urgent help, contact the hospital directly.",
   "Choose a time": "Choose a time",
+  "Choose an image smaller than 5 MB.": "Choose an image smaller than 5 MB.",
   "Choose an answer": "Choose an answer",
   "Choose an available time": "Choose an available time",
+  "Choose profile picture": "Choose profile picture",
   "Choose another date or doctor. Reception can help you find a suitable appointment.": "Choose another date or doctor. Reception can help you find a suitable appointment.",
   "Choose another date or report to view saved activity.": "Choose another date or report to view saved activity.",
   "Email and SMS include appointment times, doctor details and billing amounts. Clinical notes and prescription instructions stay in the portal. Changes apply to future events.": "Email and SMS include appointment times, doctor details and billing amounts. Clinical notes and prescription instructions stay in the portal. Changes apply to future events.",
@@ -1194,5 +1197,13 @@
   "Tell us how long": "Tell us how long",
   "Add more details (optional)": "Add more details (optional)",
   "Tick the required boxes above to continue.": "Tick the required boxes above to continue.",
-  "Your guidance": "Your guidance"
+  "Your guidance": "Your guidance",
+  "Welcome to": "Welcome to",
+  "Get to know the hospital, explore our departments and find practical information for your visit.": "Get to know the hospital, explore our departments and find practical information for your visit.",
+  "About our hospital": "About our hospital",
+  "Photo gallery": "Photo gallery",
+  "Corridor": "Corridor",
+  "Waiting area": "Waiting area",
+  "Patient room": "Patient room",
+  "Illustrative stock photos, not photographs of this hospital.": "Illustrative stock photos, not photographs of this hospital."
 }

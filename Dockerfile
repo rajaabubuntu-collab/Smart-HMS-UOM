@@ -22,6 +22,7 @@ COPY --from=build /app/client/dist ./client/dist
 COPY server/package.json ./server/package.json
 COPY server/src ./server/src
 COPY server/scripts ./server/scripts
+RUN mkdir -p /data/avatars && chown node:node /data/avatars
 USER node
 EXPOSE 4000
 HEALTHCHECK --interval=30s --timeout=5s --start-period=20s --retries=3 CMD node -e "fetch('http://127.0.0.1:4000/api/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"

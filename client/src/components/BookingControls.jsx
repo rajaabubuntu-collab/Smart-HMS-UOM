@@ -1,3 +1,4 @@
+import DoctorPortrait from './DoctorPortrait';
 import { t } from '../i18n/locale';
 import { useEffect, useState } from 'react';
 import { Search, Stethoscope, CalendarDays, Check } from 'lucide-react';
@@ -98,9 +99,7 @@ export function DoctorPicker({ onSelect, selected, initialDepartment = '' }) {
                   aria-pressed={selected?.id === doctor.id}
                   onClick={() => onSelect(doctor)}
                 >
-                  <span className="action-icon">
-                    <Stethoscope size={21} />
-                  </span>
+                  <DoctorPortrait doctor={doctor} compact />
                   <span>
                     <strong>{doctor.name}</strong>
                     <small>

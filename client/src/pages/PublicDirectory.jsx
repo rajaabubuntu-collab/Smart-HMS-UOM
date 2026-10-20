@@ -1,7 +1,8 @@
+import DoctorPortrait from '../components/DoctorPortrait';
 import { useEffect, useState } from 'react';
 import { api } from '../api';
 import { Link, useSearchParams } from 'react-router-dom';
-import { ArrowRight, Stethoscope } from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
 import { Field, Loading, Notice, Pager, useResource } from '../components/ui';
 import { PublicPage } from '../components/PublicSite';
 import { useAuth } from '../auth';
@@ -12,9 +13,7 @@ export function PublicDoctorCard({ doctor }) {
   const { user } = useAuth();
   return (
     <article className="hospital-profile-card">
-      <span className="hospital-doctor-symbol">
-        <Stethoscope size={28} aria-hidden="true" />
-      </span>
+      <DoctorPortrait doctor={doctor} />
       <p className="public-kicker">{doctor.department}</p>
       <h3>{doctor.name}</h3>
       <p>{doctor.specialization}</p>

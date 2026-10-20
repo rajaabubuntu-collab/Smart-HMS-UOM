@@ -4,6 +4,7 @@ import { UsersRound, Plus } from 'lucide-react';
 import { api } from '../api';
 import { Field, Loading, Notice, PageHeading, Pager, Submit, useResource } from '../components/ui';
 import Modal from '../components/Modal';
+import { UserAvatar } from '../components/UserAvatar';
 
 export default function Staff() {
   const [page, setPage] = useState(1);
@@ -109,7 +110,7 @@ export default function Staff() {
                 {data.items.length ? (
                   data.items.map((person) => (
                     <div className="staff-row" key={person.id}>
-                      <div className="avatar">{person.name.charAt(0)}</div>
+                      <UserAvatar user={person} />
                       <div className="staff-person">
                         <h3>{person.name}</h3>
                         <p>{person.email}</p>

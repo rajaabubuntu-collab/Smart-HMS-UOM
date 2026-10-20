@@ -1,3 +1,4 @@
+import DoctorPortrait from '../components/DoctorPortrait';
 import { t } from '../i18n/locale';
 import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
@@ -8,7 +9,6 @@ import {
   BrainCircuit,
   Building2,
   CalendarDays,
-  Check,
   FlaskConical,
   Info,
   Lightbulb,
@@ -29,9 +29,6 @@ import './Recommendations.css';
 
 const emptyForm = {
   symptoms: '',
-  durationValue: '',
-  durationUnit: 'days',
-  painLevel: '',
   comments: '',
   emergencySigns: '',
   acknowledged: false,
@@ -87,18 +84,10 @@ function EmergencyHelp() {
 function DoctorCard({ doctor }) {
   const firstSlot = doctor.nextSlots?.[0];
   const bookingUrl = `/book?doctor=${doctor.id}${firstSlot ? `&date=${localDate(firstSlot.startsAt)}` : ''}`;
-  const initials = doctor.name
-    .replace(/^Dr\.?\s*/i, '')
-    .split(' ')
-    .slice(0, 2)
-    .map((s) => s[0])
-    .join('');
   return (
     <div className="card guide-doctor">
       <div className="guide-doctor-heading">
-        <span className="guide-doctor-avatar" aria-hidden="true">
-          {initials}
-        </span>
+        <DoctorPortrait doctor={doctor} compact />
         <div>
           <h3>{doctor.name}</h3>
           <p>{doctor.specialization}</p>
@@ -198,8 +187,6 @@ export default function Recommendations() {
         signal: controller.signal,
         body: {
           symptoms: form.symptoms,
-          duration: { value: Number(form.durationValue), unit: form.durationUnit },
-          ...(form.painLevel ? { painLevel: Number(form.painLevel) } : {}),
           comments: form.comments,
           emergencySigns: form.emergencySigns,
           acknowledged: form.acknowledged,
@@ -346,69 +333,6 @@ export default function Recommendations() {
                     <span>{form.symptoms.length}/1000</span>
                   </div>
                 </div>
-                <div className="guide-form-section">
-                  <h3 className="guide-step-title">
-                    <span>3</span>
-                    {t('Tell us how long')}
-                  </h3>
-                  <div className="guide-duration-chips" aria-label={t('Quick duration choices')}>
-                    {[
-                      [1, 'days', '1 day'],
-                      [3, 'days', '3 days'],
-                      [7, 'days', '1 week'],
-                      [2, 'weeks', '2 weeks'],
-                    ].map(([value, unit, label]) => (
-                      <button
-                        key={label}
-                        type="button"
-                        aria-pressed={
-                          Number(form.durationValue) === value && form.durationUnit === unit
-                        }
-                        onClick={() => {
-                          setForm((f) => ({
-                            ...f,
-                            durationValue: String(value),
-                            durationUnit: unit,
-                          }));
-                          setResult(null);
-                          setError(null);
-                        }}
-                      >
-                        {t(label)}
-                        {Number(form.durationValue) === value && form.durationUnit === unit && (
-                          <Check size={14} aria-hidden="true" />
-                        )}
-                      </button>
-                    ))}
-                  </div>
-                  <div className="form-grid">
-                    <Field
-                      name="durationValue"
-                      label={t('How long have you had these symptoms?')}
-                      required
-                      type="number"
-                      min={1}
-                      max={3650}
-                      step={1}
-                      value={form.durationValue}
-                      onChange={(e) => change('durationValue', e.target.value)}
-                      error={error?.fields?.['duration.value']}
-                    />
-                    <Field
-                      name="durationUnit"
-                      label={t('Duration unit')}
-                      as="select"
-                      value={form.durationUnit}
-                      onChange={(e) => change('durationUnit', e.target.value)}
-                    >
-                      {['hours', 'days', 'weeks', 'months'].map((unit) => (
-                        <option key={unit} value={unit}>
-                          {t(unit)}
-                        </option>
-                      ))}
-                    </Field>
-                  </div>
-                </div>
                 <details
                   className="guide-optional"
                   open={optionalOpen}
@@ -419,24 +343,6 @@ export default function Recommendations() {
                     <ChevronDown size={18} aria-hidden="true" />
                   </summary>
                   <div className="guide-optional-content">
-                    <Field
-                      name="painLevel"
-                      label={t('Pain level (optional)')}
-                      as="select"
-                      value={form.painLevel}
-                      onChange={(e) => change('painLevel', e.target.value)}
-                      error={error?.fields?.painLevel}
-                      hint={t(
-                        '1 = lowest, 10 = highest. Leave blank if there is no pain or you prefer not to say.',
-                      )}
-                    >
-                      <option value="">{t('Not provided')}</option>
-                      {Array.from({ length: 10 }, (_, i) => (
-                        <option key={i + 1} value={i + 1}>
-                          {i + 1}
-                        </option>
-                      ))}
-                    </Field>
                     <Field
                       name="comments"
                       label={t('Additional comments (optional)')}

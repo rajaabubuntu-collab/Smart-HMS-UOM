@@ -15,7 +15,6 @@ const choices = departmentChoices([{ _id: 'private-database-id', name: 'ENT' }])
 const input = {
   symptoms: 'my nose hurt and itchy.',
   comments: '',
-  duration: { value: 2, unit: 'days' },
   name: 'PRIVATE_NAME',
   email: 'PRIVATE_EMAIL',
   patientId: 'PRIVATE_ID',
@@ -71,8 +70,6 @@ test('Groq uses fixed HTTPS, structured output and minimal fields; maps allowed 
   assert.ok(!/PRIVATE_|test-secret|private-database-id/.test(request.body));
   assert.deepEqual(Object.keys(JSON.parse(body.messages[1].content).patientDescription).sort(), [
     'comments',
-    'duration',
-    'painLevel',
     'symptoms',
   ]);
 });

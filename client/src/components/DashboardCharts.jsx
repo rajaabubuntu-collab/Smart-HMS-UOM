@@ -4,7 +4,7 @@ import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxi
 import { Field, Loading, Notice, useResource } from './ui';
 import { money } from '../scheduling';
 
-function ChartCard({ title, points, currency = false, description, color = '#6551c8' }) {
+function ChartCard({ title, points, currency = false, description, color = '#096b60' }) {
   const rows = points.map((p) => ({ ...p, value: currency ? p.value / 100 : p.value }));
   return (
     <section

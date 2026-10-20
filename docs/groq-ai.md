@@ -51,7 +51,8 @@ then restart. No automatic local-model retry happens after a Groq failure.
 - The patient must explicitly consent before any description is sent to Groq.
   Server-side checks enforce this even if someone bypasses the browser checkbox.
 - The payload contains department names/scopes, temporary choice IDs, and the
-  submitted symptoms, comments, duration and optional pain level. It does not
+  submitted symptoms and optional comments. The simplified form does not ask for
+  duration or a pain score. Older API clients may still supply these optional fields. It does not
   attach patient IDs, names, emails, dates of birth, medical records or doctors.
   Identifying information typed into the free-text fields would still be sent;
   the UI therefore asks users to leave it out.

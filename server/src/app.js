@@ -8,6 +8,7 @@ import { recoveryRouter, loginMetadata } from './security/recovery.js';
 import { publicHospitalRouter, hospitalSettingsRouter } from './settings/hospital.js';
 import { reportingRouter } from './reporting/routes.js';
 import { dashboardRouter } from './reporting/dashboard.js';
+import { profileAvatarRouter } from './profile-avatars.js';
 import { deliveryRouter } from './notifications/delivery-routes.js';
 import { feedbackRouter } from './feedback/routes.js';
 import { recommendationRouter } from './recommendations/routes.js';
@@ -47,16 +48,43 @@ import {
 // Use a fixed-cost comparison even for unknown accounts to reduce login timing differences.
 const dummyHash = bcrypt.hashSync('not-a-real-account-password', 12);
 
+function isAllowedRequestOrigin(requestOrigin, config) {
+  if (requestOrigin === config.origin) return true;
+  if (config.env !== 'development' || !requestOrigin) return false;
+
+  try {
+    const configured = new URL(config.origin);
+    const requested = new URL(requestOrigin);
+    const localHosts = new Set(['localhost', '127.0.0.1']);
+    return (
+      requested.protocol === configured.protocol &&
+      requested.port === configured.port &&
+      localHosts.has(configured.hostname) &&
+      localHosts.has(requested.hostname)
+    );
+  } catch {
+    return false;
+  }
+}
+
 export function createApp(config, { rateLimitEnabled = true, recommendationFetch } = {}) {
   const app = express();
   app.disable('x-powered-by');
   if (config.trustProxy) app.set('trust proxy', 1);
-  app.use(helmet({ strictTransportSecurity: config.env === 'production' ? undefined : false }));
+  app.use(
+    helmet({
+      strictTransportSecurity: config.env === 'production' ? undefined : false,
+      contentSecurityPolicy: { directives: { frameSrc: ["'self'", 'https://www.google.com'] } },
+    }),
+  );
   app.use(cors({ origin: config.origin, credentials: true }));
   app.use('/api', (req, res, next) => {
     res.set('Cache-Control', 'no-store');
     // Cookie authentication requires CSRF protection, including login and registration.
-    if (!['GET', 'HEAD', 'OPTIONS'].includes(req.method) && req.get('origin') !== config.origin) {
+    if (
+      !['GET', 'HEAD', 'OPTIONS'].includes(req.method) &&
+      !isAllowedRequestOrigin(req.get('origin'), config)
+    ) {
       return next(httpError(403, 'Request origin is not allowed.'));
     }
     next();
@@ -146,6 +174,7 @@ export function createApp(config, { rateLimitEnabled = true, recommendationFetch
   app.use('/api', publicDirectoryRouter());
   app.use('/api', publicEnquiryRouter({ rateLimitEnabled }));
   app.use('/api', authenticate(config));
+  app.use('/api', profileAvatarRouter(config, { rateLimitEnabled }));
   app.use('/api', hospitalSettingsRouter());
   app.use('/api', administrationRouter());
   app.use('/api', staffEnquiryRouter());
