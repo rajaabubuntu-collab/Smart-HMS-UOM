@@ -5,8 +5,9 @@ import express, { Router } from 'express';
 import { rateLimit } from 'express-rate-limit';
 import mongoose from 'mongoose';
 import sharp from 'sharp';
-import { audit, publicUser, User } from './models.js';
+import { audit, publicUser, User, Doctor } from './models.js';
 import { httpError } from './auth.js';
+import { publishedDoctors } from './settings/administration.js';
 
 const maxUploadBytes = 5 * 1024 * 1024;
 const maxStoredBytes = 300 * 1024;
@@ -128,21 +129,52 @@ export function profileAvatarRouter(config, { rateLimitEnabled = true } = {}) {
 
   router.get('/users/:id/avatar', async (req, res) => {
     if (!mongoose.isValidObjectId(req.params.id)) throw httpError(404, 'Profile photo not found.');
-    const user = await User.findById(req.params.id).select('avatarId');
+    const user = await User.findById(req.params.id).select('avatarId role isActive');
     if (!user?.avatarId) throw httpError(404, 'Profile photo not found.');
-    let image;
-    try {
-      image = await readFile(path.join(directory, `${user.avatarId}.webp`));
-    } catch (error) {
-      if (error.code === 'ENOENT') throw httpError(404, 'Profile photo not found.');
-      throw error;
+    const ownPhoto = String(req.user._id) === String(user._id);
+    if (!ownPhoto && req.user.role !== 'admin') {
+      // Patients never expose their photos to other patients. Active doctors are
+      // visible in the authenticated booking/department directories only.
+      const doctor =
+        user.role === 'doctor' && user.isActive
+          ? await Doctor.findOne({ user: user._id }).populate('department', 'isActive').lean()
+          : null;
+      if (!doctor?.department?.isActive) throw httpError(404, 'Profile photo not found.');
     }
-    res
-      .set('Content-Type', 'image/webp')
-      .set('Cache-Control', 'private, no-store')
-      .set('X-Content-Type-Options', 'nosniff')
-      .send(image);
+    await sendAvatar(res, directory, user.avatarId);
   });
 
+  return router;
+}
+
+async function sendAvatar(res, directory, avatarId) {
+  if (!avatarId) throw httpError(404, 'Profile photo not found.');
+  let image;
+  try {
+    image = await readFile(path.join(directory, `${avatarId}.webp`));
+  } catch (error) {
+    if (error.code === 'ENOENT') throw httpError(404, 'Profile photo not found.');
+    throw error;
+  }
+  res
+    .set('Content-Type', 'image/webp')
+    .set('Cache-Control', 'private, no-store')
+    .set('X-Content-Type-Options', 'nosniff')
+    .send(image);
+}
+
+export function publicDoctorAvatarRouter(config) {
+  const router = Router();
+  const directory = path.resolve(config.avatarStorageDir || '.local/avatars');
+  router.get('/public/doctors/:id/avatar', async (req, res) => {
+    if (!mongoose.isValidObjectId(req.params.id)) throw httpError(404, 'Profile photo not found.');
+    // Recheck the SAME publication conditions as the public profile on every
+    // image request, including after a doctor or department is unpublished.
+    const [doctor] = await Doctor.aggregate([
+      ...publishedDoctors({ id: req.params.id }),
+      { $project: { avatarId: '$account.avatarId' } },
+    ]).option({ maxTimeMS: 10000 });
+    await sendAvatar(res, directory, doctor?.avatarId);
+  });
   return router;
 }

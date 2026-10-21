@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import { z } from 'zod';
 import { rateLimit } from 'express-rate-limit';
-import { Department, Doctor, Patient, User, audit } from '../models.js';
+import { Department, Doctor, Patient, User, audit, userAvatarUrl } from '../models.js';
 import { allowRoles } from '../auth.js';
 import { parse } from '../validation.js';
 import { hospitalDate } from '../scheduling/time.js';
@@ -157,7 +157,7 @@ export function recommendationRouter(config, { rateLimitEnabled = true, fetchImp
           if (!(await Department.exists({ _id: department._id, isActive: true }))) continue;
           const filter = { department: department._id, user: { $in: users.map((u) => u._id) } };
           const doctors = await Doctor.find(filter)
-            .populate('user', 'name')
+            .populate('user', 'name avatarId')
             .sort({ _id: 1 })
             .limit(6)
             .lean();
@@ -173,6 +173,7 @@ export function recommendationRouter(config, { rateLimitEnabled = true, fetchImp
             doctors: doctors.map((d) => ({
               id: d._id,
               name: d.user.name,
+              avatarUrl: userAvatarUrl(d.user),
               specialization: d.specialization,
               qualification: d.qualification,
               consultationFeeMinor: d.consultationFeeMinor,

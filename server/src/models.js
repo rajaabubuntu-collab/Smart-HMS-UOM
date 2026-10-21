@@ -543,6 +543,10 @@ export async function connectDatabase(uri) {
   );
 }
 
+export function userAvatarUrl(user) {
+  return user.avatarId ? `/api/users/${user._id}/avatar?v=${user.avatarId}` : '';
+}
+
 export function publicUser(user) {
   const id = user._id.toString();
   return {
@@ -552,7 +556,7 @@ export function publicUser(user) {
     phone: user.phone,
     role: user.role,
     isActive: user.isActive,
-    avatarUrl: user.avatarId ? `/api/users/${id}/avatar?v=${user.avatarId}` : '',
+    avatarUrl: userAvatarUrl(user),
   };
 }
 

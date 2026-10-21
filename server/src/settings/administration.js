@@ -189,7 +189,7 @@ export function administrationRouter() {
   return router;
 }
 // A shared publication filter protects both search results and individual public profiles.
-function publishedDoctors({ department, id, q } = {}) {
+export function publishedDoctors({ department, id, q } = {}) {
   return [
     {
       $match: {
@@ -203,7 +203,7 @@ function publishedDoctors({ department, id, q } = {}) {
         from: 'users',
         localField: 'user',
         foreignField: '_id',
-        pipeline: [{ $match: { isActive: true } }, { $project: { name: 1 } }],
+        pipeline: [{ $match: { isActive: true } }, { $project: { name: 1, avatarId: 1 } }],
         as: 'account',
       },
     },
@@ -234,6 +234,15 @@ function publishedDoctors({ department, id, q } = {}) {
 const publicDoctorFields = {
   _id: 1,
   name: '$account.name',
+  avatarUrl: {
+    $cond: [
+      { $ne: [{ $ifNull: ['$account.avatarId', ''] }, ''] },
+      {
+        $concat: ['/api/public/doctors/', { $toString: '$_id' }, '/avatar?v=', '$account.avatarId'],
+      },
+      '',
+    ],
+  },
   department: '$service.name',
   departmentId: '$service._id',
   specialization: 1,

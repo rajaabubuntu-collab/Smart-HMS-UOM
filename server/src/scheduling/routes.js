@@ -13,6 +13,7 @@ import {
   DoctorSchedule,
   audit,
   publicUser,
+  userAvatarUrl,
 } from '../models.js';
 import { allowRoles, httpError } from '../auth.js';
 import { parse, objectId, pageSchema } from '../validation.js';
@@ -60,6 +61,7 @@ function doctorResponse(doctor) {
   return {
     id: doctor._id,
     name: doctor.user.name,
+    avatarUrl: userAvatarUrl(doctor.user),
     department: doctor.department,
     specialization: doctor.specialization,
     qualification: doctor.qualification,
@@ -138,7 +140,7 @@ export function schedulingRouter() {
       _id: parse(objectId, req.params.id),
       ...(await activeDoctors()),
     })
-      .populate('user', 'name')
+      .populate('user', 'name avatarId')
       .populate('department', 'name')
       .lean();
     if (!doctor)
@@ -165,7 +167,7 @@ export function schedulingRouter() {
     }
     const [doctors, total] = await Promise.all([
       Doctor.find(filter)
-        .populate('user', 'name')
+        .populate('user', 'name avatarId')
         .populate('department', 'name')
         .sort({ _id: 1 })
         .skip((page - 1) * limit)
@@ -179,7 +181,7 @@ export function schedulingRouter() {
     const id = parse(objectId, req.params.id);
     const { date } = parse(availabilityQuery, req.query);
     const doctor = await Doctor.findOne({ _id: id, ...(await activeDoctors()) })
-      .populate('user', 'name')
+      .populate('user', 'name avatarId')
       .populate('department', 'name')
       .lean();
     if (!doctor) throw httpError(404, 'Available doctor not found.');

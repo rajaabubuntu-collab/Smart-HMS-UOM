@@ -4,25 +4,25 @@ Base path: `/api`. JSON request/response bodies. Authenticated requests use the 
 
 Every POST/PUT/PATCH/DELETE must include an `Origin` exactly matching `APP_ORIGIN` (including development scripts and Postman). Browsers set this automatically. Browser calls use the same-origin Vite proxy locally. Responses containing application data use `Cache-Control: no-store`.
 
-| Method | Endpoint                             | Permission   | Behaviour                                                                      |
-| ------ | ------------------------------------ | ------------ | ------------------------------------------------------------------------------ |
-| GET    | `/health`                            | Public       | 200 if MongoDB is connected, otherwise 503                                     |
-| POST   | `/auth/register`                     | Public       | Creates patient + profile + session; 201                                       |
-| POST   | `/auth/login`                        | Public       | Authenticates any of the four roles; sets session cookie                       |
-| GET    | `/auth/me`                           | Signed in    | Returns safe current-user fields                                               |
-| POST   | `/auth/logout`                       | Signed in    | Deletes current session, clears cookie; 204                                    |
-| PUT    | `/profile/avatar`                    | Signed in    | Uploads and resizes own JPEG/PNG/WebP avatar (max 5 MiB input, 300 KiB stored) |
-| DELETE | `/profile/avatar`                    | Signed in    | Removes own avatar                                                             |
-| GET    | `/users/:id/avatar`                  | Signed in    | Streams a user's optimized avatar; private, no-store                           |
-| GET    | `/patients/me`                       | Patient      | Own profile and account only                                                   |
-| PATCH  | `/patients/me`                       | Patient      | Updates own contact details atomically                                         |
-| GET    | `/doctors/me`                        | Doctor       | Own doctor profile and department                                              |
-| GET    | `/reception/overview`                | Receptionist | Registered patient count; no clinical records                                  |
-| GET    | `/admin/overview`                    | Admin        | Patient/doctor/receptionist/department counts                                  |
-| GET    | `/admin/departments?page=1&limit=10` | Admin        | Paginated departments                                                          |
-| POST   | `/admin/departments`                 | Admin        | Creates department; 201                                                        |
-| GET    | `/admin/staff?page=1&limit=10`       | Admin        | Paginated doctors/receptionists with doctor profiles                           |
-| POST   | `/admin/staff`                       | Admin        | Creates doctor or receptionist; 201                                            |
+| Method | Endpoint                             | Permission   | Behaviour                                                                                                    |
+| ------ | ------------------------------------ | ------------ | ------------------------------------------------------------------------------------------------------------ |
+| GET    | `/health`                            | Public       | 200 if MongoDB is connected, otherwise 503                                                                   |
+| POST   | `/auth/register`                     | Public       | Creates patient + profile + session; 201                                                                     |
+| POST   | `/auth/login`                        | Public       | Authenticates any of the four roles; sets session cookie                                                     |
+| GET    | `/auth/me`                           | Signed in    | Returns safe current-user fields                                                                             |
+| POST   | `/auth/logout`                       | Signed in    | Deletes current session, clears cookie; 204                                                                  |
+| PUT    | `/profile/avatar`                    | Signed in    | Uploads and resizes own JPEG/PNG/WebP avatar (max 5 MiB input, 300 KiB stored)                               |
+| DELETE | `/profile/avatar`                    | Signed in    | Removes own avatar                                                                                           |
+| GET    | `/users/:id/avatar`                  | Signed in    | Own photo or admin access; other users may view active doctors in active departments only; private, no-store |
+| GET    | `/patients/me`                       | Patient      | Own profile and account only                                                                                 |
+| PATCH  | `/patients/me`                       | Patient      | Updates own contact details atomically                                                                       |
+| GET    | `/doctors/me`                        | Doctor       | Own doctor profile and department                                                                            |
+| GET    | `/reception/overview`                | Receptionist | Registered patient count; no clinical records                                                                |
+| GET    | `/admin/overview`                    | Admin        | Patient/doctor/receptionist/department counts                                                                |
+| GET    | `/admin/departments?page=1&limit=10` | Admin        | Paginated departments                                                                                        |
+| POST   | `/admin/departments`                 | Admin        | Creates department; 201                                                                                      |
+| GET    | `/admin/staff?page=1&limit=10`       | Admin        | Paginated doctors/receptionists with doctor profiles                                                         |
+| POST   | `/admin/staff`                       | Admin        | Creates doctor or receptionist; 201                                                                          |
 
 Pagination: `page` 1–10000, `limit` 1–50. Lists return `{ items, total, page, limit }`.
 
@@ -42,6 +42,8 @@ Pagination: `page` 1–10000, `limit` 1–50. Lists return `{ items, total, page
 Email is trimmed/lowercased and database-unique. Passwords must contain at least 10 characters and at most 72 UTF-8 bytes (bcrypt limit). Gender values: `female`, `male`, `other`, `prefer-not-to-say`. Birth date must be a real date between 1900 and today. Phone is optional at registration. Role cannot be supplied; all self-registrations become patients.
 
 Login accepts only `{ "email": "...", "password": "..." }`. Login/register return `{ user: { id, name, email, phone, role, isActive, avatarUrl } }` and a Set-Cookie header. `avatarUrl` is empty until an image is uploaded. Password hashes never appear in responses.
+
+Public doctor profiles and authenticated doctor directories return `avatarUrl`. `GET /api/public/doctors/:id/avatar` accepts a Doctor ID and serves a photo only while the doctor is published, their account is active, and their department is active and published. Publication is rechecked for every request, including old photo URLs. Patient and non-doctor staff photos are never served publicly. Doctor cards fall back to labelled sample portraits when no upload exists or an upload is unavailable.
 
 Avatar uploads use the original image MIME type as `Content-Type` and send the raw file bytes. Images are decoded, cropped to a square, resized to at most 512×512, converted to WebP, and capped at 300 KiB. SVG and other unsupported formats are rejected. MongoDB stores only a random image identifier; the image itself is stored in the persistent `avatar_data` Docker volume (`AVATAR_STORAGE_DIR`) and must be backed up separately from MongoDB.
 

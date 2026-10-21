@@ -8,7 +8,7 @@ import { recoveryRouter, loginMetadata } from './security/recovery.js';
 import { publicHospitalRouter, hospitalSettingsRouter } from './settings/hospital.js';
 import { reportingRouter } from './reporting/routes.js';
 import { dashboardRouter } from './reporting/dashboard.js';
-import { profileAvatarRouter } from './profile-avatars.js';
+import { profileAvatarRouter, publicDoctorAvatarRouter } from './profile-avatars.js';
 import { deliveryRouter } from './notifications/delivery-routes.js';
 import { feedbackRouter } from './feedback/routes.js';
 import { recommendationRouter } from './recommendations/routes.js';
@@ -172,6 +172,7 @@ export function createApp(config, { rateLimitEnabled = true, recommendationFetch
   app.use('/api', recoveryRouter(config));
   app.use('/api', publicHospitalRouter());
   app.use('/api', publicDirectoryRouter());
+  app.use('/api', publicDoctorAvatarRouter(config));
   app.use('/api', publicEnquiryRouter({ rateLimitEnabled }));
   app.use('/api', authenticate(config));
   app.use('/api', profileAvatarRouter(config, { rateLimitEnabled }));

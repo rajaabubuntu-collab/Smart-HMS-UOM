@@ -372,3 +372,97 @@ test('authentication rate limiter stops repeated attempts', async () => {
   assert.equal(response.status, 429);
   assert.ok(response.headers['retry-after']);
 });
+
+test('patient avatars are private to their owner and administrators', async () => {
+  const patientCookie = cookie(await login('patient'));
+  const image = await sharp({ create: { width: 12, height: 12, channels: 3, background: '#fff' } })
+    .png()
+    .toBuffer();
+  const uploaded = await send('put', '/api/profile/avatar', patientCookie)
+    .set('Content-Type', 'image/png')
+    .send(image)
+    .expect(200);
+  const url = uploaded.body.user.avatarUrl;
+  const other = await send('post', '/api/auth/register')
+    .send({
+      name: 'Other Patient',
+      email: 'other-avatar@test.local',
+      password: testPassword,
+      dateOfBirth: '2000-01-01',
+      gender: 'other',
+    })
+    .expect(201);
+  await send('get', url, cookie(other)).expect(404);
+  await send('get', url, cookie(await login('doctor'))).expect(404);
+  await send('get', url, cookie(await login('receptionist'))).expect(404);
+  await request(app).get(url).expect(401);
+  await send('get', url, patientCookie).expect(200);
+  await send('get', url, cookie(await login('admin'))).expect(200);
+  await request(app).get(`/api/public/doctors/${fixtures.users.patient._id}/avatar`).expect(404);
+  await send('delete', '/api/profile/avatar', patientCookie).expect(200);
+});
+
+test('doctor photos reach both directories and public access follows publication state', async () => {
+  const doctorCookie = cookie(await login('doctor'));
+  const patientCookie = cookie(await login('patient'));
+  const doctor = await Doctor.findOne({ user: fixtures.users.doctor._id });
+  const image = await sharp({ create: { width: 12, height: 12, channels: 3, background: '#fff' } })
+    .png()
+    .toBuffer();
+  const upload = await send('put', '/api/profile/avatar', doctorCookie)
+    .set('Content-Type', 'image/png')
+    .send(image)
+    .expect(200);
+  const privateUrl = upload.body.user.avatarUrl;
+  const publicPath = `/api/public/doctors/${doctor._id}`;
+  const photoPath = `${publicPath}/avatar`;
+  try {
+    const directory = (
+      await send('get', `/api/directory/doctors/${doctor._id}`, patientCookie).expect(200)
+    ).body.doctor;
+    assert.equal(directory.avatarUrl, privateUrl);
+    const guidance = (
+      await send('post', '/api/recommendations', patientCookie)
+        .send({ symptoms: 'cough', emergencySigns: 'no', acknowledged: true })
+        .expect(200)
+    ).body;
+    assert.equal(
+      guidance.suggestions[0].doctors.find((item) => item.id === String(doctor._id)).avatarUrl,
+      privateUrl,
+    );
+    await request(app).get(photoPath).expect(404);
+    await Doctor.updateOne({ _id: doctor._id }, { isPublic: true });
+    await request(app).get(photoPath).expect(404);
+    await Department.updateOne({ _id: doctor.department }, { isPublic: true });
+    const profile = (await request(app).get(publicPath).expect(200)).body.doctor;
+    assert.ok(profile.avatarUrl.startsWith(`${photoPath}?v=`));
+    assert.equal(
+      (await request(app).get('/api/public/doctors').expect(200)).body.items.find(
+        (item) => item._id === String(doctor._id),
+      ).avatarUrl,
+      profile.avatarUrl,
+    );
+    await request(app)
+      .get(profile.avatarUrl)
+      .expect('Content-Type', /image\/webp/)
+      .expect(200);
+    for (const [Model, id, patch, reset] of [
+      [Doctor, doctor._id, { isPublic: false }, { isPublic: true }],
+      [Department, doctor.department, { isPublic: false }, { isPublic: true }],
+      [Department, doctor.department, { isActive: false }, { isActive: true }],
+      [User, fixtures.users.doctor._id, { isActive: false }, { isActive: true }],
+    ]) {
+      await Model.updateOne({ _id: id }, patch);
+      await request(app).get(profile.avatarUrl).expect(404);
+      if ('isActive' in patch) await send('get', privateUrl, patientCookie).expect(404);
+      await Model.updateOne({ _id: id }, reset);
+    }
+    await send('delete', '/api/profile/avatar', doctorCookie).expect(200);
+    await request(app).get(profile.avatarUrl).expect(404);
+    assert.equal((await request(app).get(publicPath).expect(200)).body.doctor.avatarUrl, '');
+  } finally {
+    await Doctor.updateOne({ _id: doctor._id }, { isPublic: false });
+    await Department.updateOne({ _id: doctor.department }, { isPublic: false, isActive: true });
+    await User.updateOne({ _id: fixtures.users.doctor._id }, { isActive: true });
+  }
+});

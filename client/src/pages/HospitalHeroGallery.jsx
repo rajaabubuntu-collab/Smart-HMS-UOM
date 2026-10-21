@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { ChevronLeft, ChevronRight, Pause, Play } from 'lucide-react';
 import { t } from '../i18n/locale';
 import { PhotoCredit } from './PublicHospitalSections';
 
@@ -22,6 +23,9 @@ const photos = [
 
 export default function HospitalHeroGallery() {
   const [selected, setSelected] = useState(0);
+  const [paused, setPaused] = useState(false);
+  const [hovered, setHovered] = useState(false);
+  const [focused, setFocused] = useState(false);
   const [hidden, setHidden] = useState(() => document.hidden);
   const [reduced, setReduced] = useState(
     () => matchMedia('(prefers-reduced-motion: reduce)').matches,
@@ -37,15 +41,56 @@ export default function HospitalHeroGallery() {
       document.removeEventListener('visibilitychange', onVisibility);
     };
   }, []);
+  const playing = !hidden && !reduced && !paused && !hovered && !focused;
   useEffect(() => {
-    if (hidden || reduced) return;
+    if (!playing) return;
     const timer = setInterval(() => setSelected((value) => (value + 1) % photos.length), 6000);
     return () => clearInterval(timer);
-  }, [hidden, reduced]);
+  }, [playing]);
   const photo = photos[selected];
+  function move(step) {
+    setPaused(true);
+    setSelected((value) => (value + step + photos.length) % photos.length);
+  }
   return (
-    <div className="hospital-hero-gallery" role="region" aria-label={t('Photo gallery')}>
-      <figure className="hospital-gallery-photo" aria-live="off">
+    <div
+      className="hospital-hero-gallery"
+      role="region"
+      aria-label={t('Photo gallery')}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+      onFocusCapture={() => setFocused(true)}
+      onBlurCapture={(event) => {
+        if (!event.currentTarget.contains(event.relatedTarget)) setFocused(false);
+      }}
+    >
+      <div className="hospital-gallery-controls">
+        <button type="button" onClick={() => move(-1)} aria-label={t('Previous photo')}>
+          <ChevronLeft size={18} aria-hidden="true" />
+        </button>
+        <span>
+          {selected + 1} / {photos.length}
+        </span>
+        <button type="button" onClick={() => move(1)} aria-label={t('Next photo')}>
+          <ChevronRight size={18} aria-hidden="true" />
+        </button>
+        {!reduced && (
+          <button
+            type="button"
+            className="hospital-gallery-play"
+            onClick={() => setPaused((value) => !value)}
+            aria-label={t(paused ? 'Play slideshow' : 'Pause slideshow')}
+          >
+            {paused ? (
+              <Play size={16} aria-hidden="true" />
+            ) : (
+              <Pause size={16} aria-hidden="true" />
+            )}
+            {t(paused ? 'Play' : 'Pause')}
+          </button>
+        )}
+      </div>
+      <figure className="hospital-gallery-photo" aria-live={playing ? 'off' : 'polite'}>
         <img
           key={photo.file}
           src={`/images/${photo.file}`}

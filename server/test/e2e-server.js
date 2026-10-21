@@ -1,4 +1,6 @@
-import { rm } from 'node:fs/promises';
+import { tmpdir } from 'node:os';
+import path from 'node:path';
+import { mkdtemp, rm } from 'node:fs/promises';
 import { startRecoveryWorker } from '../src/security/recovery.js';
 import { runReminderBatch } from '../src/notifications/reminders.js';
 import mongoose from 'mongoose';
@@ -137,6 +139,7 @@ testConfig.delivery = deliveryConfig({});
 testConfig.recommendations = recommendationConfig({
   RECOMMENDATION_PROVIDER: process.env.E2E_LOCAL_AI === 'true' ? 'ollama' : 'rules',
 });
+testConfig.avatarStorageDir = await mkdtemp(path.join(tmpdir(), 'hms-e2e-avatars-'));
 const server = createServer(createApp(testConfig, { rateLimitEnabled: false }));
 const realtime = await startRealtime(server, testConfig);
 const stopDelivery = startDeliveryWorker(testConfig);
@@ -148,6 +151,7 @@ async function cleanup() {
   await stopRecovery();
   await rm('.local/e2e-reset-mail', { recursive: true, force: true });
   await realtime.stop();
+  await rm(testConfig.avatarStorageDir, { recursive: true, force: true });
   await mongoose.connection.dropDatabase();
   await mongoose.disconnect();
   process.exit(0);

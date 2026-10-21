@@ -6,16 +6,15 @@ test('licensed photographs, visit guidance and FAQs work in all three languages'
 }) => {
   await page.goto('/');
   const images = page.locator('.hospital-landing main figure img');
-  await expect(images).toHaveCount(6);
+  await expect(images).toHaveCount(5);
+  await page.emulateMedia({ reducedMotion: 'reduce' });
   for (const image of await images.all()) {
     await image.scrollIntoViewIfNeeded();
     await expect(image).toHaveJSProperty('complete', true);
     expect(await image.evaluate((element) => element.naturalWidth)).toBeGreaterThan(0);
     await expect(image).toHaveAttribute('alt', /Stock photograph|Colombo/);
   }
-  await expect(
-    page.locator('figcaption').filter({ hasText: 'Healthcare stock photograph' }),
-  ).toHaveCount(5);
+  await expect(page.locator('.hospital-landing main figure figcaption')).toHaveCount(5);
   await expect(
     page.getByRole('link', { name: 'Explore doctors & services', exact: true }),
   ).toHaveAttribute('href', '/doctors');
@@ -170,6 +169,7 @@ test('homepage shows approved directory data, local contacts and licensed photo 
           {
             _id: 'doctor',
             name: 'Published doctor',
+            avatarUrl: '/images/doctor-usman.webp',
             department: 'Published department',
             specialization: 'Approved speciality',
             qualification: 'Approved qualification',
@@ -193,6 +193,11 @@ test('homepage shows approved directory data, local contacts and licensed photo 
     directory.getByRole('heading', { name: 'Published doctor', exact: true }),
   ).toBeVisible();
   await expect(directory.getByText('Approved qualification')).toBeVisible();
+  await expect(directory.locator('.doctor-portrait img')).toHaveAttribute(
+    'src',
+    '/images/doctor-usman.webp',
+  );
+  await expect(directory.locator('.doctor-portrait-label')).toHaveCount(0);
   await expect(directory.locator('.hospital-doctor-fee')).toContainText('2,500.00');
   await expect(directory.getByRole('link', { name: 'Check availability' })).toHaveAttribute(
     'href',
@@ -202,19 +207,20 @@ test('homepage shows approved directory data, local contacts and licensed photo 
     'href',
     'tel:+94112345678',
   );
-  const map = page.getByRole('link', { name: 'Explore the area on Google Maps' });
-  expect(new URL(await map.getAttribute('href')).searchParams.get('query')).toBe(
-    'Synthetic road, Colombo 09, Sri Lanka',
-  );
+  const map = page.getByRole('link', { name: 'Open location in Google Maps' });
+  await expect(map).toHaveAttribute('href', 'https://maps.app.goo.gl/Yj4JNrHrM6kEjLWM9');
+  await expect(page.getByTitle('Location map')).toHaveAttribute('src', /ll=6\.9275337,79\.8827629/);
   await expect(page.getByRole('link', { name: 'Call 1990', exact: true })).toHaveAttribute(
     'href',
     'tel:1990',
   );
   await page.getByText('Photography & credits', { exact: true }).click();
   await expect(
-    page.getByText('Healthcare photographs are stock images for illustration;', { exact: false }),
+    page
+      .locator('.hospital-photo-credits')
+      .getByText('Illustrative photographs, not Smart HMS premises or staff.'),
   ).toBeVisible();
-  await expect(page.locator('.hospital-photo-credits a')).toHaveCount(7);
+  await expect(page.locator('.hospital-photo-credits a')).toHaveCount(13);
 });
 
 test('directory failure preserves visitor guidance and never claims unpublished opening hours', async ({
@@ -259,4 +265,70 @@ test('empty directory and reduced reception hours do not imply available clinica
   await expect(page.locator('.hospital-doctor-grid article')).toHaveCount(0);
   await expect(page.locator('.hospital-hours')).toContainText('Monday');
   await expect(page.locator('.hospital-hours')).toContainText('09:00–17:00');
+});
+
+test('gallery advances, pauses for interaction, and remains browsable with reduced motion', async ({
+  page,
+}) => {
+  await page.clock.install();
+  await page.clock.pauseAt(new Date(Date.now() + 1000));
+  await page.goto('/');
+  const gallery = page.getByRole('region', { name: 'Photo gallery' });
+  const photo = gallery.locator('figure img');
+  await expect(photo).toHaveAttribute('src', '/images/colombo-hospital.webp');
+  await page.mouse.move(0, 0);
+  await page.clock.fastForward(6100);
+  await expect(photo).toHaveAttribute('src', '/images/doctor-female-south-asia.webp');
+  await gallery.hover();
+  await page.clock.fastForward(6100);
+  await expect(photo).toHaveAttribute('src', '/images/doctor-female-south-asia.webp');
+  await page.mouse.move(0, 0);
+  await gallery.getByRole('button', { name: 'Next photo' }).focus();
+  await page.clock.fastForward(6100);
+  await expect(photo).toHaveAttribute('src', '/images/doctor-female-south-asia.webp');
+  await page.keyboard.press('Enter');
+  await expect(photo).toHaveAttribute('src', '/images/colombo-view.webp');
+  await expect(gallery.getByRole('button', { name: 'Play slideshow' })).toBeVisible();
+  await gallery.getByRole('button', { name: 'Play slideshow' }).click();
+  await page.locator('h1').click();
+  await page.mouse.move(0, 0);
+  await page.clock.fastForward(6100);
+  await expect(photo).toHaveAttribute('src', '/images/colombo-hospital.webp');
+  await gallery.getByRole('button', { name: 'Pause slideshow' }).click();
+  await page.locator('h1').click();
+  await page.clock.fastForward(12000);
+  await expect(photo).toHaveAttribute('src', '/images/colombo-hospital.webp');
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await expect(gallery.getByRole('button', { name: 'Play slideshow' })).toHaveCount(0);
+  await gallery.getByRole('button', { name: 'Previous photo' }).click();
+  await expect(photo).toHaveAttribute('src', '/images/colombo-view.webp');
+  await expect(photo).toHaveCSS('animation-name', 'none');
+  await page.clock.fastForward(18000);
+  await expect(photo).toHaveAttribute('src', '/images/colombo-view.webp');
+});
+
+test('new photo labels and map controls are translated and fit on small screens', async ({
+  page,
+}) => {
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await page.goto('/');
+  for (const language of ['si', 'ta']) {
+    await page.locator('#hms-language').selectOption(language);
+    await expect(page.locator('.hospital-gallery-photo figcaption')).not.toContainText(
+      'Illustrative location',
+    );
+    await expect(page.locator('.hospital-gallery-photo img')).not.toHaveAttribute(
+      'alt',
+      'Mulleriyawa Hospital in Colombo, Sri Lanka',
+    );
+    await expect(page.locator('.hospital-map > a')).not.toContainText('Open location');
+    await expect(page.locator('.hospital-map iframe')).not.toHaveAttribute('title', 'Location map');
+    for (const width of [320, 390, 768]) {
+      await page.setViewportSize({ width, height: 844 });
+      expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(
+        true,
+      );
+    }
+  }
+  await page.screenshot({ path: '.local/screenshots/gallery-tamil-mobile.png', fullPage: false });
 });

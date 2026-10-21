@@ -52,6 +52,7 @@ test('public profiles and search require publication, active doctor and active p
     Object.keys(profile).sort(),
     [
       '_id',
+      'avatarUrl',
       'name',
       'department',
       'departmentId',
