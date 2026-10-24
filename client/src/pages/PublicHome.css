@@ -654,25 +654,6 @@ html[data-surfaces='solid'] .hospital-landing .hospital-image-note {
 .hospital-landing .public-cta p {
   color: #d3e7ed;
 }
-.hospital-photo-credits {
-  border-top: 1px solid #d6e4e7;
-  padding: 20px 0 35px;
-  color: #4d6476;
-  font-size: 12px;
-  line-height: 1.8;
-}
-.hospital-photo-credits summary {
-  cursor: pointer;
-  padding-block: 8px;
-  width: fit-content;
-}
-.hospital-photo-credits p {
-  margin-top: 15px;
-}
-.hospital-photo-credits a {
-  text-decoration: underline;
-  text-underline-offset: 3px;
-}
 @media (max-width: 1000px) {
   .hospital-landing .public-hero {
     padding: 34px;

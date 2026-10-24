@@ -231,7 +231,7 @@ export default function AuthPage({ register = false }) {
         </div>
         <footer className="auth-bottom">
           <span>{t('Built for better hospital experiences.')}</span>
-          <span>{t('Smart HMS · University project')}</span>
+          <span>{t('Smart HMS')}</span>
         </footer>
       </section>
     </main>

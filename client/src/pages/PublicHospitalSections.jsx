@@ -18,81 +18,15 @@ import { useResource } from '../components/ui';
 import { money } from '../scheduling';
 import { t } from '../i18n/locale';
 
-const photoCredits = [
-  {
-    name: 'Sasun Bughdaryan',
-    url: 'https://unsplash.com/photos/doctor-in-white-coat-with-stethoscope-RlIppR1I3E8',
-    file: 'care-stock.webp',
-  },
-  {
-    name: 'Tasha Kostyuk',
-    url: 'https://unsplash.com/photos/empty-hospital-corridor-with-benches-and-doors-Pk-KuizxQv8',
-    file: 'waiting-stock.webp',
-  },
-  {
-    name: 'Zoshua Colah',
-    url: 'https://unsplash.com/photos/cityscape-view-with-buildings-and-overcast-sky-TRQ04e-B-yI',
-    file: 'colombo-stock.webp',
-  },
-  {
-    name: 'Hush Naidoo Jade Photography',
-    url: 'https://unsplash.com/photos/black-and-gray-stethoscope-yo01Z-9HQAw',
-    file: 'consultation-stock.webp',
-  },
-  {
-    name: 'Sixteen Miles Out',
-    url: 'https://unsplash.com/photos/a-room-with-a-lot-of-windows-and-chairs-7BxQRsH3f0c',
-    file: 'lounge-stock.webp',
-  },
-  {
-    name: 'Annie Spratt',
-    url: 'https://unsplash.com/photos/a-hospital-room-with-a-bed-and-medical-equipment-RfanFy_lHp8',
-    file: 'room-stock.webp',
-  },
-  {
-    name: 'Anupa Uthsara',
-    url: 'https://unsplash.com/photos/a-large-white-building-sitting-on-the-side-of-a-road-K2T2KxoK_xE',
-    file: 'colombo-hospital.webp',
-    caption: 'Mulleriyawa Hospital, Colombo · Illustrative location',
-  },
-  {
-    name: 'Zoshua Colah',
-    url: 'https://unsplash.com/photos/cityscape-with-a-tall-building-under-a-clear-sky-JhFKCUGAUQk',
-    file: 'colombo-view.webp',
-    caption: 'Colombo city view · Illustrative location',
-  },
-  {
-    name: 'Usman Yousaf',
-    url: 'https://www.pexels.com/photo/portrait-of-a-doctor-wearing-a-white-coat-6762869/',
-    file: 'doctor-usman.webp',
-    provider: 'Pexels',
-    caption: 'Clinician stock photograph · Not hospital staff',
-  },
-  {
-    name: 'dr aparna jaswal',
-    url: 'https://www.pexels.com/photo/photo-of-a-doctor-standing-with-her-arms-crossed-5738735/',
-    file: 'doctor-female-south-asia.webp',
-    provider: 'Pexels',
-    caption: 'Clinician stock photograph · Not hospital staff',
-  },
-  {
-    name: 'Dr. Haror’s Wellness',
-    url: 'https://www.pexels.com/photo/professional-female-doctor-portrait-in-clinic-32428850/',
-    file: 'doctor-female-clinic.webp',
-    provider: 'Pexels',
-    caption: 'Clinician stock photograph · Not hospital staff',
-  },
-];
-export function PhotoCredit({ index, children }) {
-  const photo = photoCredits[index];
-  return (
-    <figcaption>
-      {photo.caption ? t(photo.caption) : children} ·{' '}
-      <a href={photo.url} target="_blank" rel="noopener noreferrer">
-        {photo.name} / {photo.provider || 'Unsplash'} <ArrowUpRight size={11} aria-hidden="true" />
-      </a>
-    </figcaption>
-  );
+const photoCaptions = {
+  6: 'Mulleriyawa Hospital, Colombo · Illustrative location',
+  7: 'Colombo city view · Illustrative location',
+  8: 'Clinician stock photograph · Not hospital staff',
+  9: 'Clinician stock photograph · Not hospital staff',
+  10: 'Clinician stock photograph · Not hospital staff',
+};
+export function PhotoCaption({ index, children }) {
+  return <figcaption>{photoCaptions[index] ? t(photoCaptions[index]) : children}</figcaption>;
 }
 
 export function HospitalDirectoryPreview() {
@@ -230,7 +164,7 @@ const guideItems = [
       'Use your own patient account to view visit records and prescriptions. Sign out on shared devices and avoid sending medical reports to the general reception email.',
   },
 ];
-export function SriLankaVisitorGuide() {
+export function VisitorGuide() {
   return (
     <section
       id="visitor-guide"
@@ -242,7 +176,6 @@ export function SriLankaVisitorGuide() {
           <p className="public-kicker">{t('PATIENTS & FAMILIES')}</p>
           <h2 id="local-guide-title">{t('A practical guide to your visit.')}</h2>
         </div>
-        <p>{t('Useful details for patients and families in Sri Lanka.')}</p>
       </div>
       <div className="hospital-guide-grid">
         {guideItems.map(({ icon: Icon, title, description }) => (
@@ -264,7 +197,7 @@ export function HospitalLocation({ hospital }) {
       className="public-section hospital-location"
       aria-labelledby="location-title"
     >
-      <HospitalMap />
+      <HospitalMap collapsible address={hospital?.address} />
       <div>
         <p className="public-kicker">{t('GETTING HERE')}</p>
         <h2 id="location-title">{t('Plan your journey. We’ll help with the details.')}</h2>
@@ -306,11 +239,11 @@ export function EmergencyInformation() {
     <aside className="hospital-emergency" aria-labelledby="emergency-title">
       <HeartPulse size={32} aria-hidden="true" />
       <div>
-        <p className="public-kicker">{t('EMERGENCY SUPPORT IN SRI LANKA')}</p>
+        <p className="public-kicker">{t('EMERGENCY SUPPORT')}</p>
         <h2 id="emergency-title">{t('1990 Suwa Seriya')}</h2>
         <p>
           {t(
-            'For an emergency ambulance in Sri Lanka, call 1990 toll-free. Suwa Seriya is a free national pre-hospital emergency service, separate from this hospital.',
+            'Call 1990 toll-free for a Suwa Seriya emergency ambulance. This national service operates independently of the hospital.',
           )}
         </p>
         <a href="https://www.1990.lk/faq/" target="_blank" rel="noopener noreferrer">
@@ -342,30 +275,5 @@ export function HospitalContactStrip({ hospital }) {
         {t('Getting here')} <ArrowUpRight size={14} aria-hidden="true" />
       </a>
     </div>
-  );
-}
-
-export function PhotoCredits() {
-  return (
-    <details className="hospital-photo-credits">
-      <summary>{t('Photography & credits')}</summary>
-      <p>{t('Illustrative photographs, not Smart HMS premises or staff.')}</p>
-      <ul>
-        {photoCredits.map((photo) => (
-          <li key={photo.file}>
-            <a href={photo.url} target="_blank" rel="noopener noreferrer">
-              {photo.name} / {photo.provider || 'Unsplash'}
-            </a>
-          </li>
-        ))}
-      </ul>
-      <a href="https://unsplash.com/license" target="_blank" rel="noopener noreferrer">
-        {t('Free to use under the Unsplash License')}
-      </a>
-      {' · '}
-      <a href="https://www.pexels.com/license/" target="_blank" rel="noopener noreferrer">
-        Pexels License
-      </a>
-    </details>
   );
 }

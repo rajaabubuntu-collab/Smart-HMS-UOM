@@ -55,7 +55,8 @@ export function DoctorQueue() {
                 <div>
                   <strong>{a.name}</strong>
                   <p>
-                    {a.reference} · {dateLabel(a.startsAt)} · {timeLabel(a.startsAt)}
+                    {t('Appointment reference:')} {a.reference} · {dateLabel(a.startsAt)} ·{' '}
+                    {timeLabel(a.startsAt)}
                   </p>
                   <span>{t(a.status)}</span>
                 </div>
@@ -114,7 +115,9 @@ export function MedicalHistory({ appointment }) {
           )}
           {data.records.map((r) => (
             <article className="card padded clinical-record" key={r._id}>
-              <h2>{r.appointment.reference}</h2>
+              <h2>
+                {t('Appointment reference:')} {r.appointment.reference}
+              </h2>
               <p className="muted">
                 {r.appointment.doctorName} · {dateLabel(r.completedAt)}
               </p>
@@ -232,7 +235,7 @@ function ConsultationEditor({ data, reload }) {
       <section className="card padded clinical-record">
         <h2>{patient.user.name}</h2>
         <p>
-          {appointment.reference} · {appointment.status}
+          {t('Appointment reference:')} {appointment.reference} · {t(appointment.status)}
         </p>
         <div className="detail-list">
           <p>
@@ -517,7 +520,7 @@ function DoctorTimeline() {
                 <div>
                   <strong>{item.name}</strong>
                   <p>
-                    {item.reference} · {t(item.status)}
+                    {t('Appointment reference:')} {item.reference} · {t(item.status)}
                   </p>
                 </div>
                 {item.status !== 'Cancelled' && (

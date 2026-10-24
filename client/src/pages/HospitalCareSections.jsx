@@ -9,7 +9,7 @@ import {
   ClipboardList,
   MessageCircle,
 } from 'lucide-react';
-import { PhotoCredit } from './PublicHospitalSections';
+import { PhotoCaption } from './PublicHospitalSections';
 import { t } from '../i18n/locale';
 import './HospitalCareSections.css';
 
@@ -72,7 +72,7 @@ export function HospitalCareGallery() {
                   alt={t(card.alt)}
                 />
               </div>
-              <PhotoCredit index={card.credit}>{t('Healthcare stock photograph')}</PhotoCredit>
+              <PhotoCaption index={card.credit}>{t('Healthcare stock photograph')}</PhotoCaption>
             </figure>
             <div className="hospital-care-copy">
               <h3>{t(card.title)}</h3>

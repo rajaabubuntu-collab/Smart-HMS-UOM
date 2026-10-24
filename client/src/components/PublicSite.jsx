@@ -1,17 +1,26 @@
 import { usePublicMotion } from '../hooks/usePublicMotion';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { Link, NavLink, useLocation } from 'react-router-dom';
-import { ArrowRight, ArrowUpRight, CalendarDays, FileHeart, ReceiptText } from 'lucide-react';
+import {
+  ArrowRight,
+  ArrowUpRight,
+  CalendarDays,
+  FileHeart,
+  ReceiptText,
+  Menu,
+  X,
+} from 'lucide-react';
 import { Brand, useResource } from './ui';
 import { DisplayPreference } from './DisplayPreference';
 import { useAuth } from '../auth';
 import { t } from '../i18n/locale';
-import { HospitalContactStrip, PhotoCredits } from '../pages/PublicHospitalSections';
+import { HospitalContactStrip } from '../pages/PublicHospitalSections';
 import '../pages/PublicHome.css';
 import './PublicSite.css';
 
-export function PublicHeader({ hospital }) {
+export function PublicHeader({ hospital, homepage = false }) {
   const { user } = useAuth();
+  const [menuOpen, setMenuOpen] = useState(false);
   return (
     <>
       <HospitalContactStrip hospital={hospital} />
@@ -19,7 +28,34 @@ export function PublicHeader({ hospital }) {
         <Link to="/" aria-label={t('Smart HMS home')}>
           <Brand />
         </Link>
-        <nav aria-label={t('Hospital navigation')}>
+        {homepage && (
+          <button
+            className="homepage-menu-toggle"
+            type="button"
+            aria-label={t('Hospital navigation')}
+            aria-expanded={menuOpen}
+            aria-controls="homepage-navigation"
+            onClick={() => setMenuOpen((open) => !open)}
+          >
+            {menuOpen ? <X size={22} aria-hidden="true" /> : <Menu size={22} aria-hidden="true" />}
+          </button>
+        )}
+        <nav
+          aria-label={t('Hospital navigation')}
+          id={homepage ? 'homepage-navigation' : undefined}
+          className={homepage && !menuOpen ? 'homepage-navigation-closed' : undefined}
+          onClick={homepage ? () => setMenuOpen(false) : undefined}
+          onKeyDown={
+            homepage
+              ? (event) => {
+                  if (event.key === 'Escape') {
+                    setMenuOpen(false);
+                    event.currentTarget.previousElementSibling?.focus();
+                  }
+                }
+              : undefined
+          }
+        >
           <NavLink to="/" end>
             {t('Home')}
           </NavLink>
@@ -29,10 +65,16 @@ export function PublicHeader({ hospital }) {
           <NavLink to="/contact">{t('Contact us')}</NavLink>
         </nav>
         <div className="hospital-header-actions">
-          <Link className="button subtle" to={user?.role === 'doctor' ? '/dashboard' : '/book'}>
+          <Link
+            className={`button ${homepage ? 'primary' : 'subtle'}`}
+            to={user?.role === 'doctor' ? '/dashboard' : '/book'}
+          >
             {t('Book appointment')}
           </Link>
-          <Link className="button primary" to={user ? '/dashboard' : '/login'}>
+          <Link
+            className={`button ${homepage ? 'subtle' : 'primary'}`}
+            to={user ? '/dashboard' : '/login'}
+          >
             {user ? t('My workspace') : t('Patient portal')}
             <ArrowUpRight size={16} />
           </Link>
@@ -49,9 +91,7 @@ export function PublicFooter({ hospital }) {
         <div className="public-footer">
           <div>
             <Brand />
-            {(!hospital || hospital.isDemo) && (
-              <p>{t('University of Moratuwa · BIT final-year project')}</p>
-            )}
+            <p>{hospital?.name || t('Care, connected.')}</p>
           </div>
           <nav className="hospital-footer-nav" aria-label={t('Useful links')}>
             <Link to="/about">{t('About us')}</Link>
@@ -68,7 +108,6 @@ export function PublicFooter({ hospital }) {
             </Link>
           </div>
         </div>
-        <PhotoCredits />
       </footer>
     </>
   );

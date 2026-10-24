@@ -1,0 +1,64 @@
+[
+ {
+  "date": "2026-10-24",
+  "mode": "redesign",
+  "depth": "full",
+  "scope": "page",
+  "shape": "care directory",
+  "theme": "brand",
+  "axes": "white/Manrope/teal",
+  "hero": "Stage",
+  "nav": "balanced hospital navigation with mobile disclosure",
+  "footer": "contact mast",
+  "imagery": "existing illustrative photographs, unchanged gallery assets",
+  "photos": [
+   "colombo-hospital.webp",
+   "colombo-view.webp",
+   "doctor-female-south-asia.webp",
+   "doctor-usman.webp"
+  ],
+  "entry": "client/src/pages/PublicHome.jsx",
+  "fingerprint": [
+   "gallery",
+   "directory",
+   "split introduction",
+   "asymmetric care gallery",
+   "portal rows",
+   "visit guidance"
+  ],
+  "sections": [
+   "hero",
+   "patient shortcuts",
+   "live directory",
+   "about",
+   "care gallery",
+   "patient services",
+   "visit process",
+   "visitor guide",
+   "preparation",
+   "FAQ",
+   "location",
+   "emergency",
+   "hospital information",
+   "portal close"
+  ],
+  "signature": "Live doctor directory immediately after gallery and patient shortcuts",
+  "waived": [
+   "59 compact utility spacing",
+   "77 compact empty directory and utilities"
+  ],
+  "prompt": "Use Hallmark to redesign only the main Smart HMS webpage",
+  "verification": {
+   "floorFailures": 0,
+   "openReflex": 0,
+   "waived": 2,
+   "browserTests": 13,
+   "lint": "passed",
+   "build": "passed",
+   "translations": "1242 keys each; language review remains manual",
+   "heroReview": "2 findings resolved",
+   "finishReview": "map fallback resolved"
+  },
+  "preserved": "24/24 links, 1/1 field, 35/35 headings, recorded figures; all original routes"
+ }
+]

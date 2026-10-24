@@ -10,7 +10,7 @@ import { ArrowRight, CalendarDays, FileHeart, MessageCircle } from 'lucide-react
 import { PublicPage, PatientShortcuts } from '../components/PublicSite';
 import HospitalInformation from '../components/HospitalInformation';
 import { Field, Notice, Submit } from '../components/ui';
-import { PhotoCredit, EmergencyInformation } from './PublicHospitalSections';
+import { PhotoCaption, EmergencyInformation } from './PublicHospitalSections';
 import { api } from '../api';
 import { t } from '../i18n/locale';
 
@@ -31,7 +31,7 @@ export function PublicAbout() {
                 height="1200"
                 alt={t('Mulleriyawa Hospital in Colombo, Sri Lanka')}
               />
-              <PhotoCredit index={6}>{t('Healthcare stock photograph')}</PhotoCredit>
+              <PhotoCaption index={6}>{t('Healthcare stock photograph')}</PhotoCaption>
             </figure>
             <div>
               <p className="public-kicker">{hospital?.name || 'Smart HMS'}</p>
@@ -43,7 +43,7 @@ export function PublicAbout() {
                   {pending
                     ? t('Loading hospital information…')
                     : t(
-                        'Plan your hospital visit with confidence. Explore doctor information, arrange an appointment and stay connected to your care in Sri Lanka.',
+                        'Plan your visit, find a doctor and manage your appointments in one place.',
                       )}
                 </p>
               )}

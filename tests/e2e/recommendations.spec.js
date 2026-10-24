@@ -175,8 +175,7 @@ test('demo directory supports new specialties, real slots, profiles and form sho
   await login(page, 'patient');
   await page.goto('/recommendations');
   await expect(page.locator('.guide-demo-panel summary')).toBeVisible();
-  await expect(page.getByLabel('Hospital directory')).toContainText('20');
-  await expect(page.getByLabel('Hospital directory')).toContainText('61');
+  await expect(page.getByLabel('Example department').locator('option')).toHaveCount(19);
   await page.evaluate(() => window.scrollTo(0, 0));
   await page.screenshot({ path: '.local/screenshots/ai-guide-empty-desktop.png', fullPage: true });
   if (!(await page.locator('.guide-demo-panel').evaluate((el) => el.open)))
@@ -357,7 +356,7 @@ test('Groq disclosure and consent control submission, with provider-aware loadin
     });
   });
   await page.goto('/recommendations');
-  await expect(page.getByRole('heading', { name: 'Find your next step in care' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Department guide', exact: true })).toBeVisible();
   await expect(page.getByLabel('Pain level (optional)')).toHaveCount(0);
   await expect(page.getByLabel(/^How long/)).toHaveCount(0);
   await page.screenshot({
@@ -404,8 +403,8 @@ test('Groq disclosure and consent control submission, with provider-aware loadin
   await expect(submit).toBeDisabled();
   await page.locator('#symptoms').fill('Fictional description');
   for (const [language, heading] of [
-    ['si', 'ඔබේ සත්කාරයේ ඊළඟ පියවර සොයාගන්න'],
-    ['ta', 'உங்கள் பராமரிப்பின் அடுத்த படியைக் கண்டறியுங்கள்'],
+    ['si', 'අංශ මාර්ගෝපදේශය'],
+    ['ta', 'பிரிவு வழிகாட்டி'],
   ]) {
     await page.locator('#hms-language').selectOption(language);
     await expect(page.getByRole('heading', { name: heading })).toBeVisible();
@@ -420,3 +419,96 @@ test('Groq disclosure and consent control submission, with provider-aware loadin
     animations: 'disabled',
   });
 });
+
+for (const viewport of [
+  { width: 1440, height: 900 },
+  { width: 390, height: 844 },
+]) {
+  test(`guidance loading, results and errors stay in view at ${viewport.width}px`, async ({
+    page,
+  }) => {
+    await page.setViewportSize(viewport);
+    await page.emulateMedia({ reducedMotion: 'reduce' });
+    await login(page, 'patient');
+    await page.route('**/api/recommendations/status', (route) =>
+      route.fulfill({ json: { aiEnabled: true, provider: 'groq' } }),
+    );
+    let release;
+    let fail = false;
+    await page.route('**/api/recommendations', async (route) => {
+      await new Promise((resolve) => {
+        release = resolve;
+      });
+      await route
+        .fulfill(
+          fail
+            ? {
+                status: 503,
+                json: { message: 'Cannot reach Smart HMS. Check your connection and try again.' },
+              }
+            : {
+                json: {
+                  source: 'ai',
+                  provider: 'groq',
+                  outcome: 'staff',
+                  suggestions: [],
+                  explanation: 'Please contact reception to choose a service.',
+                },
+              },
+        )
+        .catch(() => {});
+    });
+    await page.goto('/recommendations');
+    await expect(page.getByText('Your guidance will appear here')).toHaveCount(0);
+    await page.getByLabel(/^Do any warning signs/).selectOption('no');
+    const symptoms = page.getByLabel(/^Primary symptoms/);
+    await symptoms.fill('My ear feels blocked');
+    await page
+      .getByLabel('I understand this is a department guide, not a diagnosis or emergency service.')
+      .check();
+    await page.getByLabel('I agree to send this description to Groq for AI guidance.').check();
+    const submit = page.getByRole('button', { name: 'Get department guidance' });
+    const panel = page.getByRole('region', { name: 'Your guidance' });
+    const progress = page.getByRole('progressbar', { name: 'Checking your description' });
+    const cancel = page.getByRole('button', { name: 'Cancel request' });
+    await submit.click();
+    // These assertions never scroll the page: submission itself must reveal the status.
+    await expect(progress).toBeInViewport({ ratio: 1 });
+    await expect(cancel).toBeInViewport({ ratio: 1 });
+    await expect(panel).toBeFocused();
+    expect(await progress.evaluate((el) => el.getBoundingClientRect().top)).toBeGreaterThan(49);
+    await page.screenshot({
+      path: `.local/screenshots/simple-guide-loading-${viewport.width}.png`,
+    });
+    await expect.poll(() => typeof release).toBe('function');
+    release();
+    const heading = page.getByRole('heading', { name: 'Contact hospital reception', exact: true });
+    await expect(heading).toBeInViewport({ ratio: 1 });
+    await expect(panel).toBeFocused();
+    await page.screenshot({ path: `.local/screenshots/simple-guide-result-${viewport.width}.png` });
+    await panel.getByRole('button', { name: 'Edit', exact: true }).click();
+    await expect(symptoms).toBeFocused();
+    await expect(symptoms).toHaveValue('My ear feels blocked');
+    fail = true;
+    release = null;
+    await submit.click();
+    await expect(progress).toBeInViewport({ ratio: 1 });
+    await expect.poll(() => typeof release).toBe('function');
+    release();
+    await expect(panel.getByRole('alert')).toBeInViewport({ ratio: 1 });
+    await expect(panel).toBeFocused();
+    await panel.getByRole('button', { name: 'Edit', exact: true }).click();
+    release = null;
+    await submit.click();
+    await expect(cancel).toBeInViewport({ ratio: 1 });
+    await expect.poll(() => typeof release).toBe('function');
+    await cancel.click();
+    await expect(symptoms).toBeFocused();
+    await expect(progress).toHaveCount(0);
+    release();
+    await expect(symptoms).toHaveValue('My ear feels blocked');
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(
+      true,
+    );
+  });
+}

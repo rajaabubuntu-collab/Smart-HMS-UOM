@@ -15,6 +15,7 @@ test('doctor completes a saved consultation, revises prescription and patient se
   await page.goto('/queue');
   const row = page.locator('.clinical-queue-row').filter({ hasText: 'HMS-CLINICALTEST' });
   await expect(row).toContainText('Waiting');
+  await expect(row).toContainText('Appointment reference: HMS-CLINICALTEST');
   await page.screenshot({ path: '.local/screenshots/queue-desktop.png', fullPage: true });
   await row.getByRole('link', { name: 'Open patient' }).click();
   await expect(

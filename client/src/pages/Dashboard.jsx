@@ -1,3 +1,4 @@
+import PatientDashboard from './PatientDashboard';
 import { t, getLocale } from '../i18n/locale';
 import { Link } from 'react-router-dom';
 import { UserAvatar } from '../components/UserAvatar';
@@ -70,6 +71,8 @@ export default function Dashboard() {
   }).format(new Date());
   if (pending) return <Loading />;
   if (error) return <Notice>{error}</Notice>;
+  if (user.role === 'patient')
+    return <PatientDashboard user={user} profile={data.profile} date={date} />;
   const [headline, description] = roleCopy[user.role];
   return (
     <>

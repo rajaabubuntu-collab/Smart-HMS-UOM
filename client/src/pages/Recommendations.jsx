@@ -5,9 +5,7 @@ import { Link } from 'react-router-dom';
 import {
   ArrowRight,
   ChevronDown,
-  Sparkles,
   BrainCircuit,
-  Building2,
   CalendarDays,
   FlaskConical,
   Info,
@@ -19,7 +17,6 @@ import {
   RotateCcw,
   ShieldCheck,
   Stethoscope,
-  Users,
   TriangleAlert,
 } from 'lucide-react';
 import { api } from '../api';
@@ -146,12 +143,18 @@ export default function Recommendations() {
     [error, setError] = useState(null);
   const pending = useRef(null);
   const resultsPanel = useRef(null);
+  const returnToForm = useRef(false);
   const aiEnabled = Boolean(directory?.aiEnabled);
   const cloudProvider = directory?.provider === 'groq';
   useEffect(() => {
-    if ((busy || result) && window.matchMedia('(max-width: 1000px)').matches)
+    if (busy || result || error) {
+      resultsPanel.current?.focus({ preventScroll: true });
       resultsPanel.current?.scrollIntoView({ block: 'start', behavior: 'instant' });
-  }, [busy, result]);
+    } else if (returnToForm.current) {
+      returnToForm.current = false;
+      document.getElementById('symptoms')?.focus();
+    }
+  }, [busy, result, error]);
   useEffect(() => {
     const controller = new AbortController();
     api('/recommendations/status', { signal: controller.signal })
@@ -167,11 +170,20 @@ export default function Recommendations() {
     setResult(null);
     setError(null);
   }
+  function edit() {
+    document.getElementById('symptoms')?.focus();
+  }
+  function cancel() {
+    pending.current?.abort();
+    returnToForm.current = true;
+    setBusy(false);
+  }
   function clear() {
     setForm({ ...emptyForm });
     setOptionalOpen(false);
     setResult(null);
     setError(null);
+    edit();
   }
   async function submit(event) {
     event.preventDefault();
@@ -221,32 +233,13 @@ export default function Recommendations() {
       </div>
       <PageHeading
         eyebrow="PATIENT WORKSPACE"
-        title="Find your next step in care"
+        title="Department guide"
         description="Describe your concern in your own words. Find a possible department and explore the doctors available to book."
-      >
-        {directory && (
-          <div className="guide-directory-stats" aria-label={t('Hospital directory')}>
-            <div>
-              <Building2 size={18} aria-hidden="true" />
-              <strong>{directory.departmentCount ?? '—'}</strong>
-              <span>{t('Departments')}</span>
-            </div>
-            <div>
-              <Users size={18} aria-hidden="true" />
-              <strong>{directory.doctorCount ?? '—'}</strong>
-              <span>{t('Doctors')}</span>
-            </div>
-          </div>
-        )}
-      </PageHeading>
+      />
       <div className="guide-badges">
         <span className="guide-engine">
           <BrainCircuit size={15} aria-hidden="true" />
           {aiEnabled ? t('AI-assisted department guide') : t('Department matching guide')}
-        </span>
-        <span className="guide-subtle-badge">
-          <ShieldCheck size={14} aria-hidden="true" />
-          {t('Guidance, not a diagnosis')}
         </span>
       </div>
       <div className="guide-scope-note">
@@ -261,7 +254,6 @@ export default function Recommendations() {
         <div className="guide-intake-column">
           <section className="card padded guide-panel guide-form-card">
             <form onSubmit={submit}>
-              <Notice>{error?.message}</Notice>
               <fieldset className="clinical-fieldset" disabled={busy}>
                 <div className="guide-panel-heading">
                   <span className="guide-section-icon">
@@ -269,7 +261,6 @@ export default function Recommendations() {
                   </span>
                   <div>
                     <h2>{t('Tell us about your symptoms')}</h2>
-                    <p>{t('Start with what you are experiencing')}</p>
                   </div>
                   <button type="button" className="guide-clear" onClick={clear}>
                     <RotateCcw size={14} aria-hidden="true" />
@@ -277,10 +268,6 @@ export default function Recommendations() {
                   </button>
                 </div>
                 <div className="guide-form-section">
-                  <h3 className="guide-step-title">
-                    <span>1</span>
-                    {t('First, check for warning signs')}
-                  </h3>
                   <Field
                     name="emergencySigns"
                     label={t('Do any warning signs apply now?')}
@@ -308,10 +295,6 @@ export default function Recommendations() {
                   )}
                 </div>
                 <div className="guide-form-section">
-                  <h3 className="guide-step-title">
-                    <span>2</span>
-                    {t('Describe your concern')}
-                  </h3>
                   <Field
                     name="symptoms"
                     label={t('Primary symptoms')}
@@ -410,105 +393,39 @@ export default function Recommendations() {
               </fieldset>
             </form>
           </section>
-          {directory?.demoAvailable && (
-            <details className="card padded guide-panel guide-demo-panel">
-              <summary>
-                <FlaskConical size={20} aria-hidden="true" />
-                {t('Try a demo scenario')}
-                <ChevronDown size={18} aria-hidden="true" />
-              </summary>
-              <p>
-                {t(
-                  'These fictional examples help you explore the guide. Demo doctors are test profiles, not real clinicians.',
-                )}
-              </p>
-              <Field
-                name="demoScenario"
-                label={t('Example department')}
-                as="select"
-                value=""
-                disabled={busy}
-                onChange={(e) => {
-                  if (e.target.value) change('symptoms', e.target.value);
-                }}
-              >
-                <option value="">{t('Choose a sample description')}</option>
-                {directory.examples.map((example) => (
-                  <option key={example.department} value={example.symptoms}>
-                    {example.department}
-                  </option>
-                ))}
-              </Field>
-              <p className="small-text">
-                {t('Review the warning signs and complete the form before submitting.')}
-              </p>
-            </details>
-          )}
         </div>
         <section
           ref={resultsPanel}
           className="guide-results"
-          data-active={busy || Boolean(result)}
+          hidden={!busy && !result && !error}
+          tabIndex={-1}
           aria-live="polite"
-          aria-busy={busy}
           aria-label={t('Your guidance')}
         >
-          {!result && (
-            <div className="card padded guide-panel guide-empty">
-              <div className={`guide-orbit ${busy ? 'is-busy' : ''}`}>
-                <Sparkles size={38} aria-hidden="true" />
-              </div>
-              <span className="guide-overline">{t('YOUR NEXT STEP IN CARE')}</span>
-              <h2>{busy ? t('Reading your description…') : t('Your guidance will appear here')}</h2>
-              <p>
-                {busy
-                  ? t(
-                      cloudProvider
-                        ? 'Groq is reviewing your description. If AI is unavailable, clearly labelled basic matching rules will be used.'
-                        : aiEnabled
-                          ? 'The local model is reviewing your description. If AI is unavailable, clearly labelled basic matching rules will be used.'
-                          : 'Checking your description against the department matching rules.',
-                    )
-                  : t(
-                      'Complete the form to see a possible department, an explanation and doctor booking options.',
-                    )}
+          {error && (
+            <div className="card padded guide-panel">
+              <Notice>{error.message}</Notice>
+              <button type="button" className="button subtle" onClick={edit}>
+                {t('Edit')}
+              </button>
+            </div>
+          )}
+          {busy && (
+            <div className="card padded guide-panel guide-loading-panel">
+              <h2>{t('Reading your description…')}</h2>
+              <GuideLoading thinkingEnabled={directory?.thinkingEnabled} />
+              <p className="guide-loading-provider">
+                {t(
+                  cloudProvider
+                    ? 'Groq is reviewing your description. If AI is unavailable, clearly labelled basic matching rules will be used.'
+                    : aiEnabled
+                      ? 'The local model is reviewing your description. If AI is unavailable, clearly labelled basic matching rules will be used.'
+                      : 'Checking your description against the department matching rules.',
+                )}
               </p>
-              {busy ? (
-                <>
-                  <GuideLoading thinkingEnabled={directory?.thinkingEnabled} />
-                  <button
-                    type="button"
-                    className="guide-clear"
-                    onClick={() => {
-                      pending.current?.abort();
-                      setBusy(false);
-                    }}
-                  >
-                    {t('Cancel request')}
-                  </button>
-                </>
-              ) : (
-                <div className="guide-empty-steps">
-                  <span>
-                    <MessageSquareText size={18} aria-hidden="true" />
-                    {t('Describe')}
-                  </span>
-                  <ArrowRight size={16} aria-hidden="true" />
-                  <span>
-                    <Lightbulb size={18} aria-hidden="true" />
-                    {t('Understand')}
-                  </span>
-                  <ArrowRight size={16} aria-hidden="true" />
-                  <span>
-                    <CalendarDays size={18} aria-hidden="true" />
-                    {t('Choose care')}
-                  </span>
-                </div>
-              )}
-              <div className="guide-empty-footer">
-                <ShieldCheck size={17} aria-hidden="true" />
-                {t('No diagnosis, treatment advice or medical certainty score.')}
-              </div>
+              <button type="button" className="button subtle" onClick={cancel}>
+                {t('Cancel request')}
+              </button>
             </div>
           )}
           {result && (
@@ -530,6 +447,9 @@ export default function Recommendations() {
                             : t('Contact hospital reception')}
                     </h2>
                   </div>
+                  <button type="button" className="guide-clear" onClick={edit}>
+                    {t('Edit')}
+                  </button>
                 </div>
                 <span className="guide-engine">
                   {result.source === 'ai'
@@ -630,6 +550,40 @@ export default function Recommendations() {
             </>
           )}
         </section>
+        {directory?.demoAvailable && (
+          <details className="card padded guide-panel guide-demo-panel">
+            <summary>
+              <FlaskConical size={20} aria-hidden="true" />
+              {t('Try a demo scenario')}
+              <ChevronDown size={18} aria-hidden="true" />
+            </summary>
+            <p>
+              {t(
+                'These fictional examples help you explore the guide. Demo doctors are test profiles, not real clinicians.',
+              )}
+            </p>
+            <Field
+              name="demoScenario"
+              label={t('Example department')}
+              as="select"
+              value=""
+              disabled={busy}
+              onChange={(e) => {
+                if (e.target.value) change('symptoms', e.target.value);
+              }}
+            >
+              <option value="">{t('Choose a sample description')}</option>
+              {directory.examples.map((example) => (
+                <option key={example.department} value={example.symptoms}>
+                  {example.department}
+                </option>
+              ))}
+            </Field>
+            <p className="small-text">
+              {t('Review the warning signs and complete the form before submitting.')}
+            </p>
+          </details>
+        )}
       </div>
       <footer className="card padded guide-privacy-footer">
         <LockKeyhole size={21} aria-hidden="true" />

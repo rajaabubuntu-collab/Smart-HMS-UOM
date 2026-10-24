@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { ChevronLeft, ChevronRight, Pause, Play } from 'lucide-react';
 import { t } from '../i18n/locale';
-import { PhotoCredit } from './PublicHospitalSections';
+import { PhotoCaption } from './PublicHospitalSections';
 
 const photos = [
   {
@@ -99,7 +99,7 @@ export default function HospitalHeroGallery() {
           fetchPriority="high"
           alt={t(photo.alt)}
         />
-        <PhotoCredit index={photo.credit} />
+        <PhotoCaption index={photo.credit} />
       </figure>
     </div>
   );

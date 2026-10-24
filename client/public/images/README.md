@@ -1,6 +1,6 @@
 # Public website photography
 
-The public homepage now uses the following downloaded stock photographs. All three source pages explicitly identify the images as free under the [Unsplash License](https://unsplash.com/license), checked on 15 October 2026. This licence allows free commercial and non-commercial use; the images are licensed, not public domain. Photographer/source credits are visible on the page and in its expandable photography credits.
+The public homepage now uses the following downloaded stock photographs. All three source pages explicitly identify the images as free under the [Unsplash License](https://unsplash.com/license), checked on 15 October 2026. This licence allows free commercial and non-commercial use; the images are licensed, not public domain. Photographer/source records are kept in this file and [the complete source register](../../../docs/photo-sources.md). The public interface retains concise illustrative-image captions without photographer links or an expandable credits section.
 
 | Local asset          | Photographer     | Source                                                                                                      | Download source                                                                                        |
 | -------------------- | ---------------- | ----------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------ |

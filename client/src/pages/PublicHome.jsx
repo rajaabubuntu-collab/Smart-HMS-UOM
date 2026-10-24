@@ -22,10 +22,10 @@ import { useAuth } from '../auth';
 import './PublicHome.css';
 import {
   HospitalDirectoryPreview,
-  SriLankaVisitorGuide,
+  VisitorGuide,
   HospitalLocation,
   EmergencyInformation,
-  PhotoCredit,
+  PhotoCaption,
 } from './PublicHospitalSections';
 
 const services = [
@@ -71,28 +71,22 @@ export default function PublicHome() {
   const hospital = information?.hospital;
   const portal = user ? '/dashboard' : '/login';
   return (
-    <div ref={motionRef} className="public-home hospital-landing">
+    <div ref={motionRef} className="public-home hospital-landing homepage-design">
       <a className="skip-link" href="#public-main">
         {t('Skip to content')}{' '}
       </a>
       <div className="public-container">
-        <PublicHeader hospital={hospital} />
+        <PublicHeader hospital={hospital} homepage />
 
         <main id="public-main">
           <section className="public-hero" aria-labelledby="home-title">
             <div className="public-hero-copy">
-              <p className="public-kicker">
-                <span /> {t('GET TO KNOW US')}
-              </p>
               <h1 id="home-title">
                 {t('Welcome to')} <br />
-                <em>{hospital?.name || 'Smart HMS'}</em>
+                {hospital?.name || 'Smart HMS'}
               </h1>
               <p className="public-lead">
-                {hospital?.description ||
-                  t(
-                    'Get to know the hospital, explore our departments and find practical information for your visit.',
-                  )}
+                {t('Find your doctor, plan your visit and manage your care.')}
               </p>
               {hospital?.address && (
                 <p className="hospital-hero-address">
@@ -100,15 +94,20 @@ export default function PublicHome() {
                 </p>
               )}
               <div className="public-actions">
-                <Link className="button primary" to="/about">
-                  {t('About our hospital')}
-                  <ArrowRight size={18} />
+                <Link
+                  className="button primary"
+                  to={user?.role === 'doctor' ? '/dashboard' : '/book'}
+                >
+                  {t('Book appointment')}
                 </Link>
                 <a className="button subtle" href="#hospital-info">
                   {t('Hospital information')}
                 </a>
               </div>
               <div className="hospital-hero-links">
+                <Link className="hospital-hero-directory-link" to="/about">
+                  {t('About our hospital')}
+                </Link>
                 {hospital?.phone && (
                   <a className="hospital-hero-directory-link" href={`tel:${hospital.phone}`}>
                     <Phone size={16} aria-hidden="true" /> {t('Reception')}: {hospital.phone}
@@ -122,16 +121,15 @@ export default function PublicHome() {
                   <ArrowUpRight size={17} />
                 </Link>
               </div>
-              {(!hospital || hospital.isDemo) && (
-                <span className="demo-label">
-                  {t('University project · Demonstration website')}
-                </span>
+              {hospital?.isDemo && (
+                <span className="demo-label">{t('Demonstration information')}</span>
               )}
             </div>
             <HospitalHeroGallery />
           </section>
 
           <PatientShortcuts />
+          <HospitalDirectoryPreview />
 
           <section
             id="about-hospital"
@@ -146,7 +144,7 @@ export default function PublicHome() {
                 loading="lazy"
                 alt={t('Mulleriyawa Hospital in Colombo, Sri Lanka')}
               />
-              <PhotoCredit index={6}>{t('Healthcare stock photograph')}</PhotoCredit>
+              <PhotoCaption index={6}>{t('Healthcare stock photograph')}</PhotoCaption>
             </figure>
             <div>
               <p className="public-kicker">{t('WELCOME TO SMART HMS')}</p>
@@ -168,7 +166,6 @@ export default function PublicHome() {
             </div>
           </section>
 
-          <HospitalDirectoryPreview />
           <HospitalCareGallery />
 
           <section id="services" className="public-section" aria-labelledby="services-title">
@@ -258,7 +255,7 @@ export default function PublicHome() {
             </ol>
           </section>
 
-          <SriLankaVisitorGuide />
+          <VisitorGuide />
 
           <section className="public-section hospital-preparation" aria-labelledby="prepare-title">
             <div>
@@ -373,14 +370,7 @@ export default function PublicHome() {
                         ? t(
                             'Hospital information is temporarily unavailable. Please try again later.',
                           )
-                        : t(
-                            'This is the Smart HMS university project demonstration. A real hospital’s address, reception number, opening hours and service directory have not yet been published.',
-                          )}
-                  </p>
-                  <p className="public-small">
-                    {t(
-                      'Please use synthetic information when trying the demo. This website does not provide an emergency contact service.',
-                    )}{' '}
+                        : t('Hospital information will be available soon.')}
                   </p>
                 </>
               )}

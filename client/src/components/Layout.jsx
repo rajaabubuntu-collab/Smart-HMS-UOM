@@ -1,7 +1,7 @@
 import { t } from '../i18n/locale';
 import { NotificationBell } from '../pages/Notifications';
 import { useState } from 'react';
-import { Link, NavLink, Outlet } from 'react-router-dom';
+import { Link, NavLink, Outlet, useLocation } from 'react-router-dom';
 import {
   LayoutDashboard,
   UserRound,
@@ -30,6 +30,7 @@ import { RealtimeConnection, RealtimeStatus } from './Realtime';
 
 export default function Layout() {
   const { user, logout } = useAuth();
+  const { pathname } = useLocation();
   const [menu, setMenu] = useState(false);
   const [error, setError] = useState('');
   const [busy, setBusy] = useState(false);
@@ -86,7 +87,9 @@ export default function Layout() {
     }
   }
   return (
-    <div className={`app-shell ${user.role === 'patient' ? 'patient-workspace' : ''}`}>
+    <div
+      className={`app-shell ${user.role === 'patient' ? 'patient-workspace' : ''} ${user.role === 'patient' && pathname === '/dashboard' ? 'patient-overview-shell' : ''}`}
+    >
       <RealtimeConnection />
       <a className="skip-link" href="#main">
         {t('Skip to content')}{' '}
@@ -141,7 +144,6 @@ export default function Layout() {
           <span>
             <ShieldCheck size={16} /> {t('Protected workspace')}{' '}
           </span>
-          <small>{t('Final-year project · v0.10')}</small>
         </div>
       </aside>
       <div className="main-shell">
@@ -184,7 +186,7 @@ export default function Layout() {
           <span>
             {t('Smart HMS')} <span className="footer-dot">·</span> {t('Care, connected.')}{' '}
           </span>
-          <span>{t('University of Moratuwa · BIT Project')}</span>
+          <span>{t('Your hospital, connected.')}</span>
         </footer>
       </div>
       {user.role === 'patient' && (

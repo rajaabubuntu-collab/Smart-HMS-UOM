@@ -1,0 +1,63 @@
+/* Hallmark · homepage scoped foundations · v2.0.0 */
+html:has(.homepage-design),
+body:has(.homepage-design) {
+  overflow-x: clip;
+}
+body:has(.homepage-design) {
+  background: var(--color-paper);
+  color: var(--color-ink);
+}
+html:has(.homepage-design) {
+  scrollbar-color: var(--color-muted) var(--color-paper);
+  scroll-padding-top: var(--space-2xl);
+}
+.homepage-design {
+  font-family: var(--font-body);
+  font-size: var(--text-md);
+  line-height: 1.6;
+  caret-color: var(--color-accent);
+}
+.homepage-design ::selection {
+  background: var(--color-paper-3);
+  color: var(--color-ink);
+}
+.homepage-design :focus-visible {
+  outline: 3px solid var(--color-focus);
+  outline-offset: 4px;
+  transition: none;
+}
+.homepage-design :is(h1, h2, h3) {
+  font-family: var(--font-display);
+  font-style: normal;
+  font-synthesis: none;
+  overflow-wrap: break-word;
+  min-width: 0;
+  text-wrap: balance;
+}
+.homepage-design p {
+  text-wrap: pretty;
+}
+@media (max-width: 60rem) {
+  :root:has(.homepage-design) {
+    --gutter: 24px;
+    --section-gap: 96px;
+    --section-gap-s: 80px;
+  }
+}
+@media (max-width: 40rem) {
+  :root:has(.homepage-design) {
+    --gutter: 16px;
+    --section-gap: 64px;
+    --section-gap-s: 48px;
+    --gap-columns: 24px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .homepage-design *,
+  .homepage-design *::before,
+  .homepage-design *::after {
+    animation: none !important;
+    transition: none !important;
+    scroll-behavior: auto !important;
+  }
+}

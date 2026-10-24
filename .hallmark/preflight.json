@@ -1,0 +1,24 @@
+{
+  "scanned": "2026-10-24",
+  "findings": {
+    "fonts": "Segoe UI/system stack: client/src/glass.css:3",
+    "palette": "Existing teal: client/src/pages/PublicHome.css:17; solid patient styling: client/src/pages/PatientDashboard.css:2",
+    "framework": "React/Vite npm workspaces",
+    "scope": "PublicHome route / only",
+    "motion": "Existing gallery controls and reduced motion preserved"
+  },
+  "preserve": [
+    "hospital data",
+    "translations",
+    "links",
+    "gallery",
+    "map",
+    "other routes",
+    "preexisting uncommitted changes"
+  ],
+  "introduce": [
+    "scoped teal/white theme",
+    "new composition",
+    "consistent type scale"
+  ]
+}

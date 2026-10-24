@@ -261,9 +261,7 @@ export default function Staff() {
             </>
           )}
           <p className="small-text muted">
-            {t(
-              'Share credentials privately with the intended staff member. Use sample accounts for this prototype.',
-            )}{' '}
+            {t('Share credentials privately with the intended staff member.')}{' '}
           </p>
           <Submit busy={busy}>
             {t('Create staff account')} <Plus size={16} />

@@ -155,7 +155,6 @@ export default function AuditLog() {
                     <th scope="col">{t('User')}</th>
                     <th scope="col">{t('Action')}</th>
                     <th scope="col">{t('Module')}</th>
-                    <th scope="col">{t('Target')}</th>
                     <th scope="col">{t('Login IP')}</th>
                     <th scope="col">{t('Reason')}</th>
                   </tr>
@@ -169,13 +168,9 @@ export default function AuditLog() {
                       <td>
                         <strong>{record.actorName}</strong>
                         <small>{record.actorRole || t('No linked account')}</small>
-                        <code>{record.actorId || '—'}</code>
                       </td>
                       <td>{record.action}</td>
                       <td>{record.module}</td>
-                      <td>
-                        <code>{record.target || '—'}</code>
-                      </td>
                       <td>{record.ipAddress || '—'}</td>
                       <td>{record.reason || '—'}</td>
                     </tr>

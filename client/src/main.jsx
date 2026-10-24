@@ -47,6 +47,8 @@ import './styles.css';
 import './glass.css';
 import './workspace.css';
 import './liquid-glass.css';
+import './pages/PatientDashboard.css';
+import './pages/homepage/Homepage.css';
 
 function Protected({ roles }) {
   const { user } = useAuth();

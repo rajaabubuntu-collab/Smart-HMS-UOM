@@ -48,7 +48,7 @@ test('public homepage stays usable without session API and links to real entry p
   await page.route('**/api/auth/me', (route) => route.abort());
   await page.goto('/');
   await expect(page.getByRole('heading', { level: 1 })).toContainText('Welcome to Smart HMS');
-  await expect(page.getByText('University project · Demonstration website')).toBeVisible();
+  await expect(page.getByText('University project · Demonstration website')).toHaveCount(0);
   await expect(page.getByRole('link', { name: 'Create patient account' })).toHaveAttribute(
     'href',
     '/register',
@@ -129,9 +129,7 @@ test('solid surfaces persists through login and public-to-workspace navigation',
   await expect(page).toHaveURL(/\/login$/);
 });
 
-test('homepage shows approved directory data, local contacts and licensed photo credits', async ({
-  page,
-}) => {
+test('homepage shows approved directory data and concise patient-facing copy', async ({ page }) => {
   await page.route('**/api/public/hospital', (route) =>
     route.fulfill({
       json: {
@@ -214,13 +212,14 @@ test('homepage shows approved directory data, local contacts and licensed photo 
     'href',
     'tel:1990',
   );
-  await page.getByText('Photography & credits', { exact: true }).click();
+  await expect(page.getByText('Photography & credits', { exact: true })).toHaveCount(0);
   await expect(
-    page
-      .locator('.hospital-photo-credits')
-      .getByText('Illustrative photographs, not Smart HMS premises or staff.'),
-  ).toBeVisible();
-  await expect(page.locator('.hospital-photo-credits a')).toHaveCount(13);
+    page.getByText('Useful details for patients and families in Sri Lanka.'),
+  ).toHaveCount(0);
+  await expect(page.locator('figcaption a')).toHaveCount(0);
+  await expect(page.locator('.hospital-gallery-photo figcaption')).toContainText(
+    'Illustrative location',
+  );
 });
 
 test('directory failure preserves visitor guidance and never claims unpublished opening hours', async ({

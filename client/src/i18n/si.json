@@ -1225,5 +1225,20 @@
   "Play slideshow": "ඡායාරූප පෙළ ධාවනය කරන්න",
   "Pause slideshow": "ඡායාරූප පෙළ විරාම කරන්න",
   "Play": "ධාවනය කරන්න",
-  "Pause": "විරාම කරන්න"
+  "Pause": "විරාම කරන්න",
+  "Your appointment calendar": "ඔබේ හමුවීම් දින දර්ශනය",
+  "Previous month": "පෙර මාසය",
+  "Next month": "ඊළඟ මාසය",
+  "Sri Lanka time": "ශ්‍රී ලංකා වේලාව",
+  "No appointments on this day.": "මෙම දිනයේ හමුවීම් නොමැත.",
+  "View all appointments": "සියලු හමුවීම් බලන්න",
+  "Appointment overview": "හමුවීම් සාරාංශය",
+  "Appointment reference:": "හමුවීම් යොමු අංකය:",
+  "EMERGENCY SUPPORT": "හදිසි සහාය",
+  "Call 1990 toll-free for a Suwa Seriya emergency ambulance. This national service operates independently of the hospital.": "සුව සැරිය හදිසි ගිලන් රථ සේවාව සඳහා ගාස්තු රහිත 1990 අමතන්න. මෙම ජාතික සේවාව රෝහලෙන් ස්වාධීනව ක්‍රියාත්මක වේ.",
+  "Hospital information will be available soon.": "රෝහල් තොරතුරු ළඟදීම ලබා ගත හැක.",
+  "Plan your visit, find a doctor and manage your appointments in one place.": "ඔබේ පැමිණීම සැලසුම් කරන්න, වෛද්‍යවරයෙකු සොයා ගන්න සහ ඔබේ හමුවීම් එකම තැනකින් කළමනාකරණය කරන්න.",
+  "Share credentials privately with the intended staff member.": "අදාළ කාර්ය මණ්ඩල සාමාජිකයා සමඟ පිවිසුම් තොරතුරු පෞද්ගලිකව බෙදා ගන්න.",
+  "Find your doctor, plan your visit and manage your care.": "ඔබේ වෛද්‍යවරයා සොයා, රෝහල් පැමිණීම සැලසුම් කර, සෞඛ්‍ය සේවා කළමනාකරණය කරන්න.",
+  "Show interactive map": "අන්තර්ක්‍රියාකාරී සිතියම පෙන්වන්න"
 }
