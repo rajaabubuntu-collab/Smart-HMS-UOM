@@ -45,22 +45,22 @@
   --z-toast: 500;
   --z-tooltip: 600;
   --color-paper: #ffffff;
-  --color-paper-2: #f2f7f6;
-  --color-paper-3: #e2efeb;
-  --color-ink: #183e3c;
-  --color-ink-2: #2b504e;
-  --color-muted: #536966;
-  --color-rule: #cbdad6;
-  --color-accent: #086f68;
+  --color-paper-2: var(--hms-canvas);
+  --color-paper-3: var(--hms-soft);
+  --color-ink: var(--hms-ink);
+  --color-ink-2: var(--hms-ink);
+  --color-muted: var(--hms-muted);
+  --color-rule: var(--hms-border);
+  --color-accent: var(--hms-brand);
   --color-accent-ink: #ffffff;
-  --color-focus: #075eaa;
-  --font-display: 'Manrope', 'Segoe UI', Arial, sans-serif;
-  --font-body: 'Segoe UI', Arial, sans-serif;
+  --color-focus: var(--hms-focus);
+  --font-display: var(--hms-font);
+  --font-body: var(--hms-font);
   --font-outlier: var(--font-body);
-  --radius-card: 12px;
+  --radius-card: var(--hms-card-radius);
   --radius-pill: 999px;
   --rule-hair: 1px;
-  --shadow-card: none;
+  --shadow-card: var(--hms-shadow);
   --tracking-display: -0.02em;
   --home-space-row: 32px;
   --home-space-half: 48px;
@@ -68,9 +68,9 @@
   --home-clear: transparent;
   --home-danger: #943a2d;
   --home-danger-paper: #fff5f1;
-  --home-deep: #183e3c;
+  --home-deep: var(--hms-ink);
   --home-on-deep: #ffffff;
-  --home-soft-on-deep: #d5e6e1;
+  --home-soft-on-deep: var(--hms-on-deep-muted);
 }
 
 @font-face {

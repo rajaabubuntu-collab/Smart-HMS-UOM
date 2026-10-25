@@ -1,0 +1,224 @@
+.homepage-design .hospital-assistant-launcher {
+  position: fixed;
+  right: 24px;
+  bottom: 24px;
+  z-index: 400;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 20px;
+  border: 1px solid var(--color-accent);
+  border-radius: 28px;
+  background: var(--color-accent);
+  color: var(--color-accent-ink);
+  box-shadow: 0 6px 24px color-mix(in srgb, var(--color-ink) 18%, transparent);
+  font-size: 15px;
+}
+.homepage-design .hospital-assistant-launcher:hover {
+  background: var(--color-ink);
+}
+.homepage-design .hospital-assistant-panel {
+  position: fixed;
+  right: 24px;
+  bottom: 92px;
+  z-index: 401;
+  width: min(410px, calc(100% - 32px));
+  height: min(660px, calc(100dvh - 120px));
+  display: flex;
+  flex-direction: column;
+  background: var(--color-paper);
+  color: var(--color-ink);
+  border: 1px solid var(--color-rule);
+  border-radius: 16px;
+  box-shadow: 0 12px 48px color-mix(in srgb, var(--color-ink) 18%, transparent);
+  overflow: clip;
+}
+.homepage-design .hospital-assistant-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 20px;
+  background: var(--color-paper-2);
+  border-bottom: 1px solid var(--color-rule);
+}
+.homepage-design .hospital-assistant-header h2 {
+  font-size: 20px;
+  margin: 0;
+  letter-spacing: normal;
+}
+.homepage-design .hospital-assistant-header p {
+  font-size: 13px;
+  margin: 4px 0 0;
+}
+.homepage-design .hospital-assistant-close {
+  width: 44px;
+  min-height: 44px;
+  display: grid;
+  place-items: center;
+  padding: 0;
+  background: var(--color-paper);
+  color: var(--color-ink);
+  border: 1px solid var(--color-muted);
+}
+.homepage-design .hospital-assistant-conversation {
+  flex: 1;
+  overflow-y: auto;
+  min-height: 80px;
+  padding: 16px 20px;
+  overscroll-behavior: contain;
+}
+.homepage-design .hospital-assistant-conversation p {
+  font-size: 14px;
+  line-height: 1.6;
+  margin: 0 0 12px;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+.homepage-design .hospital-assistant-suggestions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.homepage-design .hospital-assistant-suggestions button {
+  white-space: normal;
+  text-align: left;
+  min-height: 44px;
+  padding: 8px 12px;
+  background: var(--color-paper);
+  color: var(--color-accent);
+  border: 1px solid var(--color-rule);
+  font-size: 13px;
+}
+.homepage-design .hospital-assistant-question {
+  background: var(--color-paper-3);
+  color: var(--color-ink);
+  padding: 12px;
+  border-radius: 10px;
+  margin-top: 16px;
+}
+.homepage-design .hospital-assistant-turn {
+  margin-top: 20px;
+}
+.homepage-design .hospital-assistant-fact {
+  border-top: 1px solid var(--color-rule);
+  padding-top: 12px;
+  margin-top: 16px;
+}
+.homepage-design .hospital-assistant-fact h3 {
+  font-size: 16px;
+  margin: 0 0 8px;
+}
+.homepage-design .hospital-assistant-fact a,
+.homepage-design .hospital-assistant-answer > a {
+  display: inline-block;
+  padding-block: 8px;
+  font-size: 14px;
+  text-decoration: underline;
+}
+.homepage-design .hospital-assistant-fact dl {
+  margin: 8px 0;
+  font-size: 14px;
+}
+.homepage-design .hospital-assistant-fact dl > div {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+}
+.homepage-design .hospital-assistant-fact dd {
+  margin: 0;
+}
+.homepage-design .hospital-assistant-loading {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.homepage-design .hospital-assistant-loading svg {
+  animation: assistant-spin 1s linear infinite;
+  flex-shrink: 0;
+}
+.homepage-design .hospital-assistant-error {
+  color: var(--home-danger);
+}
+.homepage-design .hospital-assistant-form {
+  padding: 12px 20px 16px;
+  border-top: 1px solid var(--color-rule);
+  flex-shrink: 0;
+}
+.homepage-design .hospital-assistant-form .hospital-assistant-privacy {
+  font-size: 12px;
+  line-height: 1.45;
+  margin: 0 0 10px;
+}
+.homepage-design .hospital-assistant-form label {
+  font-size: 13px;
+  display: block;
+  margin-bottom: 6px;
+}
+.homepage-design .hospital-assistant-form textarea {
+  display: block;
+  width: 100%;
+  min-height: 64px;
+  max-height: 120px;
+  resize: vertical;
+  border: 1px solid var(--color-muted);
+  background: var(--color-paper);
+  color: var(--color-ink);
+  border-radius: 6px;
+  padding: 10px;
+  font-size: 16px;
+}
+.homepage-design .hospital-assistant-actions {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 10px;
+}
+.homepage-design .hospital-assistant-actions button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 8px 12px;
+  min-height: 44px;
+  background: var(--color-paper);
+  color: var(--color-ink);
+  border: 1px solid var(--color-muted);
+}
+.homepage-design .hospital-assistant-actions button[type='submit'] {
+  background: var(--color-accent);
+  color: var(--color-accent-ink);
+  border-color: var(--color-accent);
+}
+.homepage-design .hospital-assistant-panel button:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+@keyframes assistant-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .homepage-design .hospital-assistant-loading svg {
+    animation: none;
+  }
+}
+@media (max-width: 480px) {
+  .homepage-design .hospital-assistant-launcher {
+    right: 16px;
+    bottom: 16px;
+  }
+  .homepage-design .hospital-assistant-panel {
+    right: 16px;
+    bottom: 80px;
+    height: min(620px, calc(100dvh - 100px));
+  }
+  .homepage-design .hospital-assistant-form {
+    padding: 10px 14px;
+  }
+  .homepage-design .hospital-assistant-header,
+  .homepage-design .hospital-assistant-conversation {
+    padding: 12px 14px;
+  }
+}

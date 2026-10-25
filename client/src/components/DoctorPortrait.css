@@ -6,7 +6,7 @@
   margin-bottom: 18px;
   overflow: hidden;
   border-radius: 14px;
-  background: #e7f1ed;
+  background: var(--hms-soft);
 }
 .doctor-portrait img {
   display: block;
@@ -17,8 +17,8 @@
 }
 .doctor-portrait-label {
   display: block;
-  background: #edf5f1;
-  color: #38584d;
+  background: var(--hms-canvas);
+  color: var(--hms-ink);
   font-size: 11px;
   padding: 5px 9px;
   text-align: center;

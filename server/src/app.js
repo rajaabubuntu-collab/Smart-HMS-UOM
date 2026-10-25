@@ -1,4 +1,5 @@
 import { publicEnquiryRouter, staffEnquiryRouter } from './public/enquiries.js';
+import { publicAssistantRouter } from './public/assistant.js';
 import {
   administrationRouter,
   publicDirectoryRouter,
@@ -67,7 +68,10 @@ function isAllowedRequestOrigin(requestOrigin, config) {
   }
 }
 
-export function createApp(config, { rateLimitEnabled = true, recommendationFetch } = {}) {
+export function createApp(
+  config,
+  { rateLimitEnabled = true, recommendationFetch, assistantFetch } = {},
+) {
   const app = express();
   app.disable('x-powered-by');
   if (config.trustProxy) app.set('trust proxy', 1);
@@ -172,6 +176,14 @@ export function createApp(config, { rateLimitEnabled = true, recommendationFetch
   app.use('/api', recoveryRouter(config));
   app.use('/api', publicHospitalRouter());
   app.use('/api', publicDirectoryRouter());
+  app.use(
+    '/api',
+    publicAssistantRouter(config.recommendations, {
+      rateLimitEnabled,
+      fetchImpl: assistantFetch,
+      dailyLimit: config.publicAssistantDailyLimit,
+    }),
+  );
   app.use('/api', publicDoctorAvatarRouter(config));
   app.use('/api', publicEnquiryRouter({ rateLimitEnabled }));
   app.use('/api', authenticate(config));

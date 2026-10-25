@@ -1,21 +1,17 @@
 /* Finite, lightweight motion for public pages. No content is hidden before it enters view. */
 @keyframes hospital-arrive {
   from {
-    opacity: 0.72;
     transform: translateY(14px);
   }
   to {
-    opacity: 1;
     transform: translateY(0);
   }
 }
 @keyframes hospital-answer {
   from {
-    opacity: 0.65;
     transform: translateY(-4px);
   }
   to {
-    opacity: 1;
     transform: translateY(0);
   }
 }
@@ -69,7 +65,7 @@
   .hospital-landing :is(.hospital-care-card, .hospital-profile-card, .public-service-card):hover {
     transform: translateY(-3px);
     box-shadow: 0 14px 30px #174f5512;
-    border-color: #a8cdc5;
+    border-color: var(--hms-border-strong);
   }
   .hospital-landing .hospital-care-card:hover .hospital-care-image img {
     transform: scale(1.025);
@@ -90,7 +86,6 @@
   .hospital-landing .hospital-reveal-in {
     animation: none;
     transform: none;
-    opacity: 1;
   }
   .hospital-landing .hospital-care-image img {
     transform: none;

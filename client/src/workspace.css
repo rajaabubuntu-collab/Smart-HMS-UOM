@@ -1,14 +1,14 @@
 /* Shared care workspace: calm colour, clear cards and mobile-first actions.
    Scoped so the public hospital website keeps its own presentation. */
 .app-shell {
-  --green: #096b60;
-  --green-dark: #07544c;
-  --lime: #d9f3e8;
-  --muted: #5d7073;
-  --border: #dce7e4;
+  --green: var(--hms-brand);
+  --green-dark: var(--hms-brand-dark);
+  --lime: var(--hms-soft);
+  --muted: var(--hms-muted);
+  --border: var(--hms-border);
   --radius: 16px;
-  color: #203936;
-  background: #f4f8f7;
+  color: var(--hms-ink);
+  background: var(--hms-canvas);
   min-height: calc(100dvh - 49px);
 }
 .app-shell .sidebar {
@@ -26,7 +26,7 @@
   margin-left: 242px;
 }
 .app-shell .brand {
-  color: #153f39;
+  color: var(--hms-ink);
 }
 .app-shell .brand-mark {
   background: var(--green);
@@ -42,13 +42,13 @@
 }
 .app-shell .nav-item {
   border-radius: 10px;
-  color: #4d6561;
+  color: var(--hms-muted);
 }
 .app-shell .nav-item:not(.active) svg {
-  color: #6b827c;
+  color: var(--hms-muted);
 }
 .app-shell .nav-item:hover {
-  background: #f0f7f4;
+  background: var(--hms-canvas);
 }
 .app-shell .nav-item.active {
   color: #fff;
@@ -56,16 +56,16 @@
   box-shadow: 0 3px 8px #096b6017;
 }
 .app-shell .sidebar-care {
-  background: #edf7f2;
-  border: 1px solid #dcebe4;
+  background: var(--hms-soft);
+  border: 1px solid var(--hms-border);
   border-radius: 14px;
   box-shadow: none;
 }
 .app-shell .sidebar-care strong {
-  color: #244d43;
+  color: var(--hms-ink);
 }
 .app-shell .sidebar-care :is(p, .tiny-label, .care-mini) {
-  color: #55756a;
+  color: var(--hms-muted);
 }
 .app-shell .topbar {
   height: 76px;
@@ -83,9 +83,9 @@
 .app-shell .avatar {
   position: relative;
   overflow: hidden;
-  color: #0e6558;
-  background: #dcf1e8;
-  border: 1px solid #c7e7da;
+  color: var(--hms-brand-dark);
+  background: var(--hms-soft);
+  border: 1px solid var(--hms-border);
 }
 .app-shell .avatar:has(.avatar-picture) {
   color: transparent;
@@ -108,7 +108,7 @@
   cursor: pointer;
 }
 .app-shell .avatar-upload:focus-visible {
-  outline: 3px solid #24806c;
+  outline: 3px solid var(--hms-focus);
   outline-offset: 3px;
 }
 .app-shell .avatar-upload:disabled {
@@ -125,7 +125,7 @@
   place-items: center;
   border: 1px solid #fff;
   border-radius: 50%;
-  background: #176e5b;
+  background: var(--hms-brand);
   color: #fff;
 }
 .app-shell .avatar-file-input {
@@ -161,12 +161,12 @@
   margin-bottom: 25px;
 }
 .app-shell .page-heading h1 {
-  color: #203936;
+  color: var(--hms-ink);
   font-size: clamp(25px, 2.3vw, 34px);
   letter-spacing: -1px;
 }
 .app-shell .eyebrow {
-  color: #48756a;
+  color: var(--hms-muted);
 }
 .app-shell .card {
   border: 1px solid var(--border);
@@ -175,7 +175,7 @@
   box-shadow: 0 3px 12px #183d3004;
 }
 .app-shell .card h2 {
-  color: #203936;
+  color: var(--hms-ink);
 }
 .app-shell .button {
   border-radius: 10px;
@@ -193,19 +193,19 @@
   background: var(--green-dark);
 }
 .app-shell .subtle {
-  color: #24574c;
+  color: var(--hms-brand-dark);
   background: #fff;
-  border-color: #cadcd5;
+  border-color: var(--hms-border);
 }
 .app-shell .subtle:hover {
-  background: #edf7f2;
+  background: var(--hms-soft);
 }
 .app-shell .text-link {
   color: var(--green);
 }
 .app-shell :is(input, select, textarea) {
-  color: #203936;
-  border-color: #bdcec8;
+  color: var(--hms-ink);
+  border-color: var(--hms-border);
   border-radius: 10px;
 }
 .app-shell :is(input, select, textarea):focus {
@@ -213,23 +213,23 @@
   box-shadow: 0 0 0 3px #096b6015;
 }
 .app-shell :is(a, button, summary):focus-visible {
-  outline: 3px solid #178775;
+  outline: 3px solid var(--hms-focus);
   outline-offset: 3px;
 }
 .app-shell input[type='checkbox'] {
   accent-color: var(--green);
 }
 .app-shell .surface-toggle {
-  background: #f5f9f7;
-  color: #42655c;
+  background: var(--hms-canvas);
+  color: var(--hms-muted);
   border-color: var(--border);
 }
 .app-shell .surface-toggle[aria-pressed='true'] {
-  background: #deefe7;
-  border-color: #83b8a7;
+  background: var(--hms-soft);
+  border-color: var(--hms-border-strong);
 }
 .app-shell .date-pill {
-  color: #527069;
+  color: var(--hms-muted);
   background: #fff;
   border: 1px solid var(--border);
   border-radius: 9px;
@@ -238,39 +238,39 @@
   min-height: 208px;
   padding: 28px 32px;
   margin-bottom: 20px;
-  background: #e5f3ec;
-  color: #183f35;
-  border: 1px solid #d0e7dc;
+  background: var(--hms-soft);
+  color: var(--hms-ink);
+  border: 1px solid var(--hms-border);
   border-radius: 18px;
   box-shadow: none;
 }
 .app-shell .welcome-banner h2 {
-  color: #183f35;
+  color: var(--hms-ink);
   font-size: clamp(23px, 2.2vw, 30px);
   font-weight: 650;
 }
 .app-shell .welcome-banner p {
-  color: #496b5f;
+  color: var(--hms-muted);
   font-size: 13px;
 }
 .app-shell .banner-label {
-  color: #3c6a58;
+  color: var(--hms-muted);
   font-weight: 700;
 }
 .app-shell .banner-label > span {
-  background: #218265;
+  background: var(--hms-secondary);
 }
 .app-shell .banner-art {
-  color: #77ad96;
+  color: var(--hms-secondary);
   opacity: 0.8;
 }
 .app-shell .banner-art::before,
 .app-shell .banner-art::after {
-  border-color: #c1dfce;
+  border-color: var(--hms-border);
 }
 .app-shell .banner-art > div {
-  background: #d4ebdf;
-  border-color: #c1dfce;
+  background: var(--hms-soft);
+  border-color: var(--hms-border);
   border-radius: 30px;
 }
 .workspace-quick-actions {
@@ -285,7 +285,7 @@
   gap: 12px;
   min-width: 0;
   padding: 18px;
-  color: #29483f;
+  color: var(--hms-ink);
   background: #fff;
   border: 1px solid var(--border);
   border-radius: 14px;
@@ -294,8 +294,8 @@
     background 0.18s;
 }
 .workspace-quick-actions > a:hover {
-  border-color: #8ab9a7;
-  background: #f7fcf9;
+  border-color: var(--hms-border-strong);
+  background: var(--hms-canvas);
 }
 .workspace-quick-actions strong {
   font-size: 13px;
@@ -303,7 +303,7 @@
 }
 .workspace-quick-actions > a > svg {
   flex-shrink: 0;
-  color: #6b857b;
+  color: var(--hms-muted);
 }
 .quick-action-icon {
   display: grid;
@@ -312,8 +312,8 @@
   height: 44px;
   flex-shrink: 0;
   border-radius: 12px;
-  background: #e4f3ec;
-  color: #196e56;
+  background: var(--hms-soft);
+  color: var(--hms-brand);
 }
 .workspace-quick-actions > a:nth-child(2) .quick-action-icon {
   background: #e7f1f9;
@@ -324,8 +324,8 @@
   color: #8c6a24;
 }
 .app-shell .appointment-stats > a {
-  --stat-color: #186b56;
-  --stat-fill: #e5f3eb;
+  --stat-color: var(--hms-brand);
+  --stat-fill: var(--hms-soft);
   background: #fff;
   border: 1px solid var(--border);
   border-radius: 14px;
@@ -340,10 +340,10 @@
   --stat-fill: #e8f3fa;
 }
 .app-shell .appointment-stats strong {
-  color: #243f35;
+  color: var(--hms-ink);
 }
 .app-shell .appointment-stats span {
-  color: #5d7068;
+  color: var(--hms-muted);
 }
 .app-shell .appointment-stats .stat-symbol {
   color: var(--stat-color);
@@ -356,16 +356,16 @@
 }
 .app-shell .metric-icon,
 .app-shell .action-icon {
-  color: #237461;
-  background: #e8f5ed;
-  border-color: #daeadf;
+  color: var(--hms-brand);
+  background: var(--hms-soft);
+  border-color: var(--hms-border);
 }
 .app-shell .tag {
-  color: #366956;
-  background: #e9f4ed;
+  color: var(--hms-brand-dark);
+  background: var(--hms-soft);
 }
 .app-shell .guide-shortcut {
-  border-left: 4px solid #84baa3;
+  border-left: 4px solid var(--hms-border-strong);
 }
 .app-shell .analytics-chart {
   border-top: 1px solid var(--border);
@@ -374,8 +374,8 @@
   color: var(--green);
 }
 .app-shell .account-avatar {
-  color: #196e56;
-  background: #e4f3ec;
+  color: var(--hms-brand);
+  background: var(--hms-soft);
 }
 @media (max-width: 380px) {
   .app-shell .topbar .avatar-control {
@@ -386,18 +386,18 @@
   }
 }
 .app-shell .role-badge {
-  color: #2c6452;
-  background: #e8f4ec;
+  color: var(--hms-brand-dark);
+  background: var(--hms-soft);
 }
 .app-shell .detail-list dt,
 .app-shell .account-status {
-  color: #5c7165;
+  color: var(--hms-muted);
 }
 .app-shell .allergy-note {
   color: #78602e;
 }
 .app-shell .metric > strong {
-  color: #29483f;
+  color: var(--hms-ink);
 }
 .app-shell .workspace-footer {
   color: var(--muted);
@@ -410,14 +410,14 @@
 body:has(.app-shell) .language-control {
   position: sticky;
   top: 0;
-  background: #eaf3ef;
-  color: #36594c;
-  border-color: #d6e5de;
+  background: var(--hms-soft);
+  color: var(--hms-muted);
+  border-color: var(--hms-border);
   min-height: 49px;
 }
 body:has(.app-shell) .language-control select {
-  color: #36594c;
-  border-color: #a6c1b5;
+  color: var(--hms-muted);
+  border-color: var(--hms-border);
 }
 :root[data-surfaces='solid'] .app-shell :is(.topbar, .sidebar) {
   background: #fff;
@@ -529,7 +529,7 @@ body:has(.app-shell) .language-control select {
     gap: 5px;
     padding: 8px 4px;
     min-height: 64px;
-    color: #60786d;
+    color: var(--hms-muted);
     border-radius: 10px;
     text-align: center;
     font-size: 10px;
@@ -537,8 +537,8 @@ body:has(.app-shell) .language-control select {
     overflow-wrap: anywhere;
   }
   .workspace-mobile-nav a.active {
-    color: #075c4c;
-    background: #e7f4ed;
+    color: var(--hms-brand);
+    background: var(--hms-soft);
     font-weight: 700;
   }
   .patient-workspace :is(input, select, textarea, button, a, summary) {

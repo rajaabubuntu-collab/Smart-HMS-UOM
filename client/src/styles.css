@@ -1796,9 +1796,9 @@ label {
 }
 .doctor-option.selected,
 .slot-option.selected {
-  border-color: #456e47;
-  background: #f0f6e7;
-  box-shadow: 0 0 0 1px #456e47;
+  border-color: var(--hms-brand);
+  background: var(--hms-soft);
+  box-shadow: 0 0 0 1px var(--hms-brand);
 }
 .doctor-price {
   font-size: 12px;
@@ -1861,12 +1861,12 @@ label {
   display: flex;
   gap: 12px;
   align-items: center;
-  background: #f1f6eb;
-  border: 1px solid #d8e4cd;
+  background: var(--hms-soft);
+  border: 1px solid var(--hms-border);
   border-radius: 10px;
   padding: 16px;
   margin: 6px 0 18px;
-  color: #4f7443;
+  color: var(--hms-brand-dark);
 }
 .selected-patient > div {
   flex: 1;
@@ -1882,7 +1882,7 @@ label {
   display: block;
   font-size: 11px;
   line-height: 1.6;
-  color: #6c7d66;
+  color: var(--hms-muted);
   margin-top: 5px;
   overflow-wrap: anywhere;
 }
@@ -2778,13 +2778,13 @@ label {
   cursor: pointer;
 }
 .feedback-stars label.selected {
-  background: #edf6ec;
-  border-color: #286347;
-  color: #1e5138;
+  background: var(--hms-soft);
+  border-color: var(--hms-brand);
+  color: var(--hms-brand-dark);
 }
 .feedback-stars input {
   margin: 0;
-  accent-color: #286347;
+  accent-color: var(--hms-brand);
 }
 @media (max-width: 600px) {
   .feedback-intro {

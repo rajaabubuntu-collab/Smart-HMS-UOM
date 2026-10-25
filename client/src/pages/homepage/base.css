@@ -8,7 +8,6 @@ body:has(.homepage-design) {
   color: var(--color-ink);
 }
 html:has(.homepage-design) {
-  scrollbar-color: var(--color-muted) var(--color-paper);
   scroll-padding-top: var(--space-2xl);
 }
 .homepage-design {

@@ -1,10 +1,10 @@
 .hospital-map {
   min-width: 0;
   width: 100%;
-  border: 1px solid #d3e4dd;
+  border: 1px solid var(--hms-border);
   border-radius: 18px;
   overflow: hidden;
-  background: #eaf3ef;
+  background: var(--hms-soft);
 }
 .hospital-map iframe {
   display: block;
@@ -15,8 +15,8 @@
 .hospital-map > a {
   display: block;
   padding: 14px 18px;
-  color: #075e51;
-  background: #f3f9f6;
+  color: var(--hms-brand-dark);
+  background: var(--hms-canvas);
   font-size: 13px;
   font-weight: 600;
 }

@@ -1,0 +1,256 @@
+/* Shared Smart HMS identity, taken from the login page. Layout stays with each page. */
+:root {
+  --hms-font: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+  --hms-brand: #5044ca;
+  --hms-brand-dark: #3c319e;
+  --hms-ink: #25334c;
+  --hms-muted: #58657d;
+  --hms-border: #dedff0;
+  --hms-border-strong: #aaa4cf;
+  --hms-canvas: #f3f3fc;
+  --hms-soft: #eae3ff;
+  --hms-secondary: #247c83;
+  --hms-focus: #246cc0;
+  --hms-on-deep-muted: #e4effc;
+  --hms-card-radius: 20px;
+  --hms-button-radius: 14px;
+  --hms-primary-gradient: linear-gradient(135deg, #5146cf, #663bbb);
+  --hms-story-gradient:
+    radial-gradient(ellipse at 100% 100%, #247c83 0, transparent 54%),
+    linear-gradient(150deg, #2c326f, #55419a 68%, #366b89);
+  --hms-page-background:
+    radial-gradient(ellipse at 4% 4%, rgb(173 164 255 / 34%), transparent 35%),
+    radial-gradient(ellipse at 96% 16%, rgb(125 225 204 / 30%), transparent 33%),
+    radial-gradient(ellipse at 70% 88%, rgb(255 196 178 / 24%), transparent 35%), #f1f2fb;
+  --hms-surface: linear-gradient(145deg, rgb(255 255 255 / 85%), rgb(248 249 255 / 77%));
+  --hms-surface-blur: blur(28px) saturate(175%);
+  --hms-shadow: 0 12px 40px rgb(74 59 142 / 10%), inset 0 1px 0 #fff;
+  --hms-metric-violet: #e0dcfa;
+  --hms-metric-rose: #f6e2ef;
+  --hms-metric-mint: #d8f1ec;
+  --hms-metric-lilac: #ebe1f8;
+  --hms-chart-blue: #386f9b;
+  --hms-chart-rose: #a44973;
+  --green: var(--hms-brand);
+  --green-dark: var(--hms-brand-dark);
+  --muted: var(--hms-muted);
+  --border: var(--hms-border);
+  --radius: var(--hms-card-radius);
+  --scrollbar-track: var(--hms-canvas);
+  --scrollbar-thumb: #8b80b5;
+  --scrollbar-hover: var(--hms-brand);
+  --scrollbar-active: var(--hms-brand-dark);
+  font-family: var(--hms-font);
+  color: var(--hms-ink);
+  background: var(--hms-canvas);
+}
+
+body,
+.hospital-landing,
+.homepage-design.public-home,
+.app-shell,
+.app-shell.patient-overview-shell {
+  background: var(--hms-page-background);
+  background-attachment: fixed;
+}
+
+.app-shell,
+.app-shell.patient-overview-shell {
+  --green: var(--hms-brand);
+  --green-dark: var(--hms-brand-dark);
+  --muted: var(--hms-muted);
+  --border: var(--hms-border);
+  --radius: var(--hms-card-radius);
+  color: var(--hms-ink);
+}
+
+/* Identical controls across public, patient and staff pages. */
+:is(.app-shell.patient-overview-shell, .app-shell, .homepage-design.public-home, .hospital-landing)
+  .button {
+  border-radius: var(--hms-button-radius);
+}
+:is(.app-shell.patient-overview-shell, .app-shell, .homepage-design.public-home, .hospital-landing)
+  .button.primary,
+.app-shell .welcome-banner .lime,
+.homepage-design.public-home .hospital-assistant-launcher,
+.homepage-design .hospital-assistant-actions button[type='submit'] {
+  background: var(--hms-primary-gradient);
+  border-color: var(--hms-brand);
+  color: #fff;
+  box-shadow: 0 6px 16px rgb(81 70 207 / 15%);
+}
+:is(.app-shell.patient-overview-shell, .app-shell, .homepage-design.public-home, .hospital-landing)
+  .button.primary:hover:not(:disabled),
+.app-shell .welcome-banner .lime:hover,
+.homepage-design.public-home .hospital-assistant-launcher:hover,
+.homepage-design .hospital-assistant-actions button[type='submit']:hover:not(:disabled) {
+  background: var(--hms-brand-dark);
+  border-color: var(--hms-brand-dark);
+}
+:is(.app-shell, .homepage-design, .hospital-landing) :is(input, select, textarea) {
+  border-radius: 12px;
+  border-color: var(--hms-border-strong);
+  color: var(--hms-ink);
+  accent-color: var(--hms-brand);
+}
+:is(.app-shell, .homepage-design, .hospital-landing) :is(input, select, textarea):focus {
+  outline-color: var(--hms-focus);
+  border-color: var(--hms-brand);
+  box-shadow: 0 0 0 3px rgb(80 68 202 / 10%);
+}
+
+body :is(.language-control, .app-shell .sidebar, .app-shell .topbar),
+.app-shell.patient-overview-shell :is(.sidebar, .topbar),
+.homepage-design .hospital-site-header,
+.homepage-design .hospital-contact-strip,
+.homepage-design .public-info-card,
+.homepage-design .hospital-profile-card,
+.homepage-design .hospital-search-form,
+.homepage-design .hospital-guide-grid article {
+  background: var(--hms-surface);
+  border-color: var(--hms-border);
+  box-shadow: var(--hms-shadow);
+  -webkit-backdrop-filter: var(--hms-surface-blur);
+  backdrop-filter: var(--hms-surface-blur);
+}
+body:has(:is(.app-shell, .homepage-design)) .language-control {
+  background: var(--hms-surface);
+  color: var(--hms-ink);
+  border-color: var(--hms-border);
+  -webkit-backdrop-filter: var(--hms-surface-blur);
+  backdrop-filter: var(--hms-surface-blur);
+}
+body:has(:is(.app-shell, .homepage-design)) .language-control select {
+  color: var(--hms-ink);
+  border-color: var(--hms-border-strong);
+}
+.app-shell.patient-overview-shell .card {
+  border-color: var(--hms-border);
+  border-radius: var(--hms-card-radius);
+  box-shadow: var(--hms-shadow);
+}
+.app-shell.patient-overview-shell .nav-item.active,
+.app-shell .nav-item.active {
+  background: var(--hms-primary-gradient);
+  color: #fff;
+  border-radius: var(--hms-button-radius);
+  box-shadow: 0 6px 16px rgb(81 70 207 / 15%);
+}
+.app-shell.patient-overview-shell .nav-item.active svg {
+  color: inherit;
+}
+.app-shell .nav-item:hover:not(.active) {
+  background: var(--hms-soft);
+}
+.app-shell .brand-mark,
+.homepage-design .brand-mark {
+  background: var(--hms-primary-gradient);
+}
+.app-shell .sidebar-care,
+.app-shell.patient-overview-shell .sidebar-care {
+  background: linear-gradient(140deg, #eae3ff, #d8f1ec);
+  border: 1px solid var(--hms-border);
+}
+.app-shell .welcome-banner {
+  background: var(--hms-story-gradient);
+  color: #fff;
+  border-color: transparent;
+  border-radius: var(--hms-card-radius);
+}
+.app-shell .welcome-banner h2 {
+  color: #fff;
+}
+.app-shell .welcome-banner :is(p, .banner-label, .banner-art) {
+  color: var(--hms-on-deep-muted);
+}
+.app-shell .banner-art > div {
+  background: rgb(255 255 255 / 12%);
+  border-color: rgb(255 255 255 / 30%);
+}
+.app-shell .banner-art::before,
+.app-shell .banner-art::after {
+  border-color: rgb(255 255 255 / 25%);
+}
+.patient-overview-grid {
+  background: rgb(234 227 255 / 48%);
+  border-color: var(--hms-border);
+  border-radius: var(--hms-card-radius);
+}
+.app-shell.patient-overview-shell .workspace-footer {
+  background: transparent;
+}
+.workspace-mobile-nav a.active {
+  color: var(--hms-brand-dark);
+  background: var(--hms-soft);
+}
+.app-shell thead th {
+  background: var(--hms-canvas);
+  color: var(--hms-ink);
+  border-color: var(--hms-border);
+}
+
+.homepage-design .hospital-site-header {
+  padding-inline: var(--space-lg);
+  border: 1px solid var(--hms-border);
+  border-radius: var(--hms-card-radius);
+}
+.homepage-design .hospital-contact-strip {
+  background: transparent;
+  box-shadow: none;
+  backdrop-filter: none;
+}
+.homepage-design .hospital-site-header nav a.active {
+  color: var(--hms-brand);
+  border-color: var(--hms-brand);
+}
+.homepage-design
+  :is(.hospital-patient-shortcuts, .hospital-preparation, .hospital-guide-grid article) {
+  border-radius: var(--hms-card-radius);
+}
+.homepage-design .hospital-guide-grid article {
+  padding: var(--space-lg);
+}
+.homepage-design :is(.public-footer, .public-cta, .hospital-faq details) {
+  background: transparent;
+}
+.homepage-design .visit-section {
+  background: var(--hms-story-gradient);
+}
+.homepage-design .hospital-assistant-panel {
+  border-radius: var(--hms-card-radius);
+  border-color: var(--hms-border);
+  box-shadow: var(--hms-shadow);
+}
+.homepage-design.public-home .hospital-assistant-launcher {
+  border-radius: 999px;
+}
+.homepage-design :is(.hospital-assistant-actions button, .hospital-assistant-suggestions button) {
+  border-radius: var(--hms-button-radius);
+}
+
+/* Keep the user's opaque-surface preference and system accessibility settings. */
+:root[data-surfaces='solid'] {
+  --hms-surface: #fff;
+  --hms-surface-blur: none;
+}
+@media (prefers-reduced-transparency: reduce), (prefers-contrast: more) {
+  :root {
+    --hms-surface: #fff;
+    --hms-surface-blur: none;
+    --hms-border-strong: #72698f;
+    --scrollbar-thumb: var(--hms-brand-dark);
+  }
+}
+@media print {
+  body,
+  .app-shell,
+  .app-shell.patient-overview-shell,
+  .hospital-landing,
+  .homepage-design.public-home {
+    background: #fff;
+  }
+  .homepage-design .hospital-assistant-launcher,
+  .homepage-design .hospital-assistant-panel {
+    display: none;
+  }
+}

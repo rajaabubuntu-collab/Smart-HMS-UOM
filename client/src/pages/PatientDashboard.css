@@ -1,19 +1,19 @@
 /* The reference-inspired theme applies only to the patient's Overview route. */
 .app-shell.patient-overview-shell {
-  --green: #087d89;
-  --green-dark: #08616c;
-  --border: #bcebea;
-  --muted: #5c6871;
+  --green: var(--hms-brand);
+  --green-dark: var(--hms-brand-dark);
+  --border: var(--hms-border);
+  --muted: var(--hms-muted);
   --radius: 12px;
-  color: #20272c;
+  color: var(--hms-ink);
   background: #fff;
 }
 body:has(.patient-overview-shell) .language-control {
   background: #fff;
-  border-color: #e4e8eb;
+  border-color: var(--hms-border);
   backdrop-filter: none;
   box-shadow: none;
-  color: #42525c;
+  color: var(--hms-muted);
 }
 .app-shell.patient-overview-shell :is(.sidebar, .topbar, .card) {
   background: #fff;
@@ -27,30 +27,30 @@ body:has(.patient-overview-shell) .language-control {
   border-right: 1px solid var(--border);
 }
 .app-shell.patient-overview-shell .brand {
-  color: #20272c;
+  color: var(--hms-ink);
 }
 .app-shell.patient-overview-shell .brand-mark {
-  background: #078ca0;
+  background: var(--hms-brand);
 }
 .app-shell.patient-overview-shell .nav-item {
-  color: #5c6871;
+  color: var(--hms-muted);
 }
 .app-shell.patient-overview-shell .nav-item.active {
-  background: #8af3ed;
-  color: #075d66;
+  background: var(--hms-soft);
+  color: var(--hms-brand-dark);
   box-shadow: none;
   font-weight: 700;
 }
 .app-shell.patient-overview-shell .nav-item.active svg {
-  color: #075d66;
+  color: var(--hms-brand-dark);
 }
 .app-shell.patient-overview-shell .sidebar-care {
-  background: #ddf8f6;
+  background: var(--hms-soft);
   border: 0;
   box-shadow: none;
 }
 .app-shell.patient-overview-shell .sidebar-care :is(strong, p, span) {
-  color: #234b52;
+  color: var(--hms-ink);
 }
 .app-shell.patient-overview-shell .topbar {
   background: #fff;
@@ -100,8 +100,8 @@ body:has(.patient-overview-shell) .language-control {
   color: var(--muted);
 }
 .app-shell.patient-overview-shell .button.primary {
-  background: #087d89;
-  border-color: #087d89;
+  background: var(--hms-brand);
+  border-color: var(--hms-brand);
   border-radius: 10px;
   color: white;
 }
@@ -119,7 +119,7 @@ body:has(.patient-overview-shell) .language-control {
   padding: 24px;
   min-height: 156px;
   border: 0;
-  color: #243448;
+  color: var(--hms-ink);
   text-decoration: none;
 }
 .patient-metric-label {
@@ -133,7 +133,7 @@ body:has(.patient-overview-shell) .language-control {
   place-items: center;
   border: 1px solid #ffffff40;
   background: #ffffff55;
-  color: #30436b;
+  color: var(--hms-ink);
   width: 64px;
   height: 64px;
   border-radius: 12px;
@@ -147,19 +147,19 @@ body:has(.patient-overview-shell) .language-control {
   line-height: 1;
 }
 .app-shell.patient-overview-shell .patient-metric:nth-child(1) {
-  background: #b4c3fa;
+  background: var(--hms-metric-violet);
 }
 .app-shell.patient-overview-shell .patient-metric:nth-child(2) {
-  background: #f3b9ed;
+  background: var(--hms-metric-rose);
 }
 .app-shell.patient-overview-shell .patient-metric:nth-child(3) {
-  background: #9ee4f7;
+  background: var(--hms-metric-mint);
 }
 .app-shell.patient-overview-shell .patient-metric:nth-child(4) {
-  background: #d8bff6;
+  background: var(--hms-metric-lilac);
 }
 .patient-metric:hover {
-  outline: 2px solid #087d89;
+  outline: 2px solid var(--hms-brand);
   outline-offset: 2px;
 }
 .patient-overview-grid {
@@ -167,8 +167,8 @@ body:has(.patient-overview-shell) .language-control {
   grid-template-columns: minmax(0, 2fr) minmax(320px, 1fr);
   padding: 20px;
   border-radius: 14px;
-  border: 1px solid #bcebea;
-  background: #dcfcfa;
+  border: 1px solid var(--hms-border);
+  background: var(--hms-soft);
   gap: 16px;
   align-items: start;
 }
@@ -196,7 +196,7 @@ body:has(.patient-overview-shell) .language-control {
 .app-shell.patient-overview-shell h2 {
   font-size: 19px;
   font-weight: 600;
-  color: #20272c;
+  color: var(--hms-ink);
   margin: 0;
 }
 .patient-next h3 {
@@ -223,7 +223,7 @@ body:has(.patient-overview-shell) .language-control {
   font-size: 14px;
 }
 .patient-empty-icon {
-  color: #14768b;
+  color: var(--hms-brand);
   margin-top: 30px;
 }
 .app-shell.patient-overview-shell .patient-guide-feature {
@@ -235,17 +235,17 @@ body:has(.patient-overview-shell) .language-control {
 }
 .patient-guide-feature > svg {
   margin-bottom: 16px;
-  color: #14768b;
+  color: var(--hms-brand);
 }
 .patient-guide-feature p {
   font-size: 13px;
   line-height: 1.65;
-  color: #3d5963;
+  color: var(--hms-muted);
 }
 .app-shell.patient-overview-shell .patient-guide-feature .button {
-  background: #d9f9f6;
-  border: 1px solid #a4e9e5;
-  color: #075d66;
+  background: var(--hms-soft);
+  border: 1px solid var(--hms-border);
+  color: var(--hms-brand-dark);
   border-radius: 10px;
   margin-top: auto;
   width: 100%;
@@ -273,8 +273,8 @@ body:has(.patient-overview-shell) .language-control {
 .patient-overview .quick-action-icon {
   width: 32px;
   height: 36px;
-  background: #eff7f9;
-  color: #14768b;
+  background: var(--hms-canvas);
+  color: var(--hms-brand);
 }
 .app-shell.patient-overview-shell .dashboard-analytics {
   margin: 0;
@@ -299,7 +299,7 @@ body:has(.patient-overview-shell) .language-control {
   min-height: 40px;
   font-size: 11px;
   background: #fff;
-  border: 1px solid #8c999f;
+  border: 1px solid var(--hms-border-strong);
   border-radius: 8px;
   max-width: 210px;
 }
@@ -366,22 +366,22 @@ body:has(.patient-overview-shell) .language-control {
   padding: 0;
   border-radius: 8px;
   border: 1px solid transparent;
-  background: #eef7f9;
-  color: #28333a;
+  background: var(--hms-canvas);
+  color: var(--hms-ink);
   font-size: 12px;
 }
 .patient-calendar-days button[aria-current='date'] {
-  border-color: #14768b;
-  color: #075d66;
-  background: #d9f2f6;
+  border-color: var(--hms-brand);
+  color: var(--hms-brand-dark);
+  background: var(--hms-soft);
 }
 .patient-calendar-days button[aria-pressed='true'] {
-  background: #087d89;
+  background: var(--hms-brand);
   color: white;
-  border-color: #087d89;
+  border-color: var(--hms-brand);
 }
 .patient-calendar-days button:hover {
-  border-color: #14768b;
+  border-color: var(--hms-brand);
 }
 .patient-calendar-toolbar {
   display: flex;
@@ -436,7 +436,7 @@ body:has(.patient-overview-shell) .language-control {
 }
 .patient-schedule-time {
   font-size: 11px;
-  color: #075d66;
+  color: var(--hms-brand-dark);
   font-weight: 600;
 }
 .patient-calendar-empty {
@@ -445,7 +445,7 @@ body:has(.patient-overview-shell) .language-control {
   color: var(--muted);
 }
 .patient-calendar-empty > svg {
-  color: #14768b;
+  color: var(--hms-brand);
 }
 .patient-view-all {
   display: flex;
@@ -456,7 +456,7 @@ body:has(.patient-overview-shell) .language-control {
   margin-top: 18px;
   border-top: 1px solid var(--border);
   font-size: 12px;
-  color: #075d66;
+  color: var(--hms-brand-dark);
   font-weight: 600;
 }
 .app-shell.patient-overview-shell .patient-profile-summary {
@@ -513,7 +513,7 @@ body:has(.patient-overview-shell) .language-control {
   margin: 4px 0 0;
 }
 .patient-overview :is(a, button):focus-visible {
-  outline: 3px solid #14768b;
+  outline: 3px solid var(--hms-brand);
   outline-offset: 3px;
 }
 @media (max-width: 1200px) {
@@ -633,8 +633,8 @@ body:has(.patient-overview-shell) .language-control {
     border-color: var(--border);
   }
   .app-shell.patient-overview-shell .workspace-mobile-nav a[aria-current='page'] {
-    background: #8af3ed;
-    color: #075d66;
+    background: var(--hms-soft);
+    color: var(--hms-brand-dark);
   }
   .patient-calendar-week,
   .patient-calendar-days {

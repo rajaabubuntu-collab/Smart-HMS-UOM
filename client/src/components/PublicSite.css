@@ -12,7 +12,7 @@
   padding-block: 10px;
 }
 .hospital-site-header nav a.active {
-  color: #09665e;
+  color: var(--hms-brand);
   text-decoration: underline;
   text-underline-offset: 7px;
 }
@@ -47,12 +47,12 @@
   line-height: 1.18;
   letter-spacing: -1.5px;
   margin-bottom: 18px;
-  color: #173f4b;
+  color: var(--hms-ink);
 }
 .hospital-page-heading > p {
   font-size: 17px;
   line-height: 1.8;
-  color: #4d6476;
+  color: var(--hms-muted);
 }
 .hospital-profile-grid {
   display: grid;
@@ -63,7 +63,7 @@
 .hospital-profile-card,
 .hospital-empty-card {
   background: #fff;
-  border: 1px solid #d6e4e7;
+  border: 1px solid var(--hms-border);
   border-radius: 22px;
   padding: 28px;
   min-width: 0;
@@ -75,24 +75,24 @@
   align-items: flex-start;
 }
 .hospital-profile-card > svg {
-  color: #11756c;
+  color: var(--hms-brand);
   margin-bottom: 20px;
 }
 .hospital-profile-card h2,
 .hospital-profile-card h3 {
-  color: #173f4b;
+  color: var(--hms-ink);
   font-size: 22px;
   line-height: 1.4;
 }
 .hospital-profile-card p,
 .hospital-page-callout p,
 .hospital-empty-card p {
-  color: #4d6476;
+  color: var(--hms-muted);
   line-height: 1.8;
 }
 .hospital-profile-card .public-kicker {
   margin: 22px 0 10px;
-  color: #09665e;
+  color: var(--hms-brand);
 }
 .hospital-card-actions {
   margin-top: auto;
@@ -104,14 +104,14 @@
 }
 .hospital-page-callout {
   padding: 30px;
-  border: 1px solid #cde4df;
-  background: #eaf5f0;
+  border: 1px solid var(--hms-border);
+  background: var(--hms-soft);
   border-radius: 22px;
   margin: 30px 0;
   overflow-wrap: anywhere;
 }
 .hospital-page-callout h2 {
-  color: #173f4b;
+  color: var(--hms-ink);
   font-size: 25px;
 }
 .hospital-page-callout .button {
@@ -123,7 +123,7 @@
   align-items: end;
   gap: 16px;
   background: #fff;
-  border: 1px solid #d6e4e7;
+  border: 1px solid var(--hms-border);
   border-radius: 22px;
   padding: 24px;
   margin-bottom: 26px;
@@ -143,10 +143,10 @@
   align-items: center;
   gap: 13px;
   padding: 24px 18px;
-  border: 1px solid #cde4df;
+  border: 1px solid var(--hms-border);
   border-radius: 18px;
-  background: #eaf5f0;
-  color: #124e48;
+  background: var(--hms-soft);
+  color: var(--hms-brand-dark);
   font-size: 14px;
   font-weight: 600;
 }
@@ -196,16 +196,16 @@
 }
 .hospital-enquiry-form {
   background: #fff;
-  border: 1px solid #d6e4e7;
+  border: 1px solid var(--hms-border);
   padding: 30px;
   border-radius: 24px;
 }
 .hospital-enquiry-form h2 {
   font-size: 25px;
-  color: #173f4b;
+  color: var(--hms-ink);
 }
 .hospital-enquiry-form p {
-  color: #4d6476;
+  color: var(--hms-muted);
   line-height: 1.8;
 }
 .hospital-enquiry-form fieldset {
@@ -221,7 +221,7 @@
   line-height: 1.7;
   font-size: 13px;
   margin: 22px 0;
-  color: #354d5d;
+  color: var(--hms-ink);
 }
 .hospital-enquiry-consent input {
   flex: 0 0 18px;
@@ -270,7 +270,7 @@
     order: 3;
     width: 100%;
     justify-content: center;
-    border-top: 1px solid #d6e4e7;
+    border-top: 1px solid var(--hms-border);
     padding-top: 8px;
   }
   .hospital-patient-shortcuts {
@@ -324,5 +324,5 @@
 }
 
 .hospital-landing .detail-list dt {
-  color: #4d6476;
+  color: var(--hms-muted);
 }

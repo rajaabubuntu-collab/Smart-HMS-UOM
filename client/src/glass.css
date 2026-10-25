@@ -24,11 +24,11 @@ body {
   outline-offset: 4px;
 }
 .primary {
-  background: linear-gradient(135deg, #5146cf, #663bbb);
+  background: var(--hms-primary-gradient);
   box-shadow: 0 6px 16px #5146cf26;
 }
 .primary:hover:not(:disabled) {
-  background: #4335a9;
+  background: var(--hms-brand-dark);
 }
 .lime {
   color: #174c42;
@@ -191,9 +191,7 @@ textarea::placeholder {
   background: transparent;
 }
 .auth-story {
-  background:
-    radial-gradient(ellipse at 100% 100%, #247c83 0, transparent 54%),
-    linear-gradient(150deg, #2c326f, #55419a 68%, #366b89);
+  background: var(--hms-story-gradient);
 }
 .auth-story .story-copy > p,
 .auth-story footer {

@@ -22,6 +22,7 @@ const schema = z.object({
   SESSION_HOURS: z.coerce.number().min(0.25).max(24).default(8),
   TRUST_PROXY: z.enum(['true', 'false']).default('false'),
   AVATAR_STORAGE_DIR: z.string().min(1).default('.local/avatars'),
+  PUBLIC_ASSISTANT_DAILY_LIMIT: z.coerce.number().int().min(0).max(10000).default(100),
 });
 
 export function loadConfig(environment = process.env) {
@@ -50,5 +51,6 @@ export function loadConfig(environment = process.env) {
     avatarStorageDir: env.AVATAR_STORAGE_DIR,
     delivery: deliveryConfig(environment),
     recommendations: recommendationConfig(environment),
+    publicAssistantDailyLimit: env.PUBLIC_ASSISTANT_DAILY_LIMIT,
   };
 }

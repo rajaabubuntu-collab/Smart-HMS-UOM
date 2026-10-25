@@ -4,7 +4,7 @@ import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxi
 import { Field, Loading, Notice, useResource } from './ui';
 import { money } from '../scheduling';
 
-function ChartCard({ title, points, currency = false, description, color = '#096b60' }) {
+function ChartCard({ title, points, currency = false, description, color = 'var(--hms-brand)' }) {
   const rows = points.map((p) => ({ ...p, value: currency ? p.value / 100 : p.value }));
   return (
     <section
@@ -112,14 +112,14 @@ export default function DashboardCharts() {
             <ChartCard
               title={t('Appointment status')}
               points={data.statuses}
-              color="#247e94"
+              color="var(--hms-chart-blue)"
               description={t('Current status of the appointments in this period.')}
             />
             {data.revenue && (
               <ChartCard
                 title={t('Net receipts (LKR)')}
                 points={data.revenue}
-                color="#20806c"
+                color="var(--hms-secondary)"
                 currency
                 description={t(
                   'Payments received minus reversals, on the day each transaction occurred.',
@@ -130,7 +130,7 @@ export default function DashboardCharts() {
               <ChartCard
                 title={t('Department activity')}
                 points={data.departments}
-                color="#b8633f"
+                color="var(--hms-chart-rose)"
                 description={t(
                   'Top 10 departments by appointment count, including cancellations. Not a capacity measure.',
                 )}

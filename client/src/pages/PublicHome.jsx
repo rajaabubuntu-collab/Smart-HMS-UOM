@@ -1,6 +1,7 @@
 import { usePublicMotion } from '../hooks/usePublicMotion';
 import { HospitalCareGallery } from './HospitalCareSections';
 import HospitalHeroGallery from './HospitalHeroGallery';
+import HospitalAssistant from '../components/HospitalAssistant';
 import { PublicHeader, PublicFooter, PatientShortcuts } from '../components/PublicSite';
 import { t } from '../i18n/locale';
 import { useEffect } from 'react';
@@ -404,6 +405,7 @@ export default function PublicHome() {
         </main>
         <PublicFooter hospital={hospital} />
       </div>
+      <HospitalAssistant />
     </div>
   );
 }

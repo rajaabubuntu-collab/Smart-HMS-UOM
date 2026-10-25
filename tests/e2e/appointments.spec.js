@@ -9,6 +9,9 @@ async function login(page, role) {
   await page.getByLabel('Email address').fill(`${role}@test.local`);
   await page.getByLabel(/^Password/).fill(testPassword);
   await page.getByRole('button', { name: 'Sign in to your workspace' }).click();
+  // Sign-in can restore a protected page after sign-out. These scenarios start at Overview.
+  await expect(page.getByRole('button', { name: 'Sign out', exact: true })).toBeVisible();
+  await page.goto('/dashboard');
   await expect(page.getByRole('heading', { name: 'Welcome, Test.' })).toBeVisible();
 }
 async function logout(page) {
