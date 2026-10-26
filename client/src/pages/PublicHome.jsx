@@ -1,5 +1,4 @@
 import { usePublicMotion } from '../hooks/usePublicMotion';
-import { HospitalCareGallery } from './HospitalCareSections';
 import HospitalHeroGallery from './HospitalHeroGallery';
 import HospitalAssistant from '../components/HospitalAssistant';
 import { PublicHeader, PublicFooter, PatientShortcuts } from '../components/PublicSite';
@@ -10,6 +9,7 @@ import {
   ArrowRight,
   ArrowUpRight,
   CalendarDays,
+  ClipboardCheck,
   Check,
   FileHeart,
   HeartPulse,
@@ -72,7 +72,7 @@ export default function PublicHome() {
   const hospital = information?.hospital;
   const portal = user ? '/dashboard' : '/login';
   return (
-    <div ref={motionRef} className="public-home hospital-landing homepage-design">
+    <div ref={motionRef} className="public-home hospital-landing homepage-design public-redesign">
       <a className="skip-link" href="#public-main">
         {t('Skip to content')}{' '}
       </a>
@@ -82,9 +82,14 @@ export default function PublicHome() {
         <main id="public-main">
           <section className="public-hero" aria-labelledby="home-title">
             <div className="public-hero-copy">
-              <h1 id="home-title">
-                {t('Welcome to')} <br />
+              <p className="public-kicker hero-hospital-name">
+                <span />
                 {hospital?.name || 'Smart HMS'}
+              </p>
+              <h1 id="home-title">
+                {t('Your care.')}
+                <br />
+                <span>{t('A simpler journey.')}</span>
               </h1>
               <p className="public-lead">
                 {t('Find your doctor, plan your visit and manage your care.')}
@@ -100,6 +105,7 @@ export default function PublicHome() {
                   to={user?.role === 'doctor' ? '/dashboard' : '/book'}
                 >
                   {t('Book appointment')}
+                  <ArrowUpRight size={18} aria-hidden="true" />
                 </Link>
                 <a className="button subtle" href="#hospital-info">
                   {t('Hospital information')}
@@ -126,7 +132,19 @@ export default function PublicHome() {
                 <span className="demo-label">{t('Demonstration information')}</span>
               )}
             </div>
-            <HospitalHeroGallery />
+            <div className="public-hero-media">
+              <HospitalHeroGallery />
+              <Link className="hero-care-note" to="/doctors">
+                <span className="hero-care-note-icon">
+                  <HeartPulse size={26} aria-hidden="true" />
+                </span>
+                <span>
+                  <strong>{t('Find a doctor')}</strong>
+                  <small>{t('Explore doctors & services')}</small>
+                </span>
+                <ArrowUpRight size={20} aria-hidden="true" />
+              </Link>
+            </div>
           </section>
 
           <PatientShortcuts />
@@ -139,13 +157,24 @@ export default function PublicHome() {
           >
             <figure className="hospital-reception-visual">
               <img
-                src="/images/colombo-hospital.webp"
+                src="/images/care-stock.webp"
                 width="1600"
                 height="1200"
                 loading="lazy"
-                alt={t('Mulleriyawa Hospital in Colombo, Sri Lanka')}
+                alt={t('Stock photograph of a clinician holding a stethoscope')}
               />
-              <PhotoCaption index={6}>{t('Healthcare stock photograph')}</PhotoCaption>
+              <PhotoCaption>{t('Healthcare stock photograph')}</PhotoCaption>
+              <div className="hospital-photo-inset">
+                <img
+                  src="/images/lounge-stock.webp"
+                  width="480"
+                  height="320"
+                  loading="lazy"
+                  decoding="async"
+                  alt={t('Stock photograph of a bright medical waiting area beside large windows')}
+                />
+                <span>{t('Healthcare stock photograph')}</span>
+              </div>
             </figure>
             <div>
               <p className="public-kicker">{t('WELCOME TO SMART HMS')}</p>
@@ -167,9 +196,11 @@ export default function PublicHome() {
             </div>
           </section>
 
-          <HospitalCareGallery />
-
-          <section id="services" className="public-section" aria-labelledby="services-title">
+          <section
+            id="services"
+            className="public-section portal-section"
+            aria-labelledby="services-title"
+          >
             <div className="public-section-heading">
               <div>
                 <p className="public-kicker">{t('YOUR PATIENT PORTAL')}</p>
@@ -225,14 +256,18 @@ export default function PublicHome() {
             </div>
             <ol className="visit-steps">
               <li>
-                <span>01</span>
+                <span>
+                  <CalendarDays size={25} aria-hidden="true" />
+                </span>
                 <div>
                   <h3>{t('Choose your appointment')}</h3>
                   <p>{t('Sign in, browse available doctors and select a suitable time slot.')}</p>
                 </div>
               </li>
               <li>
-                <span>02</span>
+                <span>
+                  <ClipboardCheck size={25} aria-hidden="true" />
+                </span>
                 <div>
                   <h3>{t('Check in at reception')}</h3>
                   <p>
@@ -243,7 +278,9 @@ export default function PublicHome() {
                 </div>
               </li>
               <li>
-                <span>03</span>
+                <span>
+                  <FileHeart size={25} aria-hidden="true" />
+                </span>
                 <div>
                   <h3>{t('Keep everything together')}</h3>
                   <p>

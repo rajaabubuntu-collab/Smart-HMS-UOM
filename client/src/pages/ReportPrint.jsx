@@ -1,3 +1,4 @@
+import LanguageSwitcher from '../components/LanguageSwitcher';
 import { t } from '../i18n/locale';
 import { useParams, useSearchParams } from 'react-router-dom';
 import { Loading, Notice, useResource } from '../components/ui';
@@ -19,6 +20,7 @@ export default function ReportPrint() {
   return (
     <main className="print-report">
       <div className="print-controls">
+        <LanguageSwitcher />
         <button className="button primary" disabled={!data} onClick={() => window.print()}>
           {t('Print / save PDF')}
         </button>

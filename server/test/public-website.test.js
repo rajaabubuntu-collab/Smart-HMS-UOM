@@ -45,14 +45,15 @@ test('public profiles and search require publication, active doctor and active p
     departmentPath = `/api/public/departments/${fixtures.department._id}`;
   await request(app).get(doctorPath).expect(404);
   await request(app).get(departmentPath).expect(404);
-  await Department.updateOne({ _id: fixtures.department._id }, { isPublic: true });
-  await Doctor.updateOne({ _id: doctor._id }, { isPublic: true });
+  await Department.updateOne({ _id: fixtures.department._id }, { isPublic: true, isDemo: true });
+  await Doctor.updateOne({ _id: doctor._id }, { isPublic: true, isDemo: true });
   const profile = (await request(app).get(doctorPath).expect(200)).body.doctor;
   assert.deepEqual(
     Object.keys(profile).sort(),
     [
       '_id',
       'avatarUrl',
+      'isDemo',
       'name',
       'department',
       'departmentId',
@@ -63,7 +64,9 @@ test('public profiles and search require publication, active doctor and active p
   );
   assert.equal(profile.departmentId, String(fixtures.department._id));
   const department = (await request(app).get(departmentPath).expect(200)).body.department;
-  assert.deepEqual(Object.keys(department).sort(), ['_id', 'name', 'description'].sort());
+  assert.deepEqual(Object.keys(department).sort(), ['_id', 'name', 'description', 'isDemo'].sort());
+  assert.equal(profile.isDemo, true);
+  assert.equal(department.isDemo, true);
   for (const q of ['TEST doctor', 'general'])
     assert.equal(
       (

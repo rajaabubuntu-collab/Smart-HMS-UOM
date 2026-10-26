@@ -112,6 +112,7 @@ export function PublicContact() {
   return (
     <PublicPage
       title={t('Contact us')}
+      visual="contact"
       description={t('Get in touch with reception or send a general enquiry.')}
     >
       {({ hospital, pending, error }) => (
@@ -131,7 +132,7 @@ export function PublicContact() {
                       : t('Reception contact details have not yet been published.')}
                 </p>
               )}
-              <HospitalMap />
+              <HospitalMap collapsible address={hospital?.address} headingLevel={2} />
             </section>
             <ContactForm />
           </div>

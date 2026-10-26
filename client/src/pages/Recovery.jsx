@@ -1,3 +1,4 @@
+import LanguageSwitcher from '../components/LanguageSwitcher';
 import { t } from '../i18n/locale';
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
@@ -39,9 +40,12 @@ export default function Recovery({ reset = false }) {
   return (
     <main className="full-state">
       <section className="card padded recovery-card">
-        <Link to="/" aria-label={t('Smart HMS home')}>
-          <Brand />
-        </Link>
+        <div className="recovery-utilities">
+          <Link to="/" aria-label={t('Smart HMS home')}>
+            <Brand />
+          </Link>
+          <LanguageSwitcher />
+        </div>
         <h1>{reset ? t('Choose a new password') : t('Forgot your password?')}</h1>
         <p>
           {reset

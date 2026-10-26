@@ -1,7 +1,8 @@
+import LanguageSwitcher from './LanguageSwitcher';
 import { t } from '../i18n/locale';
 import { NotificationBell } from '../pages/Notifications';
 import { useState } from 'react';
-import { Link, NavLink, Outlet, useLocation } from 'react-router-dom';
+import { Link, NavLink, Outlet } from 'react-router-dom';
 import {
   LayoutDashboard,
   UserRound,
@@ -30,7 +31,6 @@ import { RealtimeConnection, RealtimeStatus } from './Realtime';
 
 export default function Layout() {
   const { user, logout } = useAuth();
-  const { pathname } = useLocation();
   const [menu, setMenu] = useState(false);
   const [error, setError] = useState('');
   const [busy, setBusy] = useState(false);
@@ -87,9 +87,7 @@ export default function Layout() {
     }
   }
   return (
-    <div
-      className={`app-shell ${user.role === 'patient' ? 'patient-workspace' : ''} ${user.role === 'patient' && pathname === '/dashboard' ? 'patient-overview-shell' : ''}`}
-    >
+    <div className={`app-shell ${user.role === 'patient' ? 'patient-workspace' : ''}`}>
       <RealtimeConnection />
       <a className="skip-link" href="#main">
         {t('Skip to content')}{' '}
@@ -159,6 +157,7 @@ export default function Layout() {
             <span className="topbar-title">{t('Your hospital, connected.')}</span>
             <RealtimeStatus />
           </div>
+          <LanguageSwitcher />
           <div className="topbar-user">
             <DisplayPreference />
             <NotificationBell />

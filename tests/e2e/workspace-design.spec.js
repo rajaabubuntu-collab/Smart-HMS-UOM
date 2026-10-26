@@ -73,13 +73,10 @@ test('admin keeps full workspace navigation with the shared card design', async 
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
 });
 
-test('patient overview uses personal totals and a working appointment calendar', async ({
+test('restored patient overview shows appointments, charts and profile with working shortcuts', async ({
   page,
 }) => {
-  let requestedDate;
-  await page.route('**/api/billing/bills?*', (route) =>
-    route.fulfill({ json: { records: [], total: 7, page: 1, limit: 1 } }),
-  );
+  await page.emulateMedia({ reducedMotion: 'reduce' });
   await page.route('**/api/appointments-summary', (route) =>
     route.fulfill({
       json: {
@@ -90,7 +87,6 @@ test('patient overview uses personal totals and a working appointment calendar',
           {
             id: 'demo-next',
             doctorName: 'Test clinician',
-            departmentName: 'General Medicine',
             startsAt: '2026-12-15T04:30:00.000Z',
             status: 'Scheduled',
           },
@@ -98,70 +94,32 @@ test('patient overview uses personal totals and a working appointment calendar',
       },
     }),
   );
-  await page.route('**/api/appointments?*', async (route) => {
-    requestedDate = new URL(route.request().url()).searchParams.get('date');
-    await route.fulfill({
-      json: {
-        items: requestedDate?.endsWith('-15')
-          ? [
-              {
-                id: 'demo-day',
-                doctorName: 'Test clinician',
-                departmentName: 'General Medicine',
-                startsAt: `${requestedDate}T04:30:00.000Z`,
-                status: 'Scheduled',
-              },
-            ]
-          : [],
-        total: requestedDate?.endsWith('-15') ? 1 : 0,
-      },
-    });
-  });
   await login(page, 'patient');
-  await expect(page.locator('.patient-overview-shell')).toBeVisible();
-  await expect(page.locator('.patient-metric strong')).toHaveText(['1', '0', '2', '7']);
-  await expect(page.locator('.patient-metric').last()).toHaveAttribute('href', '/billing');
-  await expect(page.locator('.patient-next')).toContainText('Test clinician');
-  await expect(page.locator('.patient-next a')).toHaveAttribute(
+  await expect(page.locator('.patient-overview-shell')).toHaveCount(0);
+  await expect(page.locator('.appointment-stats strong')).toHaveText(['1', '0', '2']);
+  await expect(page.locator('.upcoming-row')).toContainText('Test clinician');
+  await expect(page.locator('.upcoming-row')).toHaveAttribute(
     'href',
     '/appointments?selected=demo-next',
   );
-  const calendar = page.getByRole('region', { name: 'Your appointment calendar' });
-  await expect.poll(() => typeof requestedDate).toBe('string');
-  const original = requestedDate;
-  await calendar.getByRole('button', { name: 'Next month', exact: true }).click();
-  await expect.poll(() => requestedDate).not.toBe(original);
-  await expect.poll(() => requestedDate?.slice(-2)).toBe('01');
-  await calendar.locator('.patient-calendar-days button').filter({ hasText: /^15$/ }).click();
-  await expect(calendar.locator('.patient-schedule-row')).toContainText('Test clinician');
-  await expect(calendar.locator('.patient-schedule-row')).toHaveAttribute(
-    'href',
-    '/appointments?selected=demo-day',
-  );
-  await expect(calendar.locator('.patient-calendar-days button[aria-pressed="true"]')).toHaveText(
-    '15',
-  );
-  await calendar.getByRole('button', { name: 'Previous month', exact: true }).click();
-  await expect.poll(() => requestedDate?.slice(0, 7)).toBe(original.slice(0, 7));
-  await calendar.getByRole('button', { name: 'Today', exact: true }).click();
-  await expect.poll(() => requestedDate).toBe(original);
+  await expect(page.getByRole('heading', { name: 'Your health profile' })).toBeVisible();
+  await expect(page.locator('.dashboard-analytics')).toBeVisible();
   await page.screenshot({
-    path: '.local/screenshots/patient-enterprise-desktop.png',
+    path: '.local/screenshots/patient-restored-desktop.png',
     fullPage: true,
   });
-  await page.locator('.patient-guide-feature a').click();
+  await page.locator('.guide-shortcut a').click();
   await expect(page).toHaveURL(/\/recommendations$/);
-  await expect(page.locator('.patient-overview-shell')).toHaveCount(0);
   await page.goto('/dashboard');
-  await expect(page.locator('.patient-overview-shell')).toBeVisible();
   for (const width of [768, 390, 320]) {
     await page.setViewportSize({ width, height: 900 });
-    await expect(page.locator('.patient-calendar')).toBeVisible();
-    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(
-      true,
-    );
+    await expect(page.locator('.appointment-overview')).toBeVisible();
+    // Recharts recalculates its SVG size after the viewport resize notification.
+    await expect
+      .poll(() => page.evaluate(() => document.documentElement.scrollWidth))
+      .toBeLessThanOrEqual(width);
     await page.screenshot({
-      path: `.local/screenshots/patient-enterprise-${width}.png`,
+      path: `.local/screenshots/patient-restored-${width}.png`,
       fullPage: true,
     });
   }

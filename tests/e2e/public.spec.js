@@ -6,7 +6,7 @@ test('licensed photographs, visit guidance and FAQs work in all three languages'
 }) => {
   await page.goto('/');
   const images = page.locator('.hospital-landing main figure img');
-  await expect(images).toHaveCount(5);
+  await expect(images).toHaveCount(3);
   await page.emulateMedia({ reducedMotion: 'reduce' });
   for (const image of await images.all()) {
     await image.scrollIntoViewIfNeeded();
@@ -14,7 +14,7 @@ test('licensed photographs, visit guidance and FAQs work in all three languages'
     expect(await image.evaluate((element) => element.naturalWidth)).toBeGreaterThan(0);
     await expect(image).toHaveAttribute('alt', /Stock photograph|Colombo/);
   }
-  await expect(page.locator('.hospital-landing main figure figcaption')).toHaveCount(5);
+  await expect(page.locator('.hospital-landing main figure figcaption')).toHaveCount(2);
   await expect(
     page.getByRole('link', { name: 'Explore doctors & services', exact: true }),
   ).toHaveAttribute('href', '/doctors');
@@ -47,7 +47,9 @@ test('public homepage stays usable without session API and links to real entry p
   page.on('pageerror', (error) => errors.push(error.message));
   await page.route('**/api/auth/me', (route) => route.abort());
   await page.goto('/');
-  await expect(page.getByRole('heading', { level: 1 })).toContainText('Welcome to Smart HMS');
+  await expect(page.getByRole('heading', { level: 1 })).toContainText(
+    'Your care.A simpler journey.',
+  );
   await expect(page.getByText('University project · Demonstration website')).toHaveCount(0);
   await expect(page.getByRole('link', { name: 'Create patient account' })).toHaveAttribute(
     'href',

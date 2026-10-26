@@ -47,10 +47,13 @@ import './styles.css';
 import './glass.css';
 import './workspace.css';
 import './liquid-glass.css';
-import './pages/PatientDashboard.css';
 import './pages/homepage/Homepage.css';
 import './scrollbars.css';
 import './theme.css';
+import './pages/PublicBrowse.css';
+import './pages/PublicVisuals.css';
+import './pages/PublicRedesign.css';
+import './components/LanguageSwitcher.css';
 
 function Protected({ roles }) {
   const { user } = useAuth();
@@ -96,12 +99,18 @@ function App() {
   if (loading)
     return (
       <div className="full-state">
+        <div className="language-fallback">
+          <LanguageSwitcher />
+        </div>
         <Loading />
       </div>
     );
   if (error && !['/login', '/register'].includes(pathname))
     return (
       <div className="full-state">
+        <div className="language-fallback">
+          <LanguageSwitcher />
+        </div>
         <div className="card padded">
           <h1>{t('Let’s reconnect.')}</h1>
           <Notice>{error}</Notice>
@@ -165,6 +174,9 @@ function App() {
         path="*"
         element={
           <div className="full-state">
+            <div className="language-fallback">
+              <LanguageSwitcher />
+            </div>
             <div>
               <h1>Page not found</h1>
               <p>This page may have moved.</p>
@@ -183,7 +195,6 @@ ReactDOM.createRoot(document.getElementById('root')).render(
     <BrowserRouter>
       <DisplayProvider>
         <AuthProvider>
-          <LanguageSwitcher />
           <App />
         </AuthProvider>
       </DisplayProvider>

@@ -1,3 +1,4 @@
+import { Globe2 } from 'lucide-react';
 import { useEffect } from 'react';
 import { setLanguage, useLanguage } from '../i18n/locale';
 export default function LanguageSwitcher() {
@@ -6,8 +7,11 @@ export default function LanguageSwitcher() {
     document.documentElement.lang = language;
   }, [language]);
   return (
-    <div className="language-control" role="region" aria-label="Language / භාෂාව / மொழி">
-      <label htmlFor="hms-language">Language / භාෂාව / மொழி</label>
+    <div className="language-picker" role="region" aria-label="Language / භාෂාව / மொழி">
+      <Globe2 size={18} aria-hidden="true" />
+      <label className="language-picker-label" htmlFor="hms-language">
+        Language / භාෂාව / மொழி
+      </label>
       <select
         id="hms-language"
         value={language}

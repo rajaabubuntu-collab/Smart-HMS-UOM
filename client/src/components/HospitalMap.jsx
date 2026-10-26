@@ -4,7 +4,8 @@ import './HospitalMap.css';
 
 // Coordinates are the centre of the map shared by the project owner on 20 October 2026.
 // The shared URL contains no named place or verified hospital entrance.
-export default function HospitalMap({ collapsible = false, address }) {
+export default function HospitalMap({ collapsible = false, address, headingLevel = 3 }) {
+  const Heading = headingLevel === 2 ? 'h2' : 'h3';
   const map = (
     <iframe
       title={t('Location map')}
@@ -20,7 +21,7 @@ export default function HospitalMap({ collapsible = false, address }) {
         <>
           <div className="homepage-map-intro">
             <MapPin size={36} aria-hidden="true" />
-            <h3>{t('Getting here')}</h3>
+            <Heading>{t('Getting here')}</Heading>
             {address && <p>{address}</p>}
           </div>
           <details className="homepage-map-disclosure">

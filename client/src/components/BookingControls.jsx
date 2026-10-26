@@ -1,6 +1,6 @@
 import DoctorPortrait from './DoctorPortrait';
 import { t } from '../i18n/locale';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Search, Stethoscope, CalendarDays, Check } from 'lucide-react';
 import { api } from '../api';
 import { Field, Loading, Notice, Pager, useResource } from './ui';
@@ -134,11 +134,31 @@ export function DoctorPicker({ onSelect, selected, initialDepartment = '' }) {
   );
 }
 
-export function SlotPicker({ doctor, date, onDate, selected, onSelect, revision = 0 }) {
+export function SlotPicker({
+  doctor,
+  date,
+  onDate,
+  selected,
+  onSelect,
+  revision = 0,
+  initialSlotId = '',
+}) {
   const resource = useResource(
     `/directory/doctors/${doctor.id}/availability?date=${date}`,
     revision,
   );
+  const applied = useRef(false);
+  useEffect(() => {
+    if (!initialSlotId || applied.current || resource.pending || !resource.data) return;
+    applied.current = true;
+    const available = resource.data.slots.find((slot) => slot.id === initialSlotId);
+    if (available) onSelect(available);
+  }, [initialSlotId, resource.pending, resource.data, onSelect]);
+  const missingPreferred =
+    initialSlotId &&
+    !resource.pending &&
+    resource.data &&
+    !resource.data.slots.some((slot) => slot.id === initialSlotId);
   return (
     <div className="slot-picker">
       <div className="slot-heading">
@@ -163,6 +183,11 @@ export function SlotPicker({ doctor, date, onDate, selected, onSelect, revision 
         />
       </div>
       <Notice>{resource.error}</Notice>
+      {missingPreferred && (
+        <Notice>
+          {t('The time you chose is no longer available. Please select another time.')}
+        </Notice>
+      )}
       {resource.pending ? (
         <Loading text={t('Checking availability…')} />
       ) : (

@@ -26,7 +26,22 @@ const facts = [
 const envelope = (selection, finish_reason = 'stop') =>
   new Response(
     JSON.stringify({
-      choices: [{ finish_reason, message: { content: JSON.stringify(selection) } }],
+      choices: [
+        {
+          finish_reason,
+          message: {
+            content: JSON.stringify({
+              reply: 'You can use the published hospital information below.',
+              query: '',
+              doctorId: '',
+              departmentId: '',
+              date: '',
+              period: 'any',
+              ...selection,
+            }),
+          },
+        },
+      ],
     }),
   );
 const ask = (message, history = []) => ({ message, history });
@@ -40,7 +55,7 @@ after(async () => {
   await mongoose.disconnect();
 });
 
-test('AI selects approved facts; no free-form answer or internal IDs can reach the visitor', async () => {
+test('AI replies conversationally with validated published sources and no internal IDs', async () => {
   let body;
   const assistant = createHospitalAssistant(config, {
     fetchImpl: async (url, options) => {
@@ -50,10 +65,11 @@ test('AI selects approved facts; no free-form answer or internal IDs can reach t
       return envelope({ kind: 'information', factIds: ['hospital'] });
     },
   });
-  assert.deepEqual(await assistant.answer(ask('Where is the hospital?'), facts), {
-    mode: 'information',
-    facts: [facts[0]],
-  });
+  const response = await assistant.answer(ask('Where is the hospital?'), facts);
+  assert.equal(response.mode, 'information');
+  assert.equal(response.reply, 'You can use the published hospital information below.');
+  assert.deepEqual(response.facts, [facts[0]]);
+  assert.ok(response.context);
   assert.equal(body.include_reasoning, false);
   assert.ok(!body.messages[1].content.includes('/contact'));
   assert.ok(!JSON.stringify(body).includes('test-secret'));

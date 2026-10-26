@@ -9,11 +9,11 @@
   --radius: 16px;
   color: var(--hms-ink);
   background: var(--hms-canvas);
-  min-height: calc(100dvh - 49px);
+  min-height: 100dvh;
 }
 .app-shell .sidebar {
   width: 242px;
-  top: 49px;
+  top: 0;
   margin: 0;
   padding: 28px 18px 22px;
   border: 0;
@@ -405,19 +405,6 @@
 }
 .workspace-mobile-nav {
   display: none;
-}
-/* The language strip sits above the fixed desktop sidebar. */
-body:has(.app-shell) .language-control {
-  position: sticky;
-  top: 0;
-  background: var(--hms-soft);
-  color: var(--hms-muted);
-  border-color: var(--hms-border);
-  min-height: 49px;
-}
-body:has(.app-shell) .language-control select {
-  color: var(--hms-muted);
-  border-color: var(--hms-border);
 }
 :root[data-surfaces='solid'] .app-shell :is(.topbar, .sidebar) {
   background: #fff;

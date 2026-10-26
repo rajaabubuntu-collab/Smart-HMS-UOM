@@ -1,9 +1,11 @@
+import LanguageSwitcher from '../components/LanguageSwitcher';
 import { t } from '../i18n/locale';
 import { useState } from 'react';
 import { Link, Navigate, useLocation } from 'react-router-dom';
 import { ArrowUpRight, Check, ShieldCheck, HeartPulse, Eye, EyeOff } from 'lucide-react';
 import { useAuth } from '../auth';
 import { Brand, Field, Notice, Submit } from '../components/ui';
+import { safePatientReturn } from '../auth-destinations';
 import { today } from '../scheduling';
 import { DisplayPreference } from '../components/DisplayPreference';
 
@@ -15,12 +17,7 @@ export default function AuthPage({ register = false }) {
   const [showPassword, setShowPassword] = useState(false);
   // Email destinations must remain local and still pass the destination's role/ownership checks.
   const returnTo = location.state?.returnTo;
-  const safeReturn =
-    auth.user?.role === 'patient' &&
-    typeof returnTo === 'string' &&
-    /^\/(?:book(?:\?(?:doctor|department)=[a-f\d]{24})?|billing|notifications|messages|records|appointments(?:\?selected=[a-f\d]{24})?|billing\/[a-f\d]{24})$/i.test(
-      returnTo,
-    );
+  const safeReturn = auth.user?.role === 'patient' && safePatientReturn(returnTo);
   if (auth.user) return <Navigate to={safeReturn ? returnTo : '/dashboard'} replace />;
   async function submit(event) {
     event.preventDefault();
@@ -94,7 +91,10 @@ export default function AuthPage({ register = false }) {
           <Link className="text-link" to="/">
             {t('← Hospital website')}{' '}
           </Link>
-          <DisplayPreference />
+          <div className="auth-utilities">
+            <LanguageSwitcher />
+            <DisplayPreference />
+          </div>
         </div>
         <div className="auth-top">
           <span>

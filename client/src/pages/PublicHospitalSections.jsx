@@ -1,3 +1,4 @@
+import DepartmentIcon from '../components/DepartmentIcon';
 import HospitalMap from '../components/HospitalMap';
 import DoctorPortrait from '../components/DoctorPortrait';
 import { Link } from 'react-router-dom';
@@ -30,8 +31,8 @@ export function PhotoCaption({ index, children }) {
 }
 
 export function HospitalDirectoryPreview() {
-  const departments = useResource('/public/departments?limit=3');
-  const doctors = useResource('/public/doctors?limit=3');
+  const departments = useResource('/public/departments?limit=6');
+  const doctors = useResource('/public/doctors?limit=6');
   return (
     <section
       id="clinical-directory"
@@ -63,41 +64,63 @@ export function HospitalDirectoryPreview() {
         </p>
       ) : null}
       {departments.data?.items.length > 0 && (
-        <div className="hospital-department-grid">
-          {departments.data.items.map((item) => (
-            <article key={item._id}>
-              <Stethoscope size={25} aria-hidden="true" />
-              <h3>{item.name}</h3>
-              {item.description && <p>{item.description}</p>}
-              <Link to={`/departments/${item._id}`}>
-                {t('Explore this department')} <ArrowUpRight size={17} />
-              </Link>
-            </article>
-          ))}
-        </div>
+        <>
+          <div className="hospital-browse-heading">
+            <h3>{t('Our departments')}</h3>
+            <Link className="text-link" to="/departments">
+              {t('View all departments')} <ArrowRight size={17} />
+            </Link>
+          </div>
+          <div className="hospital-department-grid">
+            {departments.data.items.map((item) => (
+              <article key={item._id}>
+                <DepartmentIcon name={item.name} />
+                {item.isDemo && (
+                  <span className="hospital-demo-label">{t('Demonstration department')}</span>
+                )}
+                <h3>{item.name}</h3>
+                {item.description && <p>{item.description}</p>}
+                <Link to={`/departments/${item._id}`}>
+                  {t('Explore this department')} <ArrowUpRight size={17} />
+                </Link>
+              </article>
+            ))}
+          </div>
+        </>
       )}
       {doctors.data?.items.length > 0 && (
-        <div className="hospital-doctor-grid">
-          {doctors.data.items.map((doctor) => (
-            <article key={doctor._id}>
-              <DoctorPortrait doctor={doctor} compact />
-              <div>
-                <p className="hospital-doctor-department">{doctor.department}</p>
-                <h3>
-                  <Link to={`/doctors/${doctor._id}`}>{doctor.name}</Link>
-                </h3>
-                {doctor.specialization && <p>{doctor.specialization}</p>}
-                {doctor.qualification && <p>{doctor.qualification}</p>}
-                <p className="hospital-doctor-fee">
-                  {t('Consultation fee:')} {money(doctor.consultationFeeMinor)}
-                </p>
-                <Link className="text-link" to={`/book?doctor=${doctor._id}`}>
-                  {t('Check availability')} <ArrowRight size={17} />
-                </Link>
-              </div>
-            </article>
-          ))}
-        </div>
+        <>
+          <div className="hospital-browse-heading">
+            <h3>{t('Our doctors')}</h3>
+            <Link className="text-link" to="/doctors">
+              {t('View all doctors')} <ArrowRight size={17} />
+            </Link>
+          </div>
+          <div className="hospital-doctor-grid">
+            {doctors.data.items.map((doctor) => (
+              <article key={doctor._id}>
+                <DoctorPortrait doctor={doctor} compact />
+                <div>
+                  {doctor.isDemo && (
+                    <span className="hospital-demo-label">{t('Demonstration profile')}</span>
+                  )}
+                  <p className="hospital-doctor-department">{doctor.department}</p>
+                  <h3>
+                    <Link to={`/doctors/${doctor._id}`}>{doctor.name}</Link>
+                  </h3>
+                  {doctor.specialization && <p>{doctor.specialization}</p>}
+                  {doctor.qualification && <p>{doctor.qualification}</p>}
+                  <p className="hospital-doctor-fee">
+                    {t('Consultation fee:')} {money(doctor.consultationFeeMinor)}
+                  </p>
+                  <Link className="text-link" to={`/book?doctor=${doctor._id}`}>
+                    {t('Check availability')} <ArrowRight size={17} />
+                  </Link>
+                </div>
+              </article>
+            ))}
+          </div>
+        </>
       )}
       {!departments.pending &&
         !doctors.pending &&

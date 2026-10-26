@@ -42,7 +42,9 @@ test('homepage navigation works by keyboard on phones in every language and stay
   await nav.getByRole('link', { name: 'About us', exact: true }).click();
   await expect(page).toHaveURL(/\/about$/);
   await expect(page.locator('.homepage-design')).toHaveCount(0);
-  await expect(page.locator('.homepage-menu-toggle')).toHaveCount(0);
+  await expect(page.locator('.homepage-menu-toggle')).toBeVisible();
+  await expect(page.locator('header nav')).toBeHidden();
+  await page.locator('.homepage-menu-toggle').click();
   await expect(page.locator('header nav')).toBeVisible();
   await page.goto('/');
   await page.setViewportSize({ width: 1440, height: 1000 });

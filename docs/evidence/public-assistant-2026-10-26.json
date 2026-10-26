@@ -1,0 +1,57 @@
+{
+  "date": "2026-10-26",
+  "scope": "Public hospital assistant conversation and read-only doctor/availability tools with booking handoff",
+  "checks": {
+    "backend": {
+      "passed": 195,
+      "failed": 0
+    },
+    "browser": {
+      "assistant_final_run_passed": 4,
+      "appointment_regressions_passed": 5,
+      "note": "The first handoff test run had a navigation timing failure. Waiting for registration/sign-in navigation fixed the test; all four assistant cases then passed."
+    },
+    "lint": "passed",
+    "build": "passed with existing large-bundle warning",
+    "translation_integrity": "passed; native language review remains manual",
+    "accessibility": "no serious or critical axe violations in tested chat states",
+    "live_backend_health": "ok; database connected"
+  },
+  "live_provider_smoke": {
+    "input": "Fictional public cardiology enquiry followed by first doctor tomorrow morning",
+    "result": "Published demo cardiologists found; follow-up date and morning filter resolved. No future slots for matching live demo profiles. Rate-limited synthesis preserved checked cards.",
+    "writes_to_live_hospital_data": false
+  },
+  "limits": [
+    "General information uses one Groq call; doctor searches use up to two. Existing free-tier limits apply.",
+    "Four doctors and up to three offered slots per doctor are shown; searches cover the full published directory.",
+    "AI-generated prose can be mistaken; cards and booking actions use server-validated data.",
+    "Human handover, editable knowledge base, analytics and authenticated chat actions are not part of this phase."
+  ],
+  "conversation_continuity": {
+    "date": "2026-10-26",
+    "behaviour": [
+      "Same-tab general chat retained across navigation, browser Back and refresh",
+      "Public-page launcher; minimised after navigation; hidden during sign-in and booking",
+      "30-minute chat inactivity expiry; navigation and reload do not extend retention",
+      "Anonymous sign-in preserves this visit; logout, auth expiry, Clear and account changes clear history",
+      "Storage-disabled fallback retains memory across SPA navigation",
+      "Private and clinical classified requests excluded from sessionStorage"
+    ],
+    "checks": {
+      "session_store_tests": {
+        "passed": 6,
+        "failed": 0
+      },
+      "targeted_browser_tests": {
+        "passed": 9,
+        "failed": 0
+      },
+      "lint": "passed",
+      "translation_integrity": "passed",
+      "production_build": "passed with existing bundle-size warning",
+      "mobile_contact_chat": "visually inspected; no serious/critical axe violations"
+    },
+    "live_ai_calls_for_this_change": 0
+  }
+}

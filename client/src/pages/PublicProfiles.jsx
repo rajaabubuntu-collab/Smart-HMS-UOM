@@ -1,7 +1,8 @@
+import DepartmentIcon from '../components/DepartmentIcon';
 import DoctorPortrait from '../components/DoctorPortrait';
 import { useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
-import { ArrowRight, Stethoscope } from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
 import { PublicPage } from '../components/PublicSite';
 import { Loading, Notice, Pager, useResource } from '../components/ui';
 import { PublicDoctorCard } from './PublicDirectory';
@@ -11,10 +12,11 @@ import { t } from '../i18n/locale';
 
 export function PublicDepartments() {
   const [page, setPage] = useState(1);
-  const { data, error, pending } = useResource(`/public/departments?page=${page}`);
+  const { data, error, pending } = useResource(`/public/departments?limit=12&page=${page}`);
   return (
     <PublicPage
       title={t('Our departments')}
+      visual="departments"
       description={t('Explore our services and find the right contact for your visit.')}
     >
       <Notice>{error}</Notice>
@@ -23,8 +25,11 @@ export function PublicDepartments() {
         <>
           <div className="hospital-profile-grid">
             {data.items.map((item) => (
-              <article className="hospital-profile-card" key={item._id}>
-                <Stethoscope size={28} aria-hidden="true" />
+              <article className="hospital-profile-card hospital-department-card" key={item._id}>
+                <DepartmentIcon name={item.name} />
+                {item.isDemo && (
+                  <span className="hospital-demo-label">{t('Demonstration department')}</span>
+                )}
                 <h2>{item.name}</h2>
                 <p className="hospital-multiline">{item.description}</p>
                 <Link className="text-link" to={`/departments/${item._id}`}>
@@ -60,6 +65,9 @@ export function PublicDepartment() {
       {department && (
         <>
           <div className="hospital-page-callout">
+            {department.isDemo && (
+              <span className="hospital-demo-label">{t('Demonstration department')}</span>
+            )}
             <p className="hospital-multiline">
               {department.description ||
                 t('Please contact reception for more information about this department.')}
@@ -114,6 +122,9 @@ export function PublicDoctorProfile() {
         <div className="hospital-doctor-detail">
           <div className="hospital-profile-card">
             <DoctorPortrait doctor={doctor} />
+            {doctor.isDemo && (
+              <span className="hospital-demo-label">{t('Demonstration profile')}</span>
+            )}
             <h2>{t('Professional information')}</h2>
             <dl className="detail-list">
               <div>

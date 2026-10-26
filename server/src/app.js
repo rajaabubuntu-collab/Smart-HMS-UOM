@@ -182,6 +182,7 @@ export function createApp(
       rateLimitEnabled,
       fetchImpl: assistantFetch,
       dailyLimit: config.publicAssistantDailyLimit,
+      contextSecret: config.jwtSecret,
     }),
   );
   app.use('/api', publicDoctorAvatarRouter(config));

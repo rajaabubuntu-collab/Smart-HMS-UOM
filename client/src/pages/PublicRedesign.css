@@ -1,0 +1,1395 @@
+/* Public website only. Authenticated workspaces keep their existing identity. */
+.public-redesign.public-home {
+  --hms-brand: #087c70;
+  --hms-brand-dark: #075c54;
+  --hms-ink: #153e42;
+  --hms-muted: #526767;
+  --hms-border: #dce6e1;
+  --hms-border-strong: #8ca9a4;
+  --hms-canvas: #f5f8f5;
+  --hms-soft: #e4f2ec;
+  --hms-secondary: #087c70;
+  --hms-focus: #075c54;
+  --hms-surface: #fff;
+  --hms-surface-blur: none;
+  --hms-shadow: 0 8px 28px rgb(21 62 66 / 5%);
+  --hms-primary-gradient: #087c70;
+  --color-ink: #153e42;
+  --color-muted: #526767;
+  --color-paper: #f9fbf8;
+  --color-paper-2: #edf5ef;
+  --color-accent: #087c70;
+  --color-rule: #dce6e1;
+  --color-focus: #075c54;
+  --green: #087c70;
+  --green-dark: #075c54;
+  --muted: #526767;
+  --border: #dce6e1;
+  --site-radius: 20px;
+  background: #f9fbf8;
+  color: var(--hms-ink);
+  padding: 0;
+  font-family: var(--hms-font);
+}
+body:has(.public-redesign) {
+  background: #f9fbf8;
+}
+body:has(.public-redesign) .language-control {
+  position: relative;
+  min-height: 40px;
+  padding: 6px max(24px, calc((100% - 1280px) / 2));
+  background: #edf5ef;
+  border: 0;
+  color: #345652;
+  box-shadow: none;
+  backdrop-filter: none;
+}
+body:has(.public-redesign) .language-control select {
+  background: #fff;
+  border: 1px solid #8ca9a4;
+  color: #153e42;
+  border-radius: 6px;
+}
+.public-redesign.public-home .public-container {
+  width: min(100% - 80px, 1280px);
+  max-width: none;
+  padding: 0;
+  margin: 0 auto;
+}
+.public-redesign.public-home :is(h1, h2, h3) {
+  color: var(--hms-ink);
+  font-family: var(--hms-font);
+  letter-spacing: -0.035em;
+  text-wrap: balance;
+}
+.public-redesign.public-home p {
+  line-height: 1.75;
+}
+.public-redesign.public-home a {
+  color: var(--hms-brand-dark);
+  text-underline-offset: 4px;
+}
+.public-redesign.public-home :is(a, button, summary, input, select, textarea):focus-visible {
+  outline: 3px solid var(--hms-focus);
+  outline-offset: 4px;
+}
+.public-redesign.public-home :is(.button, button) {
+  min-height: 46px;
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 600;
+  white-space: normal;
+  text-align: center;
+  box-shadow: none;
+  transform: none;
+  cursor: pointer;
+}
+.public-redesign.public-home .button {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  padding: 13px 20px;
+  text-decoration: none;
+  transition:
+    background-color 180ms ease,
+    border-color 180ms ease;
+}
+.public-redesign.public-home .button.primary {
+  color: #fff;
+  background: var(--hms-brand);
+  border: 1px solid var(--hms-brand);
+  box-shadow: none;
+}
+.public-redesign.public-home .button.primary:hover {
+  color: #fff;
+  background: var(--hms-brand-dark);
+  border-color: var(--hms-brand-dark);
+}
+.public-redesign.public-home .button.subtle {
+  color: var(--hms-ink);
+  background: #fff;
+  border: 1px solid var(--hms-border-strong);
+  box-shadow: none;
+}
+.public-redesign.public-home :is(a, .button) > :is(.lucide-arrow-right, .lucide-arrow-up-right) {
+  display: block;
+  flex-shrink: 0;
+}
+.public-redesign.public-home .button.subtle:hover {
+  background: var(--hms-soft);
+}
+.public-redesign.public-home .text-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  font-size: 13px;
+  font-weight: 650;
+}
+.public-redesign.public-home .hospital-contact-strip {
+  min-height: 36px;
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  margin: 0;
+  padding: 8px 0;
+  font-size: 11px;
+  border: 0;
+  background: transparent;
+  color: var(--hms-muted);
+  box-shadow: none;
+  backdrop-filter: none;
+}
+.public-redesign.public-home .hospital-contact-strip a {
+  color: var(--hms-muted);
+}
+.public-redesign.public-home .hospital-site-header {
+  position: relative;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: nowrap;
+  gap: 24px;
+  padding: 22px 0;
+  margin: 0;
+  border: 0;
+  border-top: 1px solid var(--hms-border);
+  border-bottom: 1px solid var(--hms-border);
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  backdrop-filter: none;
+}
+.public-redesign.public-home .brand {
+  font-size: 24px;
+  color: var(--hms-ink);
+}
+.public-redesign.public-home .brand-mark {
+  background: var(--hms-brand);
+  border-radius: 12px;
+  box-shadow: none;
+}
+.public-redesign.public-home .brand small {
+  color: var(--hms-muted);
+  font-size: 8px;
+}
+.public-redesign.public-home .hospital-site-header nav {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  flex-wrap: nowrap;
+  font-size: 13px;
+}
+.public-redesign.public-home .hospital-site-header nav a {
+  padding: 10px 0;
+  color: var(--hms-muted);
+  white-space: nowrap;
+  border: 0;
+  text-decoration: none;
+}
+.public-redesign.public-home .hospital-site-header nav a:is(.active, :hover) {
+  color: var(--hms-brand-dark);
+  text-decoration: underline;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 8px;
+  background: transparent;
+  box-shadow: none;
+  backdrop-filter: none;
+}
+.public-redesign.public-home .hospital-header-actions {
+  margin: 0;
+  gap: 8px;
+  flex-wrap: nowrap;
+}
+.public-redesign.public-home .homepage-menu-toggle {
+  display: none;
+}
+.public-redesign.public-home .public-hero {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  align-items: center;
+  gap: 72px;
+  padding: 64px 0 76px;
+  margin: 0;
+  min-height: 0;
+  border: 0;
+  background: transparent;
+  overflow: visible;
+}
+.public-redesign.public-home .public-hero-copy {
+  width: auto;
+  max-width: none;
+  padding: 0;
+}
+.public-redesign.public-home .public-kicker {
+  display: block;
+  color: var(--hms-brand-dark);
+  font-size: 11px;
+  letter-spacing: 1.8px;
+  font-weight: 700;
+  margin-bottom: 16px;
+}
+.public-redesign.public-home .demo-label {
+  display: inline-block;
+  margin-top: 16px;
+  padding: 6px 10px;
+  border: 1px solid var(--hms-border-strong);
+  border-radius: 6px;
+  color: var(--hms-brand-dark);
+  background: var(--hms-soft);
+  font-size: 11px;
+}
+.public-redesign.public-home .hero-hospital-name {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  letter-spacing: 1.3px;
+  text-transform: uppercase;
+}
+.hero-hospital-name > span {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--hms-brand);
+  flex-shrink: 0;
+}
+.public-redesign.public-home .public-hero h1 {
+  font-size: clamp(42px, 4.8vw, 70px);
+  line-height: 1.08;
+  font-weight: 650;
+  letter-spacing: -0.055em;
+  margin: 0 0 24px;
+  max-width: 12ch;
+}
+.public-redesign.public-home .public-hero h1 > span {
+  color: var(--hms-brand);
+}
+.public-redesign.public-home .public-lead {
+  max-width: 36ch;
+  color: var(--hms-muted);
+  font-size: 18px;
+  line-height: 1.7;
+  margin-bottom: 20px;
+}
+.public-redesign.public-home .hospital-hero-address {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  font-size: 13px;
+  color: var(--hms-muted);
+}
+.public-redesign.public-home .hospital-hero-address svg {
+  margin-top: 3px;
+  flex-shrink: 0;
+}
+.public-redesign.public-home .public-actions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 28px;
+}
+.public-redesign.public-home .hospital-hero-links {
+  display: flex;
+  gap: 12px 24px;
+  flex-wrap: wrap;
+  margin-top: 24px;
+  padding: 0;
+}
+.public-redesign.public-home .hospital-hero-directory-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--hms-brand-dark);
+  font-size: 12px;
+  min-height: 32px;
+}
+.public-hero-media {
+  position: relative;
+  min-width: 0;
+  padding-bottom: 0;
+}
+.public-redesign.public-home .hospital-hero-gallery {
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  width: 100%;
+  padding: 0;
+  margin: 0;
+  border: 0;
+  border-radius: 24px;
+  background: #e4f2ec;
+  box-shadow: none;
+  overflow: hidden;
+}
+.public-redesign.public-home .hospital-gallery-photo {
+  margin: 0;
+  order: 0;
+}
+.public-redesign.public-home .hospital-gallery-photo img {
+  display: block;
+  width: 100%;
+  height: 430px;
+  aspect-ratio: auto;
+  object-fit: cover;
+  border: 0;
+  border-radius: 0;
+  animation: none;
+}
+.public-redesign.public-home .hospital-gallery-photo figcaption {
+  position: static;
+  color: var(--hms-muted);
+  background: #edf5ef;
+  padding: 10px 18px;
+  min-height: 38px;
+  font-size: 10px;
+  line-height: 1.6;
+}
+.public-redesign.public-home .hospital-gallery-controls {
+  position: absolute;
+  top: 14px;
+  bottom: auto;
+  left: auto;
+  right: 14px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  width: auto;
+  padding: 5px;
+  border-radius: 12px;
+  background: #fff;
+  color: var(--hms-ink);
+  z-index: 2;
+  box-shadow: 0 4px 16px rgb(21 62 66 / 10%);
+}
+.public-redesign.public-home .hospital-gallery-controls button {
+  min-height: 36px;
+  min-width: 36px;
+  padding: 6px;
+  background: #fff;
+  color: var(--hms-brand-dark);
+  border: 0;
+  border-radius: 8px;
+}
+.public-redesign.public-home .hospital-gallery-controls button:hover {
+  background: var(--hms-soft);
+}
+.public-redesign.public-home .hospital-gallery-play {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11px;
+}
+.hero-care-note {
+  position: relative;
+  margin: 16px 0 0;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 18px 22px;
+  border: 1px solid var(--hms-border);
+  border-radius: 16px;
+  background: #fff;
+  box-shadow: 0 12px 30px rgb(21 62 66 / 8%);
+  text-decoration: none;
+}
+.hero-care-note-icon {
+  display: grid;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  flex-shrink: 0;
+  border-radius: 12px;
+  background: var(--hms-soft);
+}
+.hero-care-note > span:nth-child(2) {
+  flex: 1;
+}
+.hero-care-note strong,
+.hero-care-note small {
+  display: block;
+}
+.hero-care-note strong {
+  color: var(--hms-ink);
+  font-size: 15px;
+}
+.hero-care-note small {
+  color: var(--hms-muted);
+  font-size: 12px;
+  margin-top: 6px;
+}
+.public-redesign.public-home .hospital-patient-shortcuts {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0;
+  padding: 24px 16px;
+  margin: 0;
+  background: #fff;
+  border: 1px solid var(--hms-border);
+  border-radius: 16px;
+}
+.public-redesign.public-home .hospital-patient-shortcuts > a {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  flex-direction: row;
+  gap: 12px;
+  min-height: 60px;
+  padding: 8px 20px;
+  border: 0;
+  border-radius: 0;
+  background: #fff;
+  box-shadow: none;
+  color: var(--hms-ink);
+  font-size: 13px;
+  text-decoration: none;
+  transform: none;
+}
+.public-redesign.public-home .hospital-patient-shortcuts > a + a {
+  border-left: 1px solid var(--hms-border);
+}
+.public-redesign.public-home .hospital-patient-shortcuts > a > svg:first-child {
+  color: var(--hms-brand);
+  width: 23px;
+  flex-shrink: 0;
+}
+.public-redesign.public-home .hospital-patient-shortcuts > a > svg:last-child {
+  margin-left: auto;
+  width: 16px;
+}
+.public-redesign.public-home .hospital-patient-shortcuts > a:hover {
+  background: var(--hms-canvas);
+}
+.public-redesign.public-home .public-section {
+  margin: 0;
+  padding: 88px 0;
+  border: 0;
+}
+.public-redesign.public-home .public-section h2 {
+  font-size: clamp(28px, 3vw, 42px);
+  line-height: 1.18;
+  max-width: 24ch;
+  font-weight: 650;
+}
+.public-redesign.public-home .public-section h3 {
+  font-size: 19px;
+  line-height: 1.4;
+  font-weight: 650;
+}
+.public-redesign.public-home .public-section p {
+  font-size: 14px;
+  color: var(--hms-muted);
+  line-height: 1.8;
+}
+.public-redesign.public-home .public-section-heading {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 28px;
+  margin-bottom: 32px;
+}
+.public-redesign.public-home .public-section-heading > p {
+  max-width: 38ch;
+  margin: 0;
+}
+.public-redesign.public-home .public-section-heading h2 {
+  margin: 0;
+}
+.public-redesign.public-home .hospital-section-intro {
+  max-width: 68ch;
+  margin-bottom: 28px;
+}
+.public-redesign.public-home
+  :is(.hospital-department-grid, .hospital-doctor-grid, .hospital-profile-grid) {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 20px;
+}
+.public-redesign.public-home
+  :is(
+    .hospital-department-grid > article,
+    .hospital-doctor-grid > article,
+    .hospital-profile-card,
+    .hospital-empty-card
+  ) {
+  padding: 24px;
+  background: #fff;
+  border: 1px solid var(--hms-border);
+  border-radius: var(--site-radius);
+  box-shadow: none;
+  min-width: 0;
+  transform: none;
+  transition:
+    border-color 180ms ease,
+    box-shadow 180ms ease;
+}
+.public-redesign.public-home
+  :is(.hospital-profile-card, .hospital-department-grid > article):hover {
+  border-color: var(--hms-border-strong);
+  box-shadow: var(--hms-shadow);
+}
+.public-redesign.public-home .hospital-doctor-grid > article {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+}
+.public-redesign.public-home .hospital-doctor-grid .doctor-portrait {
+  flex: 0 0 86px;
+  width: 86px;
+  height: 112px;
+  border-radius: 12px;
+}
+.public-redesign.public-home .hospital-doctor-grid .doctor-portrait img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.public-redesign.public-home .hospital-doctor-grid p {
+  font-size: 12px;
+}
+.public-redesign.public-home .hospital-doctor-grid h3 {
+  font-size: 17px;
+}
+.public-redesign.public-home .hospital-doctor-grid > article > div {
+  min-width: 0;
+}
+.public-redesign.public-home .hospital-department-grid > article {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+.public-redesign.public-home .hospital-department-grid > article > a {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  margin-top: auto;
+  font-size: 13px;
+  font-weight: 600;
+}
+.public-redesign.public-home .hospital-department-icon {
+  border-radius: 14px;
+  background: var(--hms-soft);
+  color: var(--hms-brand-dark);
+}
+.public-redesign.public-home .hospital-directory-empty {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  padding: 32px;
+  border-radius: 18px;
+  background: var(--hms-soft);
+  border: 1px solid var(--hms-border);
+}
+.public-redesign.public-home .hospital-about {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 72px;
+  align-items: center;
+  border-top: 1px solid var(--hms-border);
+}
+.public-redesign.public-home .hospital-about > div {
+  padding: 0;
+}
+.public-redesign.public-home .hospital-about h2 {
+  font-size: clamp(28px, 3vw, 42px);
+  line-height: 1.2;
+}
+.public-redesign.public-home .hospital-reception-visual {
+  margin: 0;
+  border-radius: 20px;
+  background: transparent;
+  box-shadow: none;
+}
+.public-redesign.public-home .hospital-reception-visual > img {
+  width: 100%;
+  height: 390px;
+  object-fit: cover;
+  border-radius: 20px;
+}
+.public-redesign.public-home figcaption {
+  font-size: 11px;
+  line-height: 1.6;
+  color: var(--hms-muted);
+}
+.public-redesign.public-home .hospital-photo-inset {
+  box-shadow: var(--hms-shadow);
+  border-color: var(--hms-border);
+}
+.public-redesign.public-home #services {
+  display: block;
+  border-radius: 24px;
+  padding: 48px;
+  background: #edf5ef;
+  margin-bottom: 64px;
+}
+.public-redesign.public-home #services .public-section-heading {
+  display: flex;
+}
+.public-redesign.public-home #services .public-section-heading h2 {
+  font-size: clamp(28px, 3vw, 40px);
+}
+.public-redesign.public-home .public-service-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 20px;
+}
+.public-redesign.public-home .public-service-card {
+  display: flex;
+  flex-direction: column;
+  padding: 28px;
+  border-radius: 16px;
+  border: 1px solid var(--hms-border);
+  background: #fff;
+  box-shadow: none;
+  transform: none;
+}
+.public-redesign.public-home .service-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: var(--hms-muted);
+}
+.public-redesign.public-home .service-icon {
+  background: var(--hms-soft);
+  color: var(--hms-brand-dark);
+  border-radius: 12px;
+}
+.public-redesign.public-home .public-service-card > a {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 600;
+  font-size: 13px;
+  min-height: 44px;
+  margin-top: auto;
+}
+.public-redesign.public-home .visit-section {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr);
+  gap: 72px;
+  padding: 48px;
+  border-radius: 24px;
+  background: #153e42;
+  color: #fff;
+}
+.public-redesign.public-home .visit-section :is(h2, h3, .text-link) {
+  color: #fff;
+}
+.public-redesign.public-home .visit-section :is(p, .public-kicker) {
+  color: #d5e9e4;
+}
+.public-redesign.public-home .visit-steps {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.public-redesign.public-home .visit-steps li {
+  display: flex;
+  align-items: flex-start;
+  gap: 20px;
+  padding: 22px 0;
+  border-color: #436563;
+}
+.public-redesign.public-home .visit-steps li:first-child {
+  padding-top: 0;
+}
+.public-redesign.public-home .visit-steps li > span {
+  background: #2b5556;
+  color: #d3f3e6;
+  border: 1px solid #527470;
+  border-radius: 14px;
+  width: 48px;
+  height: 48px;
+  flex-shrink: 0;
+}
+.public-redesign.public-home .visit-steps h3 {
+  margin: 0 0 8px;
+  font-size: 17px;
+}
+.public-redesign.public-home .visit-steps p {
+  margin: 0;
+  font-size: 13px;
+}
+.public-redesign.public-home .hospital-guide-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 32px;
+}
+.public-redesign.public-home .hospital-guide-grid article {
+  padding: 24px 0;
+  border: 0;
+  border-top: 1px solid var(--hms-border);
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  backdrop-filter: none;
+}
+.public-redesign.public-home .hospital-guide-grid article > svg {
+  color: var(--hms-brand);
+  margin-bottom: 14px;
+}
+.public-redesign.public-home .hospital-preparation {
+  display: grid;
+  grid-template-columns: 1fr 1.2fr;
+  gap: 64px;
+  border-top: 1px solid var(--hms-border);
+  border-bottom: 1px solid var(--hms-border);
+  background: transparent;
+}
+.public-redesign.public-home .hospital-checklist {
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+.public-redesign.public-home .hospital-checklist li {
+  display: flex;
+  gap: 16px;
+  padding: 16px 0;
+}
+.public-redesign.public-home .hospital-checklist svg {
+  color: var(--hms-brand);
+  background: var(--hms-soft);
+  flex-shrink: 0;
+}
+.public-redesign.public-home .hospital-faq {
+  max-width: 960px;
+  margin: auto;
+}
+.public-redesign.public-home .hospital-faq details {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-bottom: 1px solid var(--hms-border);
+  background: transparent;
+  border-radius: 0;
+}
+.public-redesign.public-home .hospital-faq summary {
+  min-height: 64px;
+  padding: 22px 4px;
+  color: var(--hms-ink);
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.public-redesign.public-home .hospital-faq details > p {
+  padding: 0 4px 18px;
+  max-width: 80ch;
+}
+.public-redesign.public-home .hospital-location {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  align-items: center;
+  gap: 64px;
+  border-top: 1px solid var(--hms-border);
+}
+.public-redesign.public-home .hospital-map {
+  border: 1px solid var(--hms-border);
+  border-radius: 20px;
+  background: #edf5ef;
+  box-shadow: none;
+}
+.public-redesign.public-home .homepage-map-intro {
+  color: var(--hms-ink);
+  background: transparent;
+  padding: 32px;
+}
+.public-redesign.public-home .homepage-map-intro :is(h2, h3) {
+  font-size: 24px;
+}
+.public-redesign.public-home .hospital-map > a {
+  display: block;
+  padding: 16px 24px;
+  font-size: 13px;
+  background: #fff;
+  color: var(--hms-brand-dark);
+}
+.public-redesign.public-home .hospital-map summary {
+  padding: 16px 24px;
+  color: var(--hms-brand-dark);
+  min-height: 48px;
+  cursor: pointer;
+}
+.public-redesign.public-home .hospital-emergency {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  margin: 0;
+  padding: 28px 32px;
+  border: 1px solid #ead9ce;
+  border-radius: 16px;
+  background: #fff5ed;
+  color: #713d2b;
+}
+.public-redesign.public-home .hospital-emergency :is(p, h2, a, svg) {
+  color: #713d2b;
+}
+.public-redesign.public-home .hospital-emergency h2 {
+  font-size: 22px;
+}
+.public-redesign.public-home .hospital-emergency .button {
+  flex-shrink: 0;
+  background: #713d2b;
+  color: #fff;
+}
+.public-redesign.public-home .hospital-emergency .button svg {
+  color: #fff;
+}
+.public-redesign.public-home .hospital-information {
+  display: grid;
+  grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr);
+  gap: 64px;
+  align-items: start;
+}
+.public-redesign.public-home
+  :is(.public-info-card, .hospital-page-callout, .hospital-overview-contact) {
+  padding: 32px;
+  background: #edf5ef;
+  border: 1px solid var(--hms-border);
+  border-radius: 20px;
+  box-shadow: none;
+  backdrop-filter: none;
+}
+.public-redesign.public-home .public-cta {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  padding: 40px;
+  margin: 0 0 72px;
+  background: var(--hms-soft);
+  border: 1px solid var(--hms-border);
+  border-radius: 20px;
+}
+.public-redesign.public-home .public-cta > div {
+  flex: 1;
+}
+.public-redesign.public-home .public-cta h2 {
+  font-size: 28px;
+}
+.public-redesign.public-home .public-cta p {
+  color: var(--hms-muted);
+}
+.public-redesign.public-home .public-site-footer {
+  padding: 56px 0 0;
+  border-top: 1px solid var(--hms-border);
+}
+.public-redesign.public-home .public-footer {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr 1fr;
+  align-items: start;
+  gap: 64px;
+  padding: 0 0 40px;
+  border: 0;
+  background: transparent;
+}
+.public-redesign.public-home .public-footer p {
+  color: var(--hms-muted);
+  font-size: 13px;
+  max-width: 32ch;
+}
+.footer-contact {
+  display: block;
+  margin: 10px 0;
+  font-size: 13px;
+  overflow-wrap: anywhere;
+}
+.public-redesign.public-home .hospital-footer-nav {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+}
+.public-redesign.public-home .hospital-footer-nav a {
+  min-height: 32px;
+}
+.public-redesign.public-home .public-footer-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 24px;
+}
+.public-redesign.public-home .public-footer-actions > a {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+}
+.public-redesign.public-home .surface-toggle {
+  color: var(--hms-ink);
+  background: #fff;
+  border: 1px solid var(--hms-border-strong);
+}
+.public-footer-bottom {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 22px 0;
+  border-top: 1px solid var(--hms-border);
+  font-size: 11px;
+  color: var(--hms-muted);
+}
+/* Directories, biographies and practical information share the same visual system. */
+.public-redesign.public-home .hospital-inner-page {
+  min-height: 70vh;
+  padding: 32px 0 80px;
+}
+.public-redesign.public-home .hospital-page-intro {
+  display: grid;
+  grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr);
+  gap: 64px;
+  align-items: center;
+  padding: 40px 0;
+  margin: 0 0 40px;
+  border-bottom: 1px solid var(--hms-border);
+}
+.public-redesign.public-home .hospital-page-heading h1 {
+  font-size: clamp(36px, 4vw, 56px);
+  line-height: 1.15;
+  margin: 0 0 20px;
+}
+.public-redesign.public-home .hospital-page-heading p {
+  color: var(--hms-muted);
+  font-size: 16px;
+}
+.public-redesign.public-home .hospital-page-photo {
+  padding: 0;
+  border: 0;
+  border-radius: 18px;
+  background: var(--hms-soft);
+  box-shadow: none;
+  overflow: hidden;
+}
+.public-redesign.public-home .hospital-page-photo img {
+  width: 100%;
+  height: 230px;
+  border-radius: 0;
+  object-fit: cover;
+}
+.public-redesign.public-home .hospital-page-photo figcaption {
+  padding: 10px 16px;
+}
+.public-redesign.public-home .hospital-profile-card :is(h2, h3) {
+  font-size: 21px;
+}
+.public-redesign.public-home .hospital-profile-card p {
+  color: var(--hms-muted);
+  font-size: 14px;
+}
+.public-redesign.public-home .hospital-doctor-card .doctor-portrait {
+  width: 100%;
+  margin-bottom: 20px;
+  border-radius: 12px;
+}
+.public-redesign.public-home .hospital-doctor-card .doctor-portrait img {
+  height: 260px;
+  width: 100%;
+  object-fit: cover;
+}
+.public-redesign.public-home .hospital-card-actions {
+  display: grid;
+  width: 100%;
+  gap: 12px;
+  padding-top: 16px;
+  margin-top: auto;
+}
+.public-redesign.public-home .hospital-doctor-detail {
+  display: grid;
+  grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr);
+  align-items: start;
+  gap: 32px;
+}
+.public-redesign.public-home .hospital-doctor-detail .doctor-portrait {
+  width: min(100%, 360px);
+  border-radius: 16px;
+}
+.public-redesign.public-home .hospital-contact-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 40px;
+  margin-bottom: 48px;
+}
+.public-redesign.public-home .hospital-enquiry-form {
+  padding: 32px;
+  border: 1px solid var(--hms-border);
+  border-radius: 20px;
+  background: #fff;
+  box-shadow: none;
+}
+.public-redesign.public-home :is(input, select, textarea) {
+  color: var(--hms-ink);
+  border-color: var(--hms-border-strong);
+  border-radius: 8px;
+  accent-color: var(--hms-brand);
+  background: #fff;
+}
+.public-redesign.public-home .hospital-about-page {
+  padding: 40px 0 64px;
+  border: 0;
+}
+.public-redesign.public-home .hospital-care-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 24px;
+}
+.public-redesign.public-home .hospital-care-card {
+  display: flex;
+  flex-direction: column;
+  grid-row: auto;
+  background: #fff;
+  border: 1px solid var(--hms-border);
+  border-radius: 20px;
+  box-shadow: none;
+  overflow: hidden;
+  transform: none;
+}
+.public-redesign.public-home .hospital-care-card .hospital-care-image img {
+  height: 220px;
+  width: 100%;
+  object-fit: cover;
+}
+.public-redesign.public-home .hospital-care-copy {
+  padding: 24px;
+}
+.public-redesign.public-home .hospital-care-card figcaption {
+  padding: 8px 16px;
+}
+.public-redesign.public-home .hospital-overview,
+.public-redesign.public-home .hospital-visit-details,
+.public-redesign.public-home .hospital-about-support {
+  margin: 0 0 64px;
+}
+.public-redesign.public-home .hospital-visit-detail-grid article > span {
+  color: var(--hms-brand-dark);
+  background: var(--hms-soft);
+}
+.public-redesign.public-home .hospital-assistant-launcher {
+  border-radius: 999px;
+  background: var(--hms-brand);
+  color: #fff;
+  border-color: var(--hms-brand);
+  box-shadow: 0 8px 24px rgb(21 62 66 / 20%);
+}
+.public-redesign.public-home .hospital-assistant-panel {
+  background: #fff;
+  border: 1px solid var(--hms-border);
+  border-radius: 20px;
+}
+@media (max-width: 1200px) {
+  .public-redesign.public-home .public-container {
+    width: calc(100% - 48px);
+  }
+  .public-redesign.public-home .hospital-site-header {
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+  .public-redesign.public-home .hospital-site-header nav {
+    order: 3;
+    width: 100%;
+    justify-content: center;
+    gap: 32px;
+  }
+  .public-redesign.public-home .hospital-header-actions {
+    margin-left: auto;
+  }
+  .public-redesign.public-home .public-hero {
+    gap: 40px;
+  }
+  .public-redesign.public-home .public-hero h1 {
+    font-size: clamp(42px, 5vw, 60px);
+  }
+  .public-redesign.public-home .hospital-gallery-photo img {
+    height: 380px;
+  }
+  .public-redesign.public-home .hospital-patient-shortcuts > a {
+    padding-inline: 12px;
+  }
+  .public-redesign.public-home .hospital-doctor-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media (max-width: 900px) {
+  .public-redesign.public-home .public-hero {
+    gap: 32px;
+    padding-top: 48px;
+  }
+  .public-redesign.public-home .hospital-patient-shortcuts {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    padding: 12px;
+  }
+  .public-redesign.public-home .hospital-patient-shortcuts > a + a {
+    border: 0;
+  }
+  .public-redesign.public-home
+    :is(.hospital-department-grid, .hospital-profile-grid, .hospital-guide-grid) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .public-redesign.public-home
+    :is(
+      .hospital-about,
+      .hospital-location,
+      .hospital-preparation,
+      .hospital-information,
+      .hospital-page-intro
+    ) {
+    gap: 32px;
+  }
+  .public-redesign.public-home #services {
+    padding: 32px;
+  }
+  .public-redesign.public-home :is(.public-service-grid, .hospital-care-grid) {
+    grid-template-columns: 1fr;
+  }
+  .public-redesign.public-home .visit-section {
+    gap: 32px;
+    padding: 32px;
+  }
+  .public-redesign.public-home .public-footer {
+    gap: 32px;
+    grid-template-columns: 1.2fr 1fr;
+  }
+  .public-redesign.public-home .public-footer-actions {
+    grid-column: 1 / -1;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+}
+@media (max-width: 760px) {
+  .public-redesign.public-home .hospital-site-header {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 16px;
+    padding: 18px 0;
+  }
+  .public-redesign.public-home .homepage-menu-toggle {
+    display: grid;
+    place-items: center;
+    width: 44px;
+    min-height: 44px;
+    color: var(--hms-ink);
+    background: #fff;
+    border: 1px solid var(--hms-border-strong);
+  }
+  .public-redesign.public-home .hospital-site-header nav {
+    grid-column: 1 / -1;
+    grid-row: 2;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0;
+    padding: 12px 20px;
+    background: #edf5ef;
+    border-radius: 12px;
+    font-size: 14px;
+  }
+  .public-redesign.public-home .hospital-site-header nav.homepage-navigation-closed {
+    display: none;
+  }
+  .public-redesign.public-home .hospital-site-header nav a {
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+    white-space: normal;
+  }
+  .public-redesign.public-home .hospital-header-actions {
+    display: flex;
+    margin: 0;
+    grid-column: 1 / -1;
+  }
+  .public-redesign.public-home .hospital-header-actions a {
+    flex: 1;
+    font-size: 12px;
+    padding: 12px;
+  }
+  .public-redesign.public-home .hospital-contact-strip {
+    flex-wrap: wrap;
+    font-size: 10px;
+  }
+  .public-redesign.public-home .hospital-contact-strip > span {
+    flex-basis: 100%;
+  }
+  .public-redesign.public-home .public-hero {
+    grid-template-columns: 1fr;
+    padding: 44px 0;
+    gap: 32px;
+  }
+  .public-redesign.public-home .public-hero h1 {
+    font-size: clamp(42px, 9vw, 64px);
+    max-width: 15ch;
+  }
+  .public-redesign.public-home .public-lead {
+    font-size: 16px;
+    max-width: 42ch;
+  }
+  .public-redesign.public-home .hospital-gallery-photo img {
+    height: 340px;
+  }
+  .public-redesign.public-home .public-section {
+    padding: 56px 0;
+  }
+  .public-redesign.public-home .public-section-heading {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+  }
+  .public-redesign.public-home
+    :is(
+      .hospital-about,
+      .visit-section,
+      .hospital-preparation,
+      .hospital-location,
+      .hospital-information,
+      .hospital-contact-layout,
+      .hospital-page-intro,
+      .hospital-doctor-detail,
+      .hospital-overview
+    ) {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .public-redesign.public-home .hospital-about {
+    gap: 40px;
+  }
+  .public-redesign.public-home #services {
+    padding: 28px;
+    margin-bottom: 48px;
+  }
+  .public-redesign.public-home #services .public-section-heading {
+    flex-direction: column;
+  }
+  .public-redesign.public-home .visit-section {
+    padding: 32px;
+  }
+  .public-redesign.public-home .hospital-emergency {
+    align-items: flex-start;
+    flex-wrap: wrap;
+    padding: 24px;
+    gap: 12px;
+  }
+  .public-redesign.public-home .hospital-emergency > div {
+    flex: 1;
+    min-width: 180px;
+  }
+  .public-redesign.public-home .hospital-emergency > .button {
+    margin-left: 44px;
+  }
+  .public-redesign.public-home .public-cta {
+    padding: 28px;
+    flex-wrap: wrap;
+    margin-bottom: 48px;
+  }
+  .public-redesign.public-home .public-cta > div {
+    min-width: 180px;
+  }
+  .public-redesign.public-home .hospital-page-intro {
+    padding: 24px 0;
+    margin-bottom: 24px;
+    gap: 24px;
+  }
+  .public-redesign.public-home .hospital-page-heading {
+    margin: 0;
+  }
+}
+@media (max-width: 520px) {
+  .public-redesign.public-home .public-container {
+    width: calc(100% - 40px);
+  }
+  body:has(.public-redesign) .language-control {
+    padding-inline: 16px;
+    font-size: 10px;
+  }
+  .public-redesign.public-home .public-hero h1 {
+    font-size: 46px;
+    letter-spacing: -0.05em;
+  }
+  .public-redesign.public-home .public-actions > .button {
+    flex: 1;
+    padding-inline: 12px;
+    font-size: 12px;
+  }
+  .public-redesign.public-home .hospital-hero-links {
+    gap: 8px 16px;
+  }
+  .public-redesign.public-home .hospital-gallery-photo img {
+    height: 290px;
+  }
+  .hero-care-note {
+    padding: 14px;
+    gap: 10px;
+  }
+  .hero-care-note small {
+    font-size: 11px;
+  }
+  .public-redesign.public-home .hospital-patient-shortcuts > a {
+    padding: 12px 8px;
+    font-size: 11px;
+    gap: 8px;
+  }
+  .public-redesign.public-home .hospital-patient-shortcuts > a > svg:last-child {
+    display: none;
+  }
+  .public-redesign.public-home
+    :is(
+      .hospital-department-grid,
+      .hospital-doctor-grid,
+      .hospital-profile-grid,
+      .hospital-guide-grid,
+      .hospital-visit-detail-grid
+    ) {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .public-redesign.public-home .hospital-guide-grid {
+    gap: 4px;
+  }
+  .public-redesign.public-home .hospital-reception-visual > img {
+    height: 280px;
+  }
+  .public-redesign.public-home .hospital-photo-inset img {
+    height: 120px;
+  }
+  .public-redesign.public-home .hospital-directory-empty {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 24px;
+  }
+  .public-redesign.public-home
+    :is(
+      .public-service-card,
+      .hospital-enquiry-form,
+      .hospital-profile-card,
+      .hospital-page-callout,
+      .public-info-card,
+      .hospital-overview-contact
+    ) {
+    padding: 24px;
+  }
+  .public-redesign.public-home .visit-section {
+    padding: 28px;
+  }
+  .public-redesign.public-home .visit-steps li {
+    gap: 14px;
+  }
+  .public-redesign.public-home .public-footer {
+    grid-template-columns: 1fr;
+    gap: 28px;
+  }
+  .public-redesign.public-home .hospital-footer-nav {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px 24px;
+  }
+  .public-footer-bottom {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .public-redesign.public-home *,
+  .public-redesign.public-home *::before,
+  .public-redesign.public-home *::after {
+    animation: none;
+    transition: none;
+    scroll-behavior: auto;
+  }
+}

@@ -8,6 +8,8 @@ import {
   ReceiptText,
   ClipboardList,
   MessageCircle,
+  CalendarDays,
+  FileHeart,
 } from 'lucide-react';
 import { PhotoCaption } from './PublicHospitalSections';
 import { t } from '../i18n/locale';
@@ -17,6 +19,7 @@ export function HospitalCareGallery() {
   const cards = [
     {
       image: 'doctor-female-south-asia.webp',
+      icon: CalendarDays,
       width: 1200,
       height: 800,
       credit: 9,
@@ -27,22 +30,24 @@ export function HospitalCareGallery() {
       action: 'Find a doctor',
     },
     {
-      image: 'colombo-view.webp',
+      image: 'lounge-stock.webp',
+      icon: MapPin,
       width: 1200,
-      height: 1600,
-      credit: 7,
-      alt: 'Colombo skyline photographed from Durdans Hospital',
+      height: 800,
+      credit: null,
+      alt: 'Stock photograph of a bright medical waiting area beside large windows',
       title: 'A little preparation, a simpler arrival',
       text: 'Check the hospital address before travelling. Contact reception for directions, appointment questions or help planning a visit with a family member.',
       to: '/contact',
       action: 'Contact reception',
     },
     {
-      image: 'doctor-usman.webp',
+      image: 'consultation-stock.webp',
+      icon: FileHeart,
       width: 1200,
-      height: 794,
-      credit: 8,
-      alt: 'Stock photograph of a clinician wearing a white coat',
+      height: 800,
+      credit: null,
+      alt: 'Stock photograph of a stethoscope on an examination bed',
       title: 'Stay informed about your care',
       text: 'Keep your consultation history, prescriptions and itemised bills together in your patient account. For questions about hospital services, send reception an enquiry.',
       to: '/about',
@@ -59,7 +64,7 @@ export function HospitalCareGallery() {
         <p>{t('Helpful information for appointments, arrival and the next steps in your care.')}</p>
       </div>
       <div className="hospital-care-grid">
-        {cards.map((card) => (
+        {cards.map(({ icon: Icon, ...card }) => (
           <article className="hospital-care-card" key={card.image}>
             <figure>
               <div className="hospital-care-image">
@@ -75,6 +80,9 @@ export function HospitalCareGallery() {
               <PhotoCaption index={card.credit}>{t('Healthcare stock photograph')}</PhotoCaption>
             </figure>
             <div className="hospital-care-copy">
+              <span className="hospital-care-icon">
+                <Icon size={25} aria-hidden="true" />
+              </span>
               <h3>{t(card.title)}</h3>
               <p>{t(card.text)}</p>
               <Link className="text-link" to={card.to}>

@@ -9,7 +9,7 @@ async function login(page, role) {
   await page.getByRole('button', { name: 'Sign in to your workspace' }).click();
   await expect(page).toHaveURL(/dashboard$/);
 }
-test('doctor search, department details and selected doctor survive the sign-in journey', async ({
+test('doctors appear without search and department links preserve the selected doctor through sign-in', async ({
   page,
   request,
 }) => {
@@ -55,20 +55,19 @@ test('doctor search, department details and selected doctor survive the sign-in 
     route.fulfill({ json: { department } }),
   );
   await page.goto('/doctors');
-  await page.getByLabel('Doctor name or speciality').fill('missing');
-  await page.getByRole('button', { name: 'Search', exact: true }).click();
-  await expect(page.getByRole('heading', { name: 'No matching doctors' })).toBeVisible();
-  await page.getByRole('button', { name: 'Clear filters' }).click();
+  await expect(page.getByRole('searchbox')).toHaveCount(0);
   await expect(page.getByRole('heading', { name: 'Test doctor' })).toBeVisible();
   expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
-  await page.getByLabel('Department', { exact: true }).selectOption(departmentId);
-  await expect(page).toHaveURL(new RegExp(`department=${departmentId}`));
   await page.getByRole('link', { name: 'View doctor profile' }).click();
   await expect(page.getByRole('heading', { level: 1 })).toHaveText('Test doctor');
   expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
   await page.getByRole('link', { name: 'General Medicine', exact: true }).click();
   await expect(page.getByRole('heading', { level: 1 })).toHaveText('General Medicine');
   await expect(page.getByText(department.description)).toBeVisible();
+  await page.getByRole('link', { name: 'Find a doctor', exact: true }).click();
+  await expect(page).toHaveURL(new RegExp(`department=${departmentId}`));
+  await page.getByRole('link', { name: 'View all doctors', exact: true }).click();
+  await expect(page).toHaveURL(/\/doctors$/);
   await page.getByRole('link', { name: 'View doctor profile' }).click();
   await page.getByRole('link', { name: 'Check availability' }).click();
   await expect(page).toHaveURL(/login$/);

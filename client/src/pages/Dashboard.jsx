@@ -5,6 +5,7 @@ import { UserAvatar } from '../components/UserAvatar';
 import { lazy, Suspense } from 'react';
 import {
   ArrowUpRight,
+  ArrowRight,
   Building2,
   UsersRound,
   Stethoscope,
@@ -16,20 +17,19 @@ import {
   Clock3,
   CalendarCheck2,
   ReceiptText,
+  CalendarPlus,
+  ChartNoAxesCombined,
 } from 'lucide-react';
 import { useAuth } from '../auth';
 import { Loading, Notice, PageHeading, useResource } from '../components/ui';
 import { dateLabel, timeLabel, statusClass } from '../scheduling';
+import './Dashboard.css';
 const DashboardCharts = lazy(() => import('../components/DashboardCharts'));
 
 const roleCopy = {
   admin: [
     'A clear view of your hospital.',
     'Manage the people and departments behind connected care.',
-  ],
-  patient: [
-    'Your care, all in one place.',
-    'Keep your details up to date for a smoother hospital experience.',
   ],
   doctor: [
     'More focus on the people you care for.',
@@ -46,16 +46,38 @@ const endpoints = {
   doctor: '/doctors/me',
   receptionist: '/reception/overview',
 };
-function Metric({ icon: Icon, label, value, detail }) {
+const shortcuts = {
+  admin: [
+    ['/admin/staff', 'Manage care team', UsersRound],
+    ['/admin/departments', 'Organise departments', Building2],
+    ['/admin/reports', 'Reports & analytics', ChartNoAxesCombined],
+    ['/billing', 'Billing', ReceiptText],
+  ],
+  doctor: [
+    ['/queue', 'Consultation queue', HeartPulse],
+    ['/schedules', 'Doctor schedules', CalendarDays],
+    ['/appointments', 'Appointments', CalendarCheck2],
+  ],
+  receptionist: [
+    ['/reception/patients', 'Patients & walk-ins', UserRound],
+    ['/book', 'Book appointment', CalendarPlus],
+    ['/appointments', 'Appointments', CalendarCheck2],
+    ['/billing', 'Billing', ReceiptText],
+  ],
+};
+function Metric({ icon: Icon, label, value, detail, to }) {
   return (
-    <div className="metric card">
-      <span className="metric-icon">
-        <Icon size={20} />
+    <Link className="staff-metric" to={to}>
+      <span className="staff-metric-top">
+        <span className="staff-icon">
+          <Icon size={21} aria-hidden="true" />
+        </span>
+        <ArrowUpRight size={17} aria-hidden="true" />
       </span>
-      <p>{t(label)}</p>
-      <strong>{value}</strong>
-      <small>{t(detail)}</small>
-    </div>
+      <span className="staff-metric-value">{new Intl.NumberFormat(getLocale()).format(value)}</span>
+      <span className="staff-metric-label">{t(label)}</span>
+      <span className="staff-metric-detail">{t(detail)}</span>
+    </Link>
   );
 }
 
@@ -75,181 +97,114 @@ export default function Dashboard() {
     return <PatientDashboard user={user} profile={data.profile} date={date} />;
   const [headline, description] = roleCopy[user.role];
   return (
-    <>
+    <div className="staff-dashboard">
       <PageHeading
         eyebrow={t('YOUR WORKSPACE')}
         title={t('Welcome, {name}.', { name: user.name.split(' ')[0] })}
         description={t('A fresh start for a more connected day.')}
       >
         <span className="date-pill">
-          <CalendarDays size={16} />
+          <CalendarDays size={17} aria-hidden="true" />
           {date}
         </span>
       </PageHeading>
-      <section className="welcome-banner">
+      <section className="welcome-banner staff-welcome">
         <div>
           <span className="banner-label">
-            <span /> {t('CARE, CONNECTED')}{' '}
+            <span />
+            {t('CARE, CONNECTED')}
           </span>
           <h2>{t(headline)}</h2>
           <p>{t(description)}</p>
-          {user.role === 'admin' ? (
-            <Link className="button lime" to="/admin/staff">
-              {t('Manage care team')} <ArrowUpRight size={17} />
-            </Link>
-          ) : user.role === 'patient' ? (
-            <Link className="button lime" to="/book">
-              {t('Book an appointment')} <ArrowUpRight size={17} />
-            </Link>
-          ) : (
-            <Link className="button lime" to={user.role === 'doctor' ? '/queue' : '/appointments'}>
-              {user.role === 'doctor' ? t('Open consultation queue') : t('View appointments')}{' '}
-              <ArrowUpRight size={17} />
-            </Link>
-          )}
         </div>
-        <div className="banner-art" aria-hidden="true">
-          <div />
-          <HeartPulse size={100} strokeWidth={1} />
-        </div>
+        <Link
+          className="button staff-primary-action"
+          to={user.role === 'doctor' ? '/queue' : '/book'}
+        >
+          {user.role === 'doctor' ? t('Open consultation queue') : t('Book an appointment')}
+          <ArrowUpRight size={18} aria-hidden="true" />
+        </Link>
+        <HeartPulse className="staff-welcome-art" size={180} strokeWidth={1} aria-hidden="true" />
       </section>
-      {user.role === 'patient' && (
-        <div className="workspace-quick-actions">
-          {[
-            { to: '/recommendations', label: 'Department guide', icon: HeartPulse },
-            { to: '/records', label: 'Medical records', icon: ClipboardList },
-            { to: '/billing', label: 'Bills & payments', icon: ReceiptText },
-          ].map(({ to, label, icon: Icon }) => (
-            <Link key={to} to={to}>
-              <span className="quick-action-icon">
-                <Icon size={22} aria-hidden="true" />
-              </span>
-              <strong>{t(label)}</strong>
-              <ArrowUpRight size={17} aria-hidden="true" />
-            </Link>
-          ))}
-        </div>
-      )}
-      <AppointmentOverview />
-      <Suspense fallback={<Loading text="Loading charts…" />}>
-        <DashboardCharts />
-      </Suspense>
-      {user.role === 'patient' && (
-        <section className="card padded guide-shortcut">
-          <h2>{t('Need help choosing a department?')}</h2>
-          <p>
-            {t(
-              'The department guide can suggest a service for non-emergency concerns. It is not a diagnosis.',
-            )}{' '}
-          </p>
-          <Link className="button primary" to="/recommendations">
-            {t('Open department guide')}{' '}
-          </Link>
-        </section>
-      )}
       {user.role === 'admin' && (
-        <>
-          <div className="section-heading">
+        <section aria-label={t('Hospital at a glance')}>
+          <div className="section-heading staff-section-heading">
             <h2>{t('Hospital at a glance')}</h2>
             <span>{t('Current registered records')}</span>
           </div>
-          <div className="metric-grid">
+          <div className="staff-metrics">
             <Metric
               icon={UserRound}
-              label={t('Patients')}
+              label="Patients"
               value={data.patients}
               detail="Registered patient profiles"
+              to="/admin/patients"
             />
             <Metric
               icon={Stethoscope}
-              label={t('Doctors')}
+              label="Doctors"
               value={data.doctors}
               detail="Members of your care team"
+              to="/admin/staff"
             />
             <Metric
               icon={UsersRound}
-              label={t('Receptionists')}
+              label="Receptionists"
               value={data.receptionists}
               detail="Front-desk staff"
+              to="/admin/staff"
             />
             <Metric
               icon={Building2}
-              label={t('Departments')}
+              label="Departments"
               value={data.departments}
               detail="Hospital departments"
+              to="/admin/departments"
             />
           </div>
-          <div className="dashboard-grid">
-            <section className="card padded">
-              <div className="section-heading">
-                <h2>{t('Build your care team')}</h2>
-                <span className="tag">{t('GET STARTED')}</span>
-              </div>
-              <p className="muted">
-                {t(
-                  'Set up your hospital’s departments, then add the people who bring them to life.',
-                )}{' '}
-              </p>
-              <Link className="action-row" to="/admin/departments">
-                <span className="action-icon">
-                  <Building2 size={22} />
-                </span>
-                <div>
-                  <strong>{t('Organise departments')}</strong>
-                  <small>{t('Create departments for your hospital.')}</small>
-                </div>
-                <ArrowUpRight size={20} />
-              </Link>
-              <Link className="action-row" to="/admin/staff">
-                <span className="action-icon">
-                  <UsersRound size={22} />
-                </span>
-                <div>
-                  <strong>{t('Manage staff accounts')}</strong>
-                  <small>{t('Add doctors and receptionists.')}</small>
-                </div>
-                <ArrowUpRight size={20} />
-              </Link>
-            </section>
-            <AccountCard user={user} />
-          </div>
-        </>
+        </section>
       )}
-      {user.role === 'patient' && (
+      <div className="staff-work-grid">
+        <AppointmentOverview />
+        <section className="card padded staff-shortcuts" aria-label={t('Quick actions')}>
+          <div className="section-heading">
+            <h2>{t('Quick actions')}</h2>
+            <ClipboardList size={20} aria-hidden="true" />
+          </div>
+          <p className="muted small-text">{t('Your everyday tools, one click away.')}</p>
+          <div className="staff-shortcut-list">
+            {shortcuts[user.role].map(([to, label, Icon]) => (
+              <Link key={to} to={to}>
+                <span className="staff-icon">
+                  <Icon size={20} aria-hidden="true" />
+                </span>
+                <span>{t(label)}</span>
+                <ArrowRight size={17} aria-hidden="true" />
+              </Link>
+            ))}
+          </div>
+          <div className="staff-security-note">
+            <ShieldCheck size={18} aria-hidden="true" />
+            <span>{t('Protected workspace')}</span>
+          </div>
+        </section>
+      </div>
+      <Suspense fallback={<Loading text="Loading charts…" />}>
+        <DashboardCharts />
+      </Suspense>
+      {user.role === 'admin' && (
         <div className="dashboard-grid">
-          <section className="card padded">
-            <div className="section-heading">
-              <h2>{t('Your health profile')}</h2>
-              <UserRound size={21} />
-            </div>
-            <p className="muted">{t('Accurate contact details help your care team reach you.')}</p>
-            <dl className="detail-list">
-              <div>
-                <dt>{t('Date of birth')}</dt>
-                <dd>{data.profile.dateOfBirth}</dd>
-              </div>
-              <div>
-                <dt>{t('Phone')}</dt>
-                <dd>{user.phone || t('Not provided')}</dd>
-              </div>
-              <div>
-                <dt>{t('Emergency contact')}</dt>
-                <dd>{data.profile.emergencyContact?.name || t('Not provided')}</dd>
-              </div>
-            </dl>
-            <div className="allergy-note">
-              <ShieldCheck size={20} />
-              <div>
-                <strong>{t('Allergy information')}</strong>
-                <p>
-                  {data.profile.allergies.length
-                    ? data.profile.allergies.join(', ')
-                    : t('No allergy information recorded. Confirm with your care team.')}
-                </p>
-              </div>
-            </div>
-            <Link className="text-link" to="/profile">
-              {t('Review my profile')} <ArrowUpRight size={16} />
+          <section className="card padded staff-team-card">
+            <span className="staff-icon">
+              <UsersRound size={24} aria-hidden="true" />
+            </span>
+            <h2>{t('Build your care team')}</h2>
+            <p className="muted">
+              {t('Set up your hospital’s departments, then add the people who bring them to life.')}
+            </p>
+            <Link className="button primary" to="/admin/staff">
+              {t('Manage staff accounts')}
+              <ArrowUpRight size={17} aria-hidden="true" />
             </Link>
           </section>
           <AccountCard user={user} />
@@ -311,7 +266,7 @@ export default function Dashboard() {
           <AccountCard user={user} />
         </div>
       )}
-    </>
+    </div>
   );
 }
 function AccountCard({ user }) {
@@ -338,56 +293,55 @@ function AppointmentOverview() {
   if (pending) return <Loading text={t('Loading appointment overview…')} />;
   if (error) return <Notice>{error}</Notice>;
   return (
-    <section className="appointment-overview">
+    <section className="appointment-overview" aria-label={t('Appointments')}>
       <div className="appointment-stats">
-        <Link to="/appointments">
-          <span className="stat-symbol" aria-hidden="true">
-            <CalendarDays size={18} />
-          </span>
-          <ArrowUpRight className="stat-arrow" size={18} aria-hidden="true" />
-          <strong>{data.today}</strong>
-          <span>{t('Appointments today')}</span>
-        </Link>
-        <Link to="/appointments">
-          <span className="stat-symbol" aria-hidden="true">
-            <Clock3 size={18} />
-          </span>
-          <ArrowUpRight className="stat-arrow" size={18} aria-hidden="true" />
-          <strong>{data.waiting}</strong>
-          <span>{t('Waiting today')}</span>
-        </Link>
-        <Link to="/appointments">
-          <span className="stat-symbol" aria-hidden="true">
-            <CalendarCheck2 size={18} />
-          </span>
-          <ArrowUpRight className="stat-arrow" size={18} aria-hidden="true" />
-          <strong>{data.upcoming}</strong>
-          <span>{t('Upcoming bookings')}</span>
-        </Link>
+        {[
+          [CalendarDays, data.today, 'Appointments today'],
+          [Clock3, data.waiting, 'Waiting today'],
+          [CalendarCheck2, data.upcoming, 'Upcoming bookings'],
+        ].map(([Icon, value, label]) => (
+          <Link to="/appointments" key={label}>
+            <span className="stat-symbol" aria-hidden="true">
+              <Icon size={19} />
+            </span>
+            <ArrowUpRight className="stat-arrow" size={16} aria-hidden="true" />
+            <strong>{new Intl.NumberFormat(getLocale()).format(value)}</strong>
+            <span>{t(label)}</span>
+          </Link>
+        ))}
       </div>
-      <div className="card padded">
+      <div className="card padded staff-upcoming">
         <div className="section-heading">
           <h2>{t('Coming up next')}</h2>
           <Link className="text-link" to="/appointments">
-            {t('View all')} <ArrowUpRight size={15} />
+            {t('View all')}
+            <ArrowUpRight size={16} aria-hidden="true" />
           </Link>
         </div>
         {data.next.length ? (
           data.next.map((item) => (
             <Link key={item.id} to={`/appointments?selected=${item.id}`} className="upcoming-row">
-              <div>
+              <span className="staff-appointment-icon">
+                <CalendarDays size={21} aria-hidden="true" />
+              </span>
+              <div className="staff-appointment-copy">
                 <strong>{item.doctorName}</strong>
                 <small>
-                  {dateLabel(item.startsAt)} · {timeLabel(item.startsAt)} · {item.patient?.name}
+                  {dateLabel(item.startsAt)} · {timeLabel(item.startsAt)}
                 </small>
+                {item.patient?.name && <small>{item.patient.name}</small>}
               </div>
               <span className={`status-pill ${statusClass(item.status)}`}>{t(item.status)}</span>
+              <ArrowUpRight size={16} className="staff-row-arrow" aria-hidden="true" />
             </Link>
           ))
         ) : (
-          <p className="muted small-text">
-            {t('No upcoming appointments. Confirmed bookings will appear here.')}{' '}
-          </p>
+          <div className="staff-empty-state">
+            <span className="staff-icon">
+              <CalendarCheck2 size={26} aria-hidden="true" />
+            </span>
+            <p>{t('No upcoming appointments. Confirmed bookings will appear here.')}</p>
+          </div>
         )}
       </div>
     </section>

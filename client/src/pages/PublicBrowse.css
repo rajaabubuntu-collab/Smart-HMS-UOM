@@ -1,0 +1,62 @@
+.hospital-browse-context,
+.hospital-browse-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin: 32px 0 20px;
+}
+.hospital-browse-heading h3 {
+  margin: 0;
+}
+.hospital-demo-label {
+  display: inline-block;
+  padding: 5px 10px;
+  margin-bottom: 12px;
+  border: 1px solid var(--hms-border);
+  border-radius: 8px;
+  background: var(--hms-canvas);
+  color: var(--hms-brand-dark);
+  font-size: 12px;
+  line-height: 1.5;
+}
+.hospital-department-icon {
+  display: grid;
+  place-items: center;
+  width: 56px;
+  height: 56px;
+  margin-bottom: 22px;
+  border-radius: 16px;
+  color: var(--hms-brand);
+  background: var(--hms-soft);
+}
+.hospital-department-card > .text-link {
+  margin-top: auto;
+  padding-top: 16px;
+}
+.hospital-doctor-card .doctor-portrait {
+  max-width: none;
+  border-radius: 16px;
+}
+.hospital-doctor-card .doctor-portrait img {
+  height: 220px;
+}
+.hospital-doctor-card .public-kicker {
+  margin-top: 8px;
+}
+.homepage-design .hospital-department-grid > article,
+.homepage-design .hospital-doctor-grid > article {
+  border: 1px solid var(--hms-border);
+  border-radius: var(--hms-card-radius);
+  padding: 24px;
+  background: #fff;
+  box-shadow: var(--hms-shadow);
+}
+.homepage-design .hospital-department-grid,
+.homepage-design .hospital-doctor-grid {
+  gap: 20px;
+}
+.homepage-design .hospital-department-grid > article > svg {
+  color: var(--hms-brand);
+}

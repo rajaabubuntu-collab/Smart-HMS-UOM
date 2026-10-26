@@ -233,6 +233,7 @@ export function publishedDoctors({ department, id, q } = {}) {
 }
 const publicDoctorFields = {
   _id: 1,
+  isDemo: { $ifNull: ['$isDemo', false] },
   name: '$account.name',
   avatarUrl: {
     $cond: [
@@ -256,7 +257,7 @@ export function publicDirectoryRouter() {
     const filter = { isActive: true, isPublic: true };
     const [items, total] = await Promise.all([
       Department.find(filter)
-        .select('name description')
+        .select('name description isDemo')
         .sort({ name: 1, _id: 1 })
         .skip((page - 1) * limit)
         .limit(limit)
@@ -268,7 +269,7 @@ export function publicDirectoryRouter() {
   router.get('/public/departments/:id', async (req, res) => {
     const id = parse(objectId, req.params.id);
     const department = await Department.findOne({ _id: id, isActive: true, isPublic: true })
-      .select('name description')
+      .select('name description isDemo')
       .lean();
     if (!department) throw httpError(404, 'Department information is unavailable.');
     res.json({ department });

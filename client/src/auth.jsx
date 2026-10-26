@@ -1,5 +1,6 @@
 import { createContext, useContext, useEffect, useState } from 'react';
 import { api } from './api';
+import { assistantSession } from './public-assistant-session';
 
 const AuthContext = createContext(null);
 export function AuthProvider({ children }) {
@@ -11,9 +12,11 @@ export function AuthProvider({ children }) {
     setError('');
     try {
       const data = await api('/auth/me', { ignoreAuth: true });
+      assistantSession.identify(data.user.id);
       setUser(data.user);
     } catch (err) {
-      if (err.status !== 401) setError(err.message);
+      if (err.status === 401) assistantSession.logout();
+      else setError(err.message);
     } finally {
       setLoading(false);
     }
@@ -22,15 +25,23 @@ export function AuthProvider({ children }) {
     let active = true;
     api('/auth/me', { ignoreAuth: true })
       .then((data) => {
-        if (active) setUser(data.user);
+        if (active) {
+          assistantSession.identify(data.user.id);
+          setUser(data.user);
+        }
       })
       .catch((err) => {
-        if (active && err.status !== 401) setError(err.message);
+        if (!active) return;
+        if (err.status === 401) assistantSession.identify(null);
+        else setError(err.message);
       })
       .finally(() => {
         if (active) setLoading(false);
       });
-    const expired = () => setUser(null);
+    const expired = () => {
+      assistantSession.logout();
+      setUser(null);
+    };
     window.addEventListener('hms:session-expired', expired);
     return () => {
       active = false;
@@ -39,11 +50,13 @@ export function AuthProvider({ children }) {
   }, []);
   async function login(values) {
     const data = await api('/auth/login', { method: 'POST', body: values, ignoreAuth: true });
+    assistantSession.identify(data.user.id);
     setError('');
     setUser(data.user);
   }
   async function register(values) {
     const data = await api('/auth/register', { method: 'POST', body: values, ignoreAuth: true });
+    assistantSession.identify(data.user.id);
     setError('');
     setUser(data.user);
   }
@@ -53,6 +66,7 @@ export function AuthProvider({ children }) {
     } catch (err) {
       if (err.status !== 401) throw err;
     }
+    assistantSession.logout();
     setUser(null);
   }
   return (

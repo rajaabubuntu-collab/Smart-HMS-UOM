@@ -1,0 +1,494 @@
+/* Staff dashboard: shared brand tokens, opaque data surfaces, compact hierarchy. */
+.app-shell .staff-dashboard {
+  --dashboard-surface: #fff;
+  --dashboard-shadow: 0 4px 20px rgb(37 51 76 / 4%);
+  display: grid;
+  gap: 28px;
+  max-width: 1600px;
+  margin-inline: auto;
+  min-width: 0;
+  color: var(--hms-ink);
+}
+.app-shell .staff-dashboard > *,
+.app-shell .staff-dashboard .staff-work-grid > * {
+  min-width: 0;
+}
+.app-shell .staff-dashboard .page-heading {
+  margin-bottom: 0;
+}
+.app-shell .staff-dashboard .date-pill {
+  background: var(--dashboard-surface);
+  border: 1px solid var(--hms-border);
+  color: var(--hms-muted);
+  padding: 12px 16px;
+  font-size: 12px;
+}
+.app-shell .staff-dashboard .staff-welcome {
+  position: relative;
+  isolation: isolate;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  margin: 0;
+  padding: 28px 32px;
+  min-height: 172px;
+  overflow: hidden;
+  background: var(--hms-brand-dark);
+  border: 0;
+  box-shadow: none;
+}
+.app-shell .staff-welcome > div:first-child {
+  width: auto;
+  max-width: 620px;
+  position: relative;
+  z-index: 1;
+}
+.app-shell .staff-welcome .banner-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 10px;
+  letter-spacing: 1.8px;
+  color: #edeaff;
+}
+.app-shell .staff-welcome .banner-label > span {
+  background: #b4ead7;
+  box-shadow: none;
+}
+.app-shell .staff-welcome h2 {
+  margin: 12px 0 8px;
+  font-size: clamp(22px, 2.1vw, 30px);
+  line-height: 1.25;
+  letter-spacing: -0.7px;
+  text-wrap: balance;
+}
+.app-shell .staff-welcome p {
+  margin: 0;
+  color: #edeaff;
+  font-size: 13px;
+  line-height: 1.6;
+}
+.app-shell .staff-welcome .staff-primary-action {
+  position: relative;
+  z-index: 1;
+  flex-shrink: 0;
+  margin: 0;
+  min-height: 44px;
+  background: #fff;
+  border: 1px solid #fff;
+  color: var(--hms-brand-dark);
+  box-shadow: none;
+}
+.app-shell .staff-welcome .staff-primary-action:hover {
+  background: var(--hms-soft);
+  border-color: var(--hms-soft);
+}
+.staff-welcome-art {
+  position: absolute;
+  right: 12%;
+  bottom: -40px;
+  opacity: 0.1;
+  pointer-events: none;
+  z-index: 0;
+}
+.app-shell .staff-dashboard .section-heading {
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+.app-shell .staff-dashboard .section-heading h2,
+.app-shell .staff-dashboard .staff-team-card h2 {
+  color: var(--hms-ink);
+  font-size: 17px;
+  font-weight: 650;
+  letter-spacing: -0.3px;
+}
+.app-shell .staff-dashboard .section-heading > span {
+  color: var(--hms-muted);
+  font-size: 12px;
+}
+.staff-metrics {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 16px;
+}
+.staff-metric {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  padding: 20px;
+  border: 1px solid var(--hms-border);
+  border-radius: 16px;
+  background: var(--dashboard-surface);
+  box-shadow: var(--dashboard-shadow);
+  color: var(--hms-ink);
+  text-decoration: none;
+  transition:
+    border-color 180ms ease,
+    box-shadow 180ms ease;
+}
+.staff-metric:hover {
+  border-color: var(--hms-brand);
+  box-shadow: 0 4px 20px rgb(80 68 202 / 10%);
+}
+.staff-metric-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  color: var(--hms-muted);
+}
+.staff-icon,
+.staff-appointment-icon {
+  display: inline-grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  flex: 0 0 42px;
+  border-radius: 12px;
+  background: var(--hms-soft);
+  color: var(--hms-brand-dark);
+}
+.staff-metric:nth-child(2) .staff-icon,
+.staff-metric:nth-child(4) .staff-icon {
+  background: var(--hms-metric-mint);
+  color: var(--hms-secondary);
+}
+.staff-metric-value {
+  margin: 18px 0 4px;
+  font-size: 34px;
+  line-height: 1.1;
+  font-weight: 650;
+  letter-spacing: -1.2px;
+  font-variant-numeric: tabular-nums;
+}
+.staff-metric-label {
+  font-size: 14px;
+  font-weight: 600;
+}
+.staff-metric-detail {
+  margin-top: 6px;
+  color: var(--hms-muted);
+  font-size: 12px;
+  line-height: 1.5;
+}
+.staff-work-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) minmax(250px, 1fr);
+  gap: 20px;
+  align-items: start;
+}
+.app-shell .staff-dashboard .card {
+  background: var(--dashboard-surface);
+  border: 1px solid var(--hms-border);
+  border-radius: 16px;
+  box-shadow: var(--dashboard-shadow);
+  backdrop-filter: none;
+}
+.app-shell .staff-dashboard .padded {
+  padding: 24px;
+}
+.app-shell .staff-dashboard .appointment-overview {
+  margin: 0;
+}
+.app-shell .staff-dashboard .appointment-stats {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+  margin: 0 0 20px;
+}
+.app-shell .staff-dashboard .appointment-stats > a {
+  padding: 16px;
+  border-radius: 14px;
+  background: var(--dashboard-surface);
+  border: 1px solid var(--hms-border);
+  box-shadow: var(--dashboard-shadow);
+  min-width: 0;
+  color: var(--hms-ink);
+}
+.app-shell .staff-dashboard .appointment-stats > a:hover {
+  border-color: var(--hms-brand);
+}
+.app-shell .staff-dashboard .appointment-stats .stat-symbol {
+  background: var(--hms-soft);
+  color: var(--hms-brand-dark);
+  margin: 0 0 12px;
+}
+.app-shell .staff-dashboard .appointment-stats > a:nth-child(2) .stat-symbol {
+  background: #fff0d6;
+  color: #885719;
+}
+.app-shell .staff-dashboard .appointment-stats > a:nth-child(3) .stat-symbol {
+  background: var(--hms-metric-mint);
+  color: var(--hms-secondary);
+}
+.app-shell .staff-dashboard .appointment-stats strong {
+  font-size: 28px;
+  line-height: 1.2;
+  font-weight: 650;
+  font-variant-numeric: tabular-nums;
+}
+.app-shell .staff-dashboard .appointment-stats > a > span:last-child {
+  color: var(--hms-muted);
+  font-size: 12px;
+  line-height: 1.5;
+}
+.app-shell .staff-dashboard .appointment-stats .stat-arrow {
+  color: var(--hms-muted);
+}
+.app-shell .staff-dashboard .upcoming-row {
+  gap: 14px;
+  padding: 18px 0;
+}
+.app-shell .staff-dashboard .upcoming-row:last-child {
+  padding-bottom: 0;
+}
+.app-shell .staff-dashboard .upcoming-row:hover .staff-appointment-copy strong {
+  color: var(--hms-brand);
+}
+.staff-appointment-copy {
+  flex: 1;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.app-shell .staff-dashboard .upcoming-row strong {
+  color: var(--hms-ink);
+  font-size: 14px;
+}
+.app-shell .staff-dashboard .upcoming-row small {
+  color: var(--hms-muted);
+  font-size: 12px;
+  line-height: 1.5;
+}
+.app-shell .staff-dashboard .text-link {
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.staff-empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 28px 12px;
+  gap: 12px;
+  text-align: center;
+}
+.staff-empty-state p {
+  max-width: 320px;
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.7;
+  color: var(--hms-muted);
+}
+.staff-shortcuts > p {
+  margin: -6px 0 20px;
+  line-height: 1.6;
+}
+.staff-shortcut-list {
+  display: grid;
+  gap: 8px;
+}
+.staff-shortcut-list a {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px;
+  margin-inline: -8px;
+  border-radius: 12px;
+  font-size: 13px;
+  font-weight: 550;
+  color: var(--hms-ink);
+  transition: background 180ms ease;
+}
+.staff-shortcut-list a:hover {
+  background: var(--hms-canvas);
+}
+.staff-shortcut-list a > span:nth-child(2) {
+  flex: 1;
+}
+.staff-shortcut-list a > svg {
+  color: var(--hms-muted);
+  flex-shrink: 0;
+}
+.staff-security-note {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 24px;
+  border-top: 1px solid var(--hms-border);
+  padding-top: 20px;
+  color: var(--hms-muted);
+  font-size: 12px;
+}
+.app-shell .staff-dashboard .dashboard-analytics,
+.app-shell .staff-dashboard .dashboard-grid {
+  margin: 0;
+}
+.app-shell .staff-dashboard .analytics-grid {
+  gap: 20px;
+}
+.app-shell .staff-dashboard .chart-title {
+  color: var(--hms-ink);
+  font-size: 15px;
+}
+.app-shell .staff-dashboard .chart-canvas {
+  height: 260px;
+  margin-top: 16px;
+  /* Recharts updates its SVG width asynchronously after a viewport resize. */
+  overflow: clip;
+}
+.app-shell .staff-dashboard .analytics-chart > p {
+  line-height: 1.6;
+}
+.app-shell .staff-dashboard .analytics-chart details {
+  border-top: 1px solid var(--hms-border);
+}
+.app-shell .staff-dashboard .analytics-chart summary {
+  min-height: 44px;
+  padding-block: 14px;
+  color: var(--hms-brand-dark);
+}
+.app-shell .staff-dashboard .staff-team-card {
+  display: flex;
+  align-items: flex-start;
+  flex-direction: column;
+  justify-content: center;
+  gap: 16px;
+}
+.app-shell .staff-dashboard .staff-team-card :is(h2, p) {
+  margin: 0;
+}
+.app-shell .staff-dashboard .staff-team-card p {
+  line-height: 1.7;
+  max-width: 45ch;
+}
+.app-shell .staff-dashboard .button {
+  min-height: 44px;
+}
+.app-shell .staff-dashboard .single-stat span {
+  color: var(--hms-muted);
+  font-size: 13px;
+}
+.app-shell .staff-dashboard :is(a, button, summary, select):focus-visible {
+  outline: 3px solid var(--hms-focus);
+  outline-offset: 4px;
+}
+@media (max-width: 1200px) {
+  .app-shell:has(.staff-dashboard) .topbar-title {
+    display: none;
+  }
+  .app-shell .staff-dashboard .staff-welcome {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+  .staff-work-grid {
+    grid-template-columns: minmax(0, 1.7fr) minmax(240px, 1fr);
+  }
+  .app-shell .staff-dashboard .padded {
+    padding: 20px;
+  }
+}
+@media (max-width: 1050px) {
+  .staff-metrics {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .staff-work-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .staff-shortcut-list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: 24px;
+  }
+}
+@media (max-width: 600px) {
+  .app-shell .staff-dashboard {
+    gap: 24px;
+  }
+  .app-shell .staff-dashboard .staff-welcome {
+    padding: 24px;
+    border-radius: 16px;
+  }
+  .staff-metrics {
+    gap: 12px;
+  }
+  .staff-metric {
+    padding: 16px;
+  }
+  .staff-metric-value {
+    font-size: 30px;
+  }
+  .app-shell .staff-dashboard .appointment-stats {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 10px;
+  }
+  .app-shell .staff-dashboard .appointment-stats > a {
+    display: grid;
+    grid-template-columns: 36px 1fr auto;
+    gap: 4px 12px;
+    align-items: center;
+  }
+  .app-shell .staff-dashboard .appointment-stats .stat-symbol {
+    grid-column: 1;
+    grid-row: 1 / 3;
+    margin: 0;
+  }
+  .app-shell .staff-dashboard .appointment-stats strong {
+    grid-column: 2;
+    grid-row: 1;
+    font-size: 24px;
+  }
+  .app-shell .staff-dashboard .appointment-stats > a > span:last-child {
+    grid-column: 2;
+    grid-row: 2;
+    margin: 0;
+  }
+  .app-shell .staff-dashboard .appointment-stats .stat-arrow {
+    position: static;
+    grid-column: 3;
+    grid-row: 1 / 3;
+  }
+  .app-shell .staff-dashboard .upcoming-row {
+    display: grid;
+    grid-template-columns: 36px minmax(0, 1fr);
+    gap: 10px 12px;
+  }
+  .staff-appointment-icon {
+    width: 36px;
+    height: 36px;
+  }
+  .app-shell .staff-dashboard .upcoming-row .status-pill {
+    grid-column: 2;
+    justify-self: start;
+  }
+  .staff-row-arrow {
+    display: none;
+  }
+  .staff-shortcut-list {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .app-shell .staff-dashboard .dashboard-analytics .field,
+  .app-shell .staff-dashboard .dashboard-analytics select {
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
+  }
+  .app-shell .staff-dashboard .chart-canvas {
+    height: 240px;
+  }
+  .app-shell .staff-dashboard .chart-data {
+    min-width: 0;
+    table-layout: fixed;
+    overflow-wrap: anywhere;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .app-shell .staff-dashboard *,
+  .app-shell .staff-dashboard *::before,
+  .app-shell .staff-dashboard *::after {
+    animation: none;
+    transition: none;
+  }
+}

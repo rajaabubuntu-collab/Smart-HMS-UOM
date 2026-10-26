@@ -40,6 +40,7 @@ export default function BookAppointment() {
     <BookingForm
       key={`${preset || 'self'}:${doctorId || ''}:${params.get('department') || ''}:${presetDate}`}
       presetDate={presetDate}
+      presetSlot={/^[a-f\d]{24}$/i.test(params.get('slot') || '') ? params.get('slot') : ''}
       presetDoctor={selectedDoctor.data?.doctor || null}
       presetDepartment={
         params.get('department') || selectedDoctor.data?.doctor.department._id || ''
@@ -56,7 +57,7 @@ export default function BookAppointment() {
     />
   );
 }
-function BookingForm({ preset, presetDoctor, presetDepartment, presetDate }) {
+function BookingForm({ preset, presetDoctor, presetDepartment, presetDate, presetSlot }) {
   const { user } = useAuth();
   const [patient, setPatient] = useState(preset),
     [doctor, setDoctor] = useState(presetDoctor),
@@ -180,6 +181,11 @@ function BookingForm({ preset, presetDoctor, presetDepartment, presetDate }) {
                 selected={slot}
                 onSelect={setSlot}
                 revision={revision}
+                initialSlotId={
+                  doctor.id === presetDoctor?.id && date === presetDate && revision === 0
+                    ? presetSlot
+                    : ''
+                }
               />
             </section>
           )}
