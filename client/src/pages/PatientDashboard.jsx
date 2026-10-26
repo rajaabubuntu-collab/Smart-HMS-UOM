@@ -1,3 +1,4 @@
+import { openPatientAssistant } from '../patient-assistant-events';
 import { lazy, Suspense } from 'react';
 import { Link } from 'react-router-dom';
 import {
@@ -70,16 +71,18 @@ export default function PatientDashboard({ user, profile, date }) {
         <DashboardCharts />
       </Suspense>
       {user.role === 'patient' && (
-        <section className="card padded guide-shortcut">
-          <h2>{t('Need help choosing a department?')}</h2>
-          <p>
-            {t(
-              'The department guide can suggest a service for non-emergency concerns. It is not a diagnosis.',
-            )}{' '}
-          </p>
-          <Link className="button primary" to="/recommendations">
-            {t('Open department guide')}{' '}
-          </Link>
+        <section className="card padded assistant-dashboard-shortcut">
+          <div>
+            <h2>{t('Your care assistant')}</h2>
+            <p>{t('Find an appointment, check a bill or get help choosing a department.')}</p>
+          </div>
+          <button
+            className="button primary"
+            type="button"
+            onClick={() => openPatientAssistant('guide')}
+          >
+            {t('Open care assistant')}
+          </button>
         </section>
       )}
       {user.role === 'patient' && (

@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState, useSyncExternalStore } from 'react';
 import { Link } from 'react-router-dom';
-import { MessageCircle, X, Send, LoaderCircle } from 'lucide-react';
+import { Sparkles, X, ArrowUp, LoaderCircle, ShieldCheck, RotateCcw } from 'lucide-react';
 import { api } from '../api';
 import { useAuth } from '../auth';
 import { useLocation } from 'react-router-dom';
@@ -124,7 +124,7 @@ export default function HospitalAssistant() {
           setOpen((value) => !value);
         }}
       >
-        <MessageCircle size={22} aria-hidden="true" /> {t('Ask Smart HMS')}
+        <Sparkles size={22} aria-hidden="true" /> {t('Ask Smart HMS')}
       </button>
       {open && (
         <section
@@ -143,7 +143,11 @@ export default function HospitalAssistant() {
           }}
         >
           <header className="hospital-assistant-header">
+            <span className="assistant-header-icon">
+              <Sparkles size={22} aria-hidden="true" />
+            </span>
             <div>
+              <p className="assistant-eyebrow">{t('SMART HMS')}</p>
               <h2 id="assistant-title">{t('Hospital assistant')}</h2>
               <p>{t('AI help with your visit')}</p>
             </div>
@@ -156,6 +160,10 @@ export default function HospitalAssistant() {
               <X size={22} aria-hidden="true" />
             </button>
           </header>
+          <div className="assistant-trust-line">
+            <ShieldCheck size={14} aria-hidden="true" />
+            {t('Hospital information · Powered by Groq')}
+          </div>
           <div
             className="hospital-assistant-conversation"
             role="log"
@@ -163,7 +171,15 @@ export default function HospitalAssistant() {
             aria-live="polite"
             aria-relevant="additions text"
           >
-            <p>{t('Ask about doctors, appointments, opening hours or getting here.')}</p>
+            {!turns.length && (
+              <div className="assistant-welcome">
+                <span className="assistant-welcome-icon">
+                  <Sparkles size={28} aria-hidden="true" />
+                </span>
+                <h3>{t('How can I help with your visit?')}</h3>
+                <p>{t('Ask about doctors, appointments, opening hours or getting here.')}</p>
+              </div>
+            )}
             {!turns.length && (
               <div className="hospital-assistant-suggestions">
                 {suggestions.map((label) => (
@@ -379,6 +395,7 @@ export default function HospitalAssistant() {
                   input.current?.focus();
                 }}
               >
+                <RotateCcw size={14} aria-hidden="true" />
                 {t('Clear')}
               </button>
               {busy ? (
@@ -393,7 +410,7 @@ export default function HospitalAssistant() {
                 </button>
               ) : (
                 <button type="submit" disabled={question.trim().length < 2}>
-                  <Send size={16} aria-hidden="true" />
+                  <ArrowUp size={18} aria-hidden="true" />
                   {t('Send question')}
                 </button>
               )}

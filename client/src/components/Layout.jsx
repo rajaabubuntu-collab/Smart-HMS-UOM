@@ -1,3 +1,4 @@
+import PatientAssistant from './PatientAssistant';
 import LanguageSwitcher from './LanguageSwitcher';
 import { t } from '../i18n/locale';
 import { NotificationBell } from '../pages/Notifications';
@@ -89,6 +90,7 @@ export default function Layout() {
   return (
     <div className={`app-shell ${user.role === 'patient' ? 'patient-workspace' : ''}`}>
       <RealtimeConnection />
+      {user.role === 'patient' && <PatientAssistant key={user.id} />}
       <a className="skip-link" href="#main">
         {t('Skip to content')}{' '}
       </a>

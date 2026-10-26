@@ -12,6 +12,7 @@ import { dashboardRouter } from './reporting/dashboard.js';
 import { profileAvatarRouter, publicDoctorAvatarRouter } from './profile-avatars.js';
 import { deliveryRouter } from './notifications/delivery-routes.js';
 import { feedbackRouter } from './feedback/routes.js';
+import { patientAssistantRouter } from './assistant/patient.js';
 import { recommendationRouter } from './recommendations/routes.js';
 import { notificationRouter } from './notifications/routes.js';
 import express from 'express';
@@ -335,6 +336,14 @@ export function createApp(
     res.status(201).json({ user: publicUser(user) });
   });
 
+  app.use(
+    '/api',
+    patientAssistantRouter(config.recommendations, {
+      rateLimitEnabled,
+      fetchImpl: assistantFetch,
+      dailyLimit: config.publicAssistantDailyLimit,
+    }),
+  );
   app.use('/api', schedulingRouter());
   app.use('/api', clinicalRouter());
   app.use('/api', billingRouter());
