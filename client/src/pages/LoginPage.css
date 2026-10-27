@@ -1,0 +1,505 @@
+/* All styles belong to the login screen; shared auth and workspace tokens stay unchanged. */
+.hms-login {
+  --login-ink: var(--hms-ink);
+  --login-muted: var(--hms-muted);
+  min-height: 100svh;
+  padding: 28px clamp(24px, 5vw, 80px) 20px;
+  display: flex;
+  flex-direction: column;
+  background: #fff;
+  color: var(--login-ink);
+}
+.hms-login .login-header,
+.hms-login .login-footer {
+  width: 100%;
+  max-width: 1320px;
+  margin-inline: auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+}
+.hms-login .login-header {
+  margin-bottom: 30px;
+}
+.hms-login .login-brand {
+  text-decoration: none;
+  color: var(--login-ink);
+}
+.hms-login .brand-mark {
+  background: var(--hms-brand);
+  color: #fff;
+  border-radius: 13px;
+}
+.hms-login .brand small {
+  color: var(--login-muted);
+}
+.hms-login .login-utilities {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.hms-login .login-layout {
+  width: 100%;
+  max-width: 1320px;
+  margin: auto;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 48px;
+  align-items: stretch;
+}
+.hms-login .login-entry {
+  width: 100%;
+  max-width: 420px;
+  margin: auto;
+  padding: 0;
+  min-width: 0;
+}
+.hms-login .login-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  margin-bottom: 32px;
+  color: var(--login-muted);
+  font-size: 13px;
+  text-decoration: none;
+}
+.hms-login .login-form-content {
+  width: 100%;
+}
+.hms-login .login-overline {
+  margin: 0 0 14px;
+  color: var(--hms-brand-dark);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1.6px;
+  line-height: 1.8;
+}
+.hms-login #login-title {
+  font-size: clamp(32px, 3.3vw, 44px);
+  line-height: 1.2;
+  letter-spacing: -1.6px;
+  font-weight: 650;
+  margin: 0 0 16px;
+  overflow-wrap: anywhere;
+}
+.hms-login .login-description {
+  margin: 0 0 32px;
+  max-width: 340px;
+  font-size: 14px;
+  line-height: 1.8;
+  color: var(--login-muted);
+}
+.hms-login form {
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+}
+.hms-login .field {
+  margin: 0;
+  gap: 10px;
+}
+.hms-login .field label {
+  color: var(--login-ink);
+  font-size: 13px;
+  font-weight: 600;
+}
+.hms-login .field .required {
+  color: var(--login-muted);
+}
+.hms-login .field input {
+  width: 100%;
+  min-height: 54px;
+  padding: 14px 16px;
+  border: 1px solid var(--hms-border-strong);
+  border-radius: 12px;
+  background: #fcfcff;
+  color: var(--login-ink);
+  box-shadow: none;
+  font: inherit;
+  font-size: 16px;
+  transition:
+    border-color 150ms ease,
+    box-shadow 150ms ease;
+}
+.hms-login .field input::placeholder {
+  color: #69728a;
+}
+.hms-login .field input:focus {
+  border-color: var(--hms-brand);
+  box-shadow: 0 0 0 4px #5044ca0d;
+  background: #fff;
+}
+.hms-login .field input[aria-invalid='true'] {
+  border-color: #b52e45;
+}
+.hms-login .login-password {
+  position: relative;
+}
+.hms-login .login-password input {
+  padding-right: 58px;
+}
+.hms-login .login-password-toggle {
+  position: absolute;
+  top: 30px;
+  right: 5px;
+  width: 44px;
+  height: 44px;
+  display: grid;
+  place-items: center;
+  padding: 0;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--login-muted);
+  cursor: pointer;
+}
+.hms-login .login-password-toggle:hover {
+  background: var(--hms-canvas);
+  color: var(--hms-brand-dark);
+}
+.hms-login .login-recovery {
+  margin-top: -16px;
+  display: flex;
+  justify-content: flex-end;
+}
+.hms-login .login-recovery a {
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  color: var(--hms-brand-dark);
+  font-size: 13px;
+  font-weight: 600;
+}
+.hms-login form > .button {
+  min-height: 54px;
+  margin-top: -8px;
+  padding: 14px 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  width: 100%;
+  border-radius: 12px;
+  border: 1px solid var(--hms-brand);
+  color: #fff;
+  background: var(--hms-brand);
+  font-size: 14px;
+  font-weight: 650;
+  line-height: 1.5;
+  box-shadow: 0 6px 16px #5044ca18;
+  transition:
+    background 150ms ease,
+    box-shadow 150ms ease;
+}
+.hms-login form > .button:hover:not(:disabled) {
+  background: var(--hms-brand-dark);
+  box-shadow: 0 8px 20px #5044ca26;
+}
+.hms-login form > .button:disabled {
+  opacity: 0.65;
+  cursor: wait;
+}
+.hms-login .login-account {
+  margin: 22px 0 26px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-size: 14px;
+  color: var(--login-muted);
+}
+.hms-login .login-account a {
+  display: inline-flex;
+  gap: 8px;
+  align-items: center;
+  min-height: 44px;
+  color: var(--hms-brand-dark);
+  font-weight: 650;
+}
+.hms-login .login-security {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 9px;
+  margin: 0;
+  padding-top: 24px;
+  border-top: 1px solid var(--hms-border);
+  font-size: 12px;
+  line-height: 1.7;
+  color: var(--login-muted);
+}
+.hms-login .login-security svg {
+  flex-shrink: 0;
+  margin-top: 2px;
+  color: var(--hms-secondary);
+}
+.hms-login .login-welcome {
+  display: none;
+}
+.hms-login .login-footer {
+  margin-top: 36px;
+  padding-top: 20px;
+  font-size: 11px;
+  line-height: 1.6;
+  color: var(--login-muted);
+}
+.hms-login :is(a, button, input, select):focus-visible {
+  outline: 3px solid var(--hms-focus);
+  outline-offset: 3px;
+}
+.hms-login a:hover {
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+.hms-login .notice {
+  margin: 0 0 22px;
+}
+@media (min-width: 1000px) {
+  .hms-login .login-layout {
+    grid-template-columns: minmax(0, 0.92fr) minmax(0, 1.08fr);
+    min-height: 740px;
+  }
+  .hms-login .login-entry {
+    padding: 28px 0;
+    width: calc(100% - 48px);
+  }
+  .hms-login .login-welcome {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-width: 0;
+    overflow: hidden;
+    position: relative;
+    border-radius: 32px;
+    padding: 48px clamp(28px, 3.2vw, 52px) 28px;
+    background:
+      radial-gradient(ellipse at 5% 95%, #dcf0e7 0, transparent 60%),
+      linear-gradient(145deg, #f3efff, #eae5fa);
+    border: 1px solid #e6e0f5;
+  }
+  .hms-login .login-welcome-copy {
+    position: relative;
+    text-align: center;
+    width: 100%;
+  }
+  .hms-login .login-welcome h2 {
+    margin: 0 0 20px;
+    color: #302951;
+    font-size: clamp(34px, 3.2vw, 46px);
+    line-height: 1.2;
+    font-weight: 550;
+    letter-spacing: -1.4px;
+    overflow-wrap: anywhere;
+  }
+  .hms-login .login-welcome h2 em {
+    font-style: normal;
+    color: var(--hms-brand);
+  }
+  .hms-login .login-welcome-copy > p:last-child {
+    max-width: 375px;
+    margin: 0 auto;
+    color: #625b7b;
+    font-size: 14px;
+    line-height: 1.8;
+  }
+  .hms-login .login-visual {
+    position: relative;
+    width: 100%;
+    max-width: 480px;
+    height: 370px;
+    flex-shrink: 0;
+    margin: auto 0;
+  }
+  .hms-login .login-visual-ring {
+    position: absolute;
+    left: calc(50% - var(--ring-size) / 2);
+    top: calc(50% - var(--ring-size) / 2);
+    width: var(--ring-size);
+    height: var(--ring-size);
+    border: 1px solid #b7acce66;
+    border-radius: 50%;
+  }
+  .hms-login .login-ring-outer {
+    --ring-size: 330px;
+  }
+  .hms-login .login-ring-inner {
+    --ring-size: 240px;
+    background: #fff2;
+  }
+  .hms-login .login-visual-hub {
+    position: absolute;
+    width: 116px;
+    height: 116px;
+    left: calc(50% - 58px);
+    top: calc(50% - 58px);
+    display: grid;
+    place-items: center;
+    border-radius: 32px;
+    color: #fff;
+    background: linear-gradient(140deg, #7666de, #4939b9);
+    box-shadow:
+      0 22px 44px #5847aa2e,
+      inset 0 2px 2px #ffffff55;
+  }
+  .hms-login .login-visual-card {
+    position: absolute;
+    display: flex;
+    align-items: center;
+    gap: 13px;
+    padding: 18px;
+    border: 1px solid #fff;
+    border-radius: 18px;
+    background: #ffffffeb;
+    box-shadow: 0 12px 30px #473b7010;
+    max-width: 85%;
+  }
+  .hms-login .login-visual-card strong {
+    color: #37314f;
+    font-size: 13px;
+    font-weight: 650;
+    line-height: 1.6;
+  }
+  .hms-login .login-appointment-card {
+    left: 0;
+    top: 18px;
+  }
+  .hms-login .login-record-card {
+    right: 0;
+    top: 230px;
+  }
+  .hms-login .login-bill-card {
+    left: 3%;
+    top: 312px;
+    padding: 12px 16px;
+  }
+  .hms-login .login-feature-icon {
+    display: grid;
+    place-items: center;
+    width: 42px;
+    height: 42px;
+    border-radius: 12px;
+    background: #eeebfc;
+    color: var(--hms-brand);
+    flex-shrink: 0;
+  }
+  .hms-login .login-record-card .login-feature-icon {
+    color: #246459;
+    background: #dff2e9;
+  }
+  .hms-login .login-bill-card .login-feature-icon {
+    width: 32px;
+    height: 32px;
+    background: #fff0e2;
+    color: #975616;
+  }
+  .hms-login .login-card-check {
+    background: #dff2e9;
+    color: #246459;
+    width: 24px;
+    height: 24px;
+    display: grid;
+    place-items: center;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+  .hms-login .login-preview-lines {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding-top: 10px;
+  }
+  .hms-login .login-preview-lines i {
+    display: block;
+    width: 96px;
+    max-width: 100%;
+    height: 5px;
+    background: #e8e6f1;
+    border-radius: 9px;
+  }
+  .hms-login .login-preview-lines i + i {
+    width: 64px;
+    background: #f0eef6;
+  }
+  .hms-login .login-visual-dot {
+    position: absolute;
+    border-radius: 50%;
+    width: 12px;
+    height: 12px;
+    background: #a094d6;
+  }
+  .hms-login .login-dot-one {
+    top: 100px;
+    right: 10%;
+  }
+  .hms-login .login-dot-two {
+    top: 244px;
+    left: 10%;
+    width: 8px;
+    height: 8px;
+    background: #62a793;
+  }
+  .hms-login .login-welcome-footer {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    justify-content: center;
+    margin: 28px 0 0;
+    font-size: 12px;
+    line-height: 1.7;
+    color: #625b7b;
+  }
+  .hms-login .login-welcome-footer svg {
+    flex-shrink: 0;
+  }
+}
+@media (max-width: 599px) {
+  .hms-login {
+    padding: 20px 24px;
+  }
+  .hms-login .login-header {
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-bottom: 20px;
+  }
+  .hms-login .login-utilities {
+    gap: 8px;
+    margin-left: auto;
+  }
+  .hms-login .login-utilities .surface-toggle {
+    width: 44px;
+    min-width: 44px;
+    height: 44px;
+    padding: 0;
+    justify-content: center;
+  }
+  .hms-login .login-utilities .surface-toggle span {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+  .hms-login .login-back {
+    margin-bottom: 24px;
+  }
+  .hms-login .login-footer > span:last-child {
+    display: none;
+  }
+  .hms-login:lang(ta) #login-title {
+    font-size: 27px;
+    line-height: 1.45;
+    letter-spacing: 0;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .hms-login *,
+  .hms-login *::before,
+  .hms-login *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+}

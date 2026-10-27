@@ -1,3 +1,4 @@
+import LoginPage from './LoginPage';
 import LanguageSwitcher from '../components/LanguageSwitcher';
 import { t } from '../i18n/locale';
 import { useState } from 'react';
@@ -41,6 +42,17 @@ export default function AuthPage({ register = false }) {
     }
   }
   const fieldError = (name) => error?.fields?.[name];
+  if (!register)
+    return (
+      <LoginPage
+        onSubmit={submit}
+        busy={busy}
+        error={error}
+        returnTo={returnTo}
+        showPassword={showPassword}
+        onTogglePassword={() => setShowPassword(!showPassword)}
+      />
+    );
   return (
     <main className="auth-shell">
       <section className="auth-story">
