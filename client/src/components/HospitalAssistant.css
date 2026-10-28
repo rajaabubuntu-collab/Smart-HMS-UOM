@@ -605,3 +605,21 @@
     min-height: 44px;
   }
 }
+
+/* Keep private assistant text opaque during its entrance for readable contrast. */
+.patient-assistant .hospital-assistant-panel {
+  animation: patient-assistant-enter 180ms ease-out;
+}
+@keyframes patient-assistant-enter {
+  from {
+    transform: translateY(12px);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .patient-assistant .hospital-assistant-panel {
+    animation: none;
+  }
+}

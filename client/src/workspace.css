@@ -393,6 +393,10 @@
 .app-shell .account-status {
   color: var(--hms-muted);
 }
+.patient-workspace .doctor-option small,
+.patient-workspace .doctor-price > span {
+  color: var(--hms-muted);
+}
 .app-shell .allergy-note {
   color: #78602e;
 }

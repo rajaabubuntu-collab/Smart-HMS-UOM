@@ -22,7 +22,7 @@ export default function PatientDashboard({ user, profile, date }) {
   const headline = 'Your care, all in one place.';
   const description = 'Keep your details up to date for a smoother hospital experience.';
   return (
-    <>
+    <div className="patient-dashboard staff-dashboard">
       <PageHeading
         eyebrow={t('YOUR WORKSPACE')}
         title={t('Welcome, {name}.', { name: user.name.split(' ')[0] })}
@@ -33,21 +33,18 @@ export default function PatientDashboard({ user, profile, date }) {
           {date}
         </span>
       </PageHeading>
-      <section className="welcome-banner">
+      <section className="welcome-banner staff-welcome">
         <div>
           <span className="banner-label">
             <span /> {t('CARE, CONNECTED')}{' '}
           </span>
           <h2>{t(headline)}</h2>
           <p>{t(description)}</p>
-          <Link className="button lime" to="/book">
-            {t('Book an appointment')} <ArrowUpRight size={17} />
-          </Link>
         </div>
-        <div className="banner-art" aria-hidden="true">
-          <div />
-          <HeartPulse size={100} strokeWidth={1} />
-        </div>
+        <Link className="button staff-primary-action" to="/book">
+          {t('Book an appointment')} <ArrowUpRight size={17} />
+        </Link>
+        <HeartPulse className="staff-welcome-art" size={180} strokeWidth={1} aria-hidden="true" />
       </section>
       {user.role === 'patient' && (
         <div className="workspace-quick-actions">
@@ -125,7 +122,7 @@ export default function PatientDashboard({ user, profile, date }) {
           <AccountCard user={user} />
         </div>
       )}
-    </>
+    </div>
   );
 }
 function AccountCard({ user }) {

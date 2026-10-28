@@ -16,7 +16,7 @@ test('patient quick actions and mobile navigation work in all three languages', 
 }) => {
   await login(page, 'patient');
   await page.screenshot({ path: '.local/screenshots/care-workspace-desktop.png', fullPage: true });
-  await page.screenshot({ path: '.local/screenshots/patient-behance-preview.png' });
+  await page.screenshot({ path: '.local/screenshots/patient-default-preview.png' });
   await page.locator('.workspace-quick-actions a[href="/records"]').click();
   await expect(page).toHaveURL(/\/records$/);
   await page.goto('/dashboard');
@@ -73,7 +73,7 @@ test('admin keeps full workspace navigation with the shared card design', async 
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
 });
 
-test('restored patient overview shows appointments, charts and profile with working shortcuts', async ({
+test('patient overview shows appointments, charts and profile with working shortcuts', async ({
   page,
 }) => {
   await page.emulateMedia({ reducedMotion: 'reduce' });
@@ -95,7 +95,7 @@ test('restored patient overview shows appointments, charts and profile with work
     }),
   );
   await login(page, 'patient');
-  await expect(page.locator('.patient-overview-shell')).toHaveCount(0);
+  await expect(page.locator('.patient-dashboard')).toBeVisible();
   await expect(page.locator('.appointment-stats strong')).toHaveText(['1', '0', '2']);
   await expect(page.locator('.upcoming-row')).toContainText('Test clinician');
   await expect(page.locator('.upcoming-row')).toHaveAttribute(
@@ -108,7 +108,7 @@ test('restored patient overview shows appointments, charts and profile with work
     path: '.local/screenshots/patient-restored-desktop.png',
     fullPage: true,
   });
-  await page.locator('.guide-shortcut a').click();
+  await page.locator('.workspace-quick-actions a[href="/recommendations"]').click();
   await expect(page).toHaveURL(/\/recommendations$/);
   await page.goto('/dashboard');
   for (const width of [768, 390, 320]) {
@@ -134,4 +134,55 @@ test('the overview design is isolated from staff dashboards', async ({ page }) =
     await page.getByRole('button', { name: 'Sign out', exact: true }).click();
     await expect(page).toHaveURL(/\/login$/);
   }
+});
+
+test('patient theme stays readable across every menu, dialogs and the care assistant', async ({
+  page,
+}) => {
+  test.setTimeout(120000);
+  await login(page, 'patient');
+  for (const path of [
+    '/dashboard',
+    '/notifications',
+    '/messages',
+    '/appointments',
+    '/feedback',
+    '/recommendations',
+    '/records',
+    '/billing',
+    '/book',
+    '/profile',
+  ]) {
+    await page.goto(path);
+    await expect(page.locator('main h1')).toBeVisible();
+    await expect(page.locator('main .loading')).toHaveCount(0);
+    if (['/book', '/profile', '/recommendations'].includes(path)) {
+      await page.screenshot({
+        path: `.local/screenshots/patient-default-${path.slice(1)}.png`,
+        fullPage: true,
+      });
+    }
+    const result = await new AxeBuilder({ page }).include('.app-shell').analyze();
+    expect
+      .soft(
+        result.violations.map(({ id, nodes }) => ({ id, targets: nodes.map((n) => n.target) })),
+        path,
+      )
+      .toEqual([]);
+  }
+  await page.goto('/appointments');
+  await page.getByRole('button', { name: 'All appointments', exact: true }).click();
+  await page.getByRole('button', { name: 'Details', exact: true }).first().click();
+  await expect(page.getByRole('dialog')).toBeVisible();
+  const dialog = await new AxeBuilder({ page }).include('dialog').analyze();
+  expect(
+    dialog.violations.map(({ id, nodes }) => ({ id, targets: nodes.map((n) => n.target) })),
+  ).toEqual([]);
+  await page.getByRole('button', { name: 'Close dialog' }).click();
+  await page.getByRole('button', { name: 'My care assistant', exact: true }).click();
+  await page.screenshot({ path: '.local/screenshots/patient-default-assistant.png' });
+  const assistant = await new AxeBuilder({ page }).include('.hospital-assistant-widget').analyze();
+  expect(
+    assistant.violations.map(({ id, nodes }) => ({ id, targets: nodes.map((n) => n.target) })),
+  ).toEqual([]);
 });

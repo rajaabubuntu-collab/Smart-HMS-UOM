@@ -101,7 +101,7 @@ export default function Layout() {
           onClick={() => setMenu(false)}
         />
       )}
-      <aside className={`sidebar ${menu ? 'open' : ''}`}>
+      <aside className={`sidebar ${menu ? 'open' : ''}`} aria-label={t('WORKSPACE')}>
         <Link to="/dashboard" className="brand-link" onClick={() => setMenu(false)}>
           <Brand />
         </Link>

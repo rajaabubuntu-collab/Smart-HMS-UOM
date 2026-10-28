@@ -181,7 +181,7 @@ export default function PatientAssistant() {
             }
           }}
         >
-          <header className="hospital-assistant-header">
+          <div className="hospital-assistant-header">
             <span className="assistant-header-icon">
               <Sparkles size={22} aria-hidden="true" />
             </span>
@@ -198,7 +198,7 @@ export default function PatientAssistant() {
             >
               <X size={20} aria-hidden="true" />
             </button>
-          </header>
+          </div>
           <div className="assistant-trust-line">
             <ShieldCheck size={14} aria-hidden="true" />
             {t('Your account only · Records stay in Smart HMS')}

@@ -157,7 +157,7 @@ export default function Appointments() {
                   </div>
                   <div className="appointment-person">
                     <span className="appointment-reference">{item.reference}</span>
-                    <h3>
+                    <h3 aria-level={user.role === 'patient' ? 2 : undefined}>
                       {user.role === 'patient'
                         ? item.doctorName
                         : item.patient?.name || t('Patient')}
@@ -247,7 +247,9 @@ export default function Appointments() {
             {!resource.data.items.length && (
               <div className="empty-state">
                 <CalendarDays size={32} />
-                <h3>{t('No appointments in this view')}</h3>
+                <h3 aria-level={user.role === 'patient' ? 2 : undefined}>
+                  {t('No appointments in this view')}
+                </h3>
                 <p>
                   {t('Try a different date or status.')}{' '}
                   {user.role === 'patient' ? t(' Your bookings will appear here.') : ''}
